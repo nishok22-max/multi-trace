@@ -1,0 +1,3 @@
+# Per-attribute tolerances (PRD 10.5) come from sensor datasheets.
+# TODO(confirm): no datasheet values are documented, so none are invented.
+tolerances: []

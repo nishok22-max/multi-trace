@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "lang": {
+      "default": "eng",
+      "title": "Lang",
+      "type": "string"
+    },
+    "psm": {
+      "default": 6,
+      "title": "Psm",
+      "type": "integer"
+    },
+    "timeout_s": {
+      "default": 20,
+      "title": "Timeout S",
+      "type": "integer"
+    }
+  },
+  "title": "OcrConfig",
+  "type": "object"
+}

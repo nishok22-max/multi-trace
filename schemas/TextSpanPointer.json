@@ -1,0 +1,177 @@
+{
+  "$defs": {
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    },
+    "RectPx": {
+      "additionalProperties": false,
+      "description": "Pixel rectangle (integers).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "integer"
+        },
+        "w": {
+          "title": "W",
+          "type": "integer"
+        },
+        "x": {
+          "title": "X",
+          "type": "integer"
+        },
+        "y": {
+          "title": "Y",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "RectPx",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "char_end": {
+      "minimum": 0,
+      "title": "Char End",
+      "type": "integer"
+    },
+    "char_start": {
+      "minimum": 0,
+      "title": "Char Start",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "text_span",
+      "default": "text_span",
+      "title": "Kind",
+      "type": "string"
+    },
+    "line": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Line"
+    },
+    "line_rects_pt": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/Rect"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Line Rects Pt"
+    },
+    "line_rects_px": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/RectPx"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Line Rects Px"
+    },
+    "page": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Page"
+    },
+    "page_text_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Page Text Sha256",
+      "type": "string"
+    },
+    "quote": {
+      "title": "Quote",
+      "type": "string"
+    },
+    "quote_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Quote Sha256",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "source_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "title": "Source Id",
+      "type": "string"
+    },
+    "text_canon_version": {
+      "title": "Text Canon Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "sha256",
+    "page_text_sha256",
+    "text_canon_version",
+    "char_start",
+    "char_end",
+    "quote",
+    "quote_sha256"
+  ],
+  "title": "TextSpanPointer",
+  "type": "object"
+}

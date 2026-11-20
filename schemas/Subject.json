@@ -1,0 +1,124 @@
+{
+  "$defs": {
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "features": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Features",
+          "type": "object"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "vetoed": {
+          "default": false,
+          "title": "Vetoed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "entity_id",
+        "score"
+      ],
+      "title": "Candidate",
+      "type": "object"
+    },
+    "MentionKey": {
+      "additionalProperties": false,
+      "description": "Stable key `(source_sha256, locator)` that decisions attach to.",
+      "properties": {
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "locator"
+      ],
+      "title": "MentionKey",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/Candidate"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "entity_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entity Id"
+    },
+    "link_status": {
+      "enum": [
+        "resolved",
+        "ambiguous",
+        "unresolved"
+      ],
+      "title": "Link Status",
+      "type": "string"
+    },
+    "mention": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mention"
+    },
+    "mention_key": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MentionKey"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "link_status"
+  ],
+  "title": "Subject",
+  "type": "object"
+}

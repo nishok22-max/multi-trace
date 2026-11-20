@@ -1,0 +1,3 @@
+# Gauge definitions for photo reading.
+# TODO(confirm): generated with the seed photos (M3); none documented yet.
+gauges: []

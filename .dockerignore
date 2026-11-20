@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+data/
+**/*.db*
+seed/credentials.local.txt
+.git
+.venv
+node_modules
+dist
+__pycache__
+**/__pycache__

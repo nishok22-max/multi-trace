@@ -1,0 +1,58 @@
+{
+  "additionalProperties": false,
+  "description": "Append-only. `kind` is opened|decided|stale|explained; escalated is derived.",
+  "properties": {
+    "at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "At",
+      "type": "string"
+    },
+    "decision_id": {
+      "anyOf": [
+        {
+          "pattern": "^dec_[0-9a-f]{24}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Decision Id"
+    },
+    "event_id": {
+      "pattern": "^rve_[0-9a-f]{24}$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "opened",
+        "decided",
+        "stale",
+        "explained"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "review_id": {
+      "pattern": "^rv_[0-9a-f]{24}$",
+      "title": "Review Id",
+      "type": "string"
+    },
+    "seq": {
+      "minimum": 0,
+      "title": "Seq",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "event_id",
+    "seq",
+    "review_id",
+    "kind",
+    "at"
+  ],
+  "title": "ReviewEvent",
+  "type": "object"
+}

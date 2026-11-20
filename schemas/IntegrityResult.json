@@ -1,0 +1,42 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "chain_ok": {
+      "title": "Chain Ok",
+      "type": "boolean"
+    },
+    "failures": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Failures",
+      "type": "array"
+    },
+    "ok": {
+      "title": "Ok",
+      "type": "boolean"
+    },
+    "records_ok": {
+      "title": "Records Ok",
+      "type": "boolean"
+    },
+    "snapshot_ok": {
+      "title": "Snapshot Ok",
+      "type": "boolean"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "ok",
+    "version",
+    "chain_ok",
+    "snapshot_ok",
+    "records_ok"
+  ],
+  "title": "IntegrityResult",
+  "type": "object"
+}

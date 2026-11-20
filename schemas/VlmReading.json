@@ -1,0 +1,36 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "prompt_id": {
+      "title": "Prompt Id",
+      "type": "string"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "text",
+    "model_id",
+    "prompt_id"
+  ],
+  "title": "VlmReading",
+  "type": "object"
+}

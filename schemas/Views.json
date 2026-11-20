@@ -1,0 +1,629 @@
+{
+  "$defs": {
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "features": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Features",
+          "type": "object"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "vetoed": {
+          "default": false,
+          "title": "Vetoed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "entity_id",
+        "score"
+      ],
+      "title": "Candidate",
+      "type": "object"
+    },
+    "CaseState": {
+      "additionalProperties": false,
+      "description": "Unified Case State (PRD 9.1), reduced to ids. Entities, events, measurements and\nrelations are views over claims and are projected later (M2/M3).",
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "claim_ids": {
+          "items": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "comparison_ids": {
+          "items": {
+            "pattern": "^cmp_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Comparison Ids",
+          "type": "array"
+        },
+        "conflict_ids": {
+          "items": {
+            "pattern": "^cf_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Conflict Ids",
+          "type": "array"
+        },
+        "decision_ids": {
+          "items": {
+            "pattern": "^dec_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Decision Ids",
+          "type": "array"
+        },
+        "gap_claim_ids": {
+          "items": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Gap Claim Ids",
+          "type": "array"
+        },
+        "manifest_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Hash",
+          "type": "string"
+        },
+        "plant_tz": {
+          "title": "Plant Tz",
+          "type": "string"
+        },
+        "review_ids": {
+          "items": {
+            "pattern": "^rv_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Review Ids",
+          "type": "array"
+        },
+        "scope_entities": {
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+            "type": "string"
+          },
+          "title": "Scope Entities",
+          "type": "array"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/Source"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "window_end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Window End",
+          "type": "string"
+        },
+        "window_start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Window Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "version",
+        "manifest_hash",
+        "plant_tz",
+        "scope_entities",
+        "window_start",
+        "window_end",
+        "sources",
+        "claim_ids",
+        "comparison_ids",
+        "conflict_ids",
+        "gap_claim_ids",
+        "decision_ids",
+        "review_ids"
+      ],
+      "title": "CaseState",
+      "type": "object"
+    },
+    "CoveragePeriod": {
+      "additionalProperties": false,
+      "description": "Dates an event log is complete for (half-open, UTC).",
+      "properties": {
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "CoveragePeriod",
+      "type": "object"
+    },
+    "MentionKey": {
+      "additionalProperties": false,
+      "description": "Stable key `(source_sha256, locator)` that decisions attach to.",
+      "properties": {
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "locator"
+      ],
+      "title": "MentionKey",
+      "type": "object"
+    },
+    "Reliability": {
+      "additionalProperties": false,
+      "description": "Beta prior on source reliability (PRD 9.2). Neutral prior is alpha = beta = 1.",
+      "properties": {
+        "alpha": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "beta": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Beta",
+          "type": "number"
+        }
+      },
+      "title": "Reliability",
+      "type": "object"
+    },
+    "ReviewItem": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Candidate"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidates"
+        },
+        "claim_ids": {
+          "items": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "evidence_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Hash",
+          "type": "string"
+        },
+        "mention_keys": {
+          "items": {
+            "$ref": "#/$defs/MentionKey"
+          },
+          "title": "Mention Keys",
+          "type": "array"
+        },
+        "opened_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Opened At",
+          "type": "string"
+        },
+        "review_id": {
+          "pattern": "^rv_[0-9a-f]{24}$",
+          "title": "Review Id",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "ambiguous_entity",
+            "reader_disagreement",
+            "implausible_value",
+            "hidden_text",
+            "envelope_drift",
+            "low_confidence",
+            "unknown_unit",
+            "llm_only_interpretation",
+            "no_text_layer",
+            "unsupported_page",
+            "pdf_page_cap",
+            "conflict_explain"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "review_id",
+        "type",
+        "claim_ids",
+        "mention_keys",
+        "evidence_hash",
+        "opened_at"
+      ],
+      "title": "ReviewItem",
+      "type": "object"
+    },
+    "ReviewQueueEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "explained": {
+          "default": false,
+          "title": "Explained",
+          "type": "boolean"
+        },
+        "item": {
+          "$ref": "#/$defs/ReviewItem"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "decided",
+            "stale",
+            "escalated"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item",
+        "status"
+      ],
+      "title": "ReviewQueueEntry",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "coverage_period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CoveragePeriod"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derived_from_sources": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "type": "string"
+          },
+          "title": "Derived From Sources",
+          "type": "array"
+        },
+        "held_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Held Reason"
+        },
+        "ingested_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Ingested At",
+          "type": "string"
+        },
+        "mime": {
+          "title": "Mime",
+          "type": "string"
+        },
+        "modality": {
+          "enum": [
+            "text",
+            "table",
+            "image",
+            "sensor"
+          ],
+          "title": "Modality",
+          "type": "string"
+        },
+        "origin": {
+          "title": "Origin",
+          "type": "string"
+        },
+        "reliability": {
+          "$ref": "#/$defs/Reliability"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size": {
+          "minimum": 0,
+          "title": "Size",
+          "type": "integer"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "synthetic": {
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source_id",
+        "case_id",
+        "modality",
+        "sha256",
+        "origin",
+        "ingested_at",
+        "synthetic",
+        "mime",
+        "size"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "Story": {
+      "additionalProperties": false,
+      "description": "Five-step story. Numbers in `text` are computed, never typed (promise 8).",
+      "properties": {
+        "headline_outcome": {
+          "anyOf": [
+            {
+              "enum": [
+                "agree",
+                "disagree",
+                "cant_compare",
+                "cant_tell"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Headline Outcome"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/StoryStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "steps"
+      ],
+      "title": "Story",
+      "type": "object"
+    },
+    "StoryStep": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_ids": {
+          "items": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "comparison_ids": {
+          "items": {
+            "pattern": "^cmp_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Comparison Ids",
+          "type": "array"
+        },
+        "n": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "N",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "n",
+        "title",
+        "text"
+      ],
+      "title": "StoryStep",
+      "type": "object"
+    },
+    "TimelineEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "attribute": {
+          "title": "Attribute",
+          "type": "string"
+        },
+        "claim_id": {
+          "pattern": "^clm_[0-9a-f]{24}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "End"
+        },
+        "entity_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Id"
+        },
+        "entry_id": {
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "granularity": {
+          "enum": [
+            "hour",
+            "shift",
+            "day",
+            "unknown"
+          ],
+          "title": "Granularity",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "modality": {
+          "enum": [
+            "text",
+            "table",
+            "image",
+            "sensor",
+            "decision"
+          ],
+          "title": "Modality",
+          "type": "string"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start"
+        }
+      },
+      "required": [
+        "entry_id",
+        "claim_id",
+        "granularity",
+        "attribute",
+        "modality",
+        "label"
+      ],
+      "title": "TimelineEntry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "review": {
+      "items": {
+        "$ref": "#/$defs/ReviewQueueEntry"
+      },
+      "title": "Review",
+      "type": "array"
+    },
+    "state": {
+      "$ref": "#/$defs/CaseState"
+    },
+    "story": {
+      "$ref": "#/$defs/Story"
+    },
+    "timeline": {
+      "items": {
+        "$ref": "#/$defs/TimelineEntry"
+      },
+      "title": "Timeline",
+      "type": "array"
+    }
+  },
+  "required": [
+    "state",
+    "story",
+    "timeline",
+    "review"
+  ],
+  "title": "Views",
+  "type": "object"
+}

@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "EntityChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "entity",
+          "default": "entity",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_id"
+      ],
+      "title": "EntityChoice",
+      "type": "object"
+    },
+    "EscalateChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "escalate",
+          "default": "escalate",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "EscalateChoice",
+      "type": "object"
+    },
+    "ExplainChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "explanation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "type": {
+          "const": "explain",
+          "default": "explain",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "ExplainChoice",
+      "type": "object"
+    },
+    "Principal": {
+      "additionalProperties": false,
+      "description": "Identity from the session only (promise 9). MVP `iss` is \"local\".",
+      "properties": {
+        "iss": {
+          "title": "Iss",
+          "type": "string"
+        },
+        "sub": {
+          "title": "Sub",
+          "type": "string"
+        }
+      },
+      "required": [
+        "iss",
+        "sub"
+      ],
+      "title": "Principal",
+      "type": "object"
+    },
+    "ReadingChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "reading",
+          "default": "reading",
+          "title": "Type",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "accept",
+            "reject"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict"
+      ],
+      "title": "ReadingChoice",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A stored human decision. Identity fields come from the session (promise 9).",
+  "properties": {
+    "at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "At",
+      "type": "string"
+    },
+    "base_version": {
+      "minimum": 0,
+      "title": "Base Version",
+      "type": "integer"
+    },
+    "case_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "choice": {
+      "discriminator": {
+        "mapping": {
+          "entity": "#/$defs/EntityChoice",
+          "escalate": "#/$defs/EscalateChoice",
+          "explain": "#/$defs/ExplainChoice",
+          "reading": "#/$defs/ReadingChoice"
+        },
+        "propertyName": "type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EntityChoice"
+        },
+        {
+          "$ref": "#/$defs/ReadingChoice"
+        },
+        {
+          "$ref": "#/$defs/ExplainChoice"
+        },
+        {
+          "$ref": "#/$defs/EscalateChoice"
+        }
+      ],
+      "title": "Choice"
+    },
+    "decision_id": {
+      "pattern": "^dec_[0-9a-f]{24}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "display_name_snapshot": {
+      "title": "Display Name Snapshot",
+      "type": "string"
+    },
+    "principal": {
+      "$ref": "#/$defs/Principal"
+    },
+    "reason": {
+      "minLength": 15,
+      "title": "Reason",
+      "type": "string"
+    },
+    "review_id": {
+      "pattern": "^rv_[0-9a-f]{24}$",
+      "title": "Review Id",
+      "type": "string"
+    },
+    "role_snapshot": {
+      "enum": [
+        "viewer",
+        "reviewer",
+        "senior_reviewer",
+        "ingestor",
+        "evaluator"
+      ],
+      "title": "Role Snapshot",
+      "type": "string"
+    },
+    "shown_evidence_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Shown Evidence Hash",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "pattern": "^dec_[0-9a-f]{24}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    }
+  },
+  "required": [
+    "decision_id",
+    "case_id",
+    "review_id",
+    "principal",
+    "display_name_snapshot",
+    "role_snapshot",
+    "choice",
+    "reason",
+    "base_version",
+    "shown_evidence_hash",
+    "at"
+  ],
+  "title": "Decision",
+  "type": "object"
+}

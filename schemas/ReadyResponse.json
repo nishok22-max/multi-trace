@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "description": "Readiness probe: every flag must be true for 200.",
+  "properties": {
+    "blobs_writable": {
+      "title": "Blobs Writable",
+      "type": "boolean"
+    },
+    "db_writable": {
+      "title": "Db Writable",
+      "type": "boolean"
+    },
+    "disk_ok": {
+      "title": "Disk Ok",
+      "type": "boolean"
+    },
+    "tesseract_present": {
+      "title": "Tesseract Present",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "db_writable",
+    "blobs_writable",
+    "tesseract_present",
+    "disk_ok"
+  ],
+  "title": "ReadyResponse",
+  "type": "object"
+}

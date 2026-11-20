@@ -1,0 +1,608 @@
+{
+  "$defs": {
+    "HumanDecisionPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "base_version": {
+          "minimum": 0,
+          "title": "Base Version",
+          "type": "integer"
+        },
+        "decision_id": {
+          "pattern": "^dec_[0-9a-f]{24}$",
+          "title": "Decision Id",
+          "type": "string"
+        },
+        "display_name_snapshot": {
+          "title": "Display Name Snapshot",
+          "type": "string"
+        },
+        "kind": {
+          "const": "human_decision",
+          "default": "human_decision",
+          "title": "Kind",
+          "type": "string"
+        },
+        "principal": {
+          "$ref": "#/$defs/Principal"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "role_snapshot": {
+          "enum": [
+            "viewer",
+            "reviewer",
+            "senior_reviewer",
+            "ingestor",
+            "evaluator"
+          ],
+          "title": "Role Snapshot",
+          "type": "string"
+        },
+        "shown_evidence_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Shown Evidence Hash",
+          "type": "string"
+        },
+        "timestamp": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decision_id",
+        "principal",
+        "display_name_snapshot",
+        "role_snapshot",
+        "reason",
+        "base_version",
+        "shown_evidence_hash",
+        "timestamp"
+      ],
+      "title": "HumanDecisionPointer",
+      "type": "object"
+    },
+    "ImageRegionPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/Rect"
+        },
+        "coord_space": {
+          "const": "oriented_px",
+          "default": "oriented_px",
+          "title": "Coord Space",
+          "type": "string"
+        },
+        "crop_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Crop Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "image_region",
+          "default": "image_region",
+          "title": "Kind",
+          "type": "string"
+        },
+        "read_text": {
+          "title": "Read Text",
+          "type": "string"
+        },
+        "reader": {
+          "enum": [
+            "ocr",
+            "vlm"
+          ],
+          "title": "Reader",
+          "type": "string"
+        },
+        "reread_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reread Text"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "sha256",
+        "bbox",
+        "reader",
+        "read_text",
+        "crop_sha256"
+      ],
+      "title": "ImageRegionPointer",
+      "type": "object"
+    },
+    "Principal": {
+      "additionalProperties": false,
+      "description": "Identity from the session only (promise 9). MVP `iss` is \"local\".",
+      "properties": {
+        "iss": {
+          "title": "Iss",
+          "type": "string"
+        },
+        "sub": {
+          "title": "Sub",
+          "type": "string"
+        }
+      },
+      "required": [
+        "iss",
+        "sub"
+      ],
+      "title": "Principal",
+      "type": "object"
+    },
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    },
+    "RectPx": {
+      "additionalProperties": false,
+      "description": "Pixel rectangle (integers).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "integer"
+        },
+        "w": {
+          "title": "W",
+          "type": "integer"
+        },
+        "x": {
+          "title": "X",
+          "type": "integer"
+        },
+        "y": {
+          "title": "Y",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "RectPx",
+      "type": "object"
+    },
+    "SensorWindowPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Channels",
+          "type": "array"
+        },
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "envelope_id": {
+          "anyOf": [
+            {
+              "pattern": "^env_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Envelope Id"
+        },
+        "expected_points": {
+          "minimum": 0,
+          "title": "Expected Points",
+          "type": "integer"
+        },
+        "granularity": {
+          "enum": [
+            "hour",
+            "shift",
+            "day"
+          ],
+          "title": "Granularity",
+          "type": "string"
+        },
+        "kind": {
+          "const": "sensor_window",
+          "default": "sensor_window",
+          "title": "Kind",
+          "type": "string"
+        },
+        "n_points": {
+          "minimum": 0,
+          "title": "N Points",
+          "type": "integer"
+        },
+        "partition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Partition Sha256",
+          "type": "string"
+        },
+        "series_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$",
+          "title": "Series Id",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        },
+        "statistic": {
+          "title": "Statistic",
+          "type": "string"
+        },
+        "window_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Window Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "series_id",
+        "partition_sha256",
+        "channels",
+        "start",
+        "end",
+        "n_points",
+        "expected_points",
+        "statistic",
+        "granularity",
+        "window_sha256"
+      ],
+      "title": "SensorWindowPointer",
+      "type": "object"
+    },
+    "TableCellPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "title": "Column",
+          "type": "string"
+        },
+        "kind": {
+          "const": "table_cell",
+          "default": "table_cell",
+          "title": "Kind",
+          "type": "string"
+        },
+        "raw_value": {
+          "title": "Raw Value",
+          "type": "string"
+        },
+        "row": {
+          "minimum": 0,
+          "title": "Row",
+          "type": "integer"
+        },
+        "row_byte_offset": {
+          "minimum": 0,
+          "title": "Row Byte Offset",
+          "type": "integer"
+        },
+        "row_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Row Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "sheet": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sheet"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "sha256",
+        "row",
+        "column",
+        "raw_value",
+        "row_sha256",
+        "row_byte_offset"
+      ],
+      "title": "TableCellPointer",
+      "type": "object"
+    },
+    "TextSpanPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "char_end": {
+          "minimum": 0,
+          "title": "Char End",
+          "type": "integer"
+        },
+        "char_start": {
+          "minimum": 0,
+          "title": "Char Start",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "text_span",
+          "default": "text_span",
+          "title": "Kind",
+          "type": "string"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "line_rects_pt": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Rect"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Rects Pt"
+        },
+        "line_rects_px": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/RectPx"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Rects Px"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "page_text_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Page Text Sha256",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "quote_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Quote Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "text_canon_version": {
+          "title": "Text Canon Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "sha256",
+        "page_text_sha256",
+        "text_canon_version",
+        "char_start",
+        "char_end",
+        "quote",
+        "quote_sha256"
+      ],
+      "title": "TextSpanPointer",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "What the proof view needs. PNGs are served from cache only: a miss is 404 render-missing.",
+  "properties": {
+    "claim_id": {
+      "pattern": "^clm_[0-9a-f]{24}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "crop_png": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Crop Png"
+    },
+    "page_png": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Page Png"
+    },
+    "pointer": {
+      "discriminator": {
+        "mapping": {
+          "human_decision": "#/$defs/HumanDecisionPointer",
+          "image_region": "#/$defs/ImageRegionPointer",
+          "sensor_window": "#/$defs/SensorWindowPointer",
+          "table_cell": "#/$defs/TableCellPointer",
+          "text_span": "#/$defs/TextSpanPointer"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/TextSpanPointer"
+        },
+        {
+          "$ref": "#/$defs/ImageRegionPointer"
+        },
+        {
+          "$ref": "#/$defs/TableCellPointer"
+        },
+        {
+          "$ref": "#/$defs/SensorWindowPointer"
+        },
+        {
+          "$ref": "#/$defs/HumanDecisionPointer"
+        }
+      ],
+      "title": "Pointer"
+    },
+    "render_status": {
+      "enum": [
+        "cached",
+        "missing"
+      ],
+      "title": "Render Status",
+      "type": "string"
+    },
+    "window_rows": {
+      "anyOf": [
+        {
+          "items": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Window Rows"
+    }
+  },
+  "required": [
+    "claim_id",
+    "pointer",
+    "render_status"
+  ],
+  "title": "EvidenceRender",
+  "type": "object"
+}

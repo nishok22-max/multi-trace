@@ -1,0 +1,32 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "abs_tol": {
+      "minimum": 0,
+      "title": "Abs Tol",
+      "type": "number"
+    },
+    "attribute": {
+      "title": "Attribute",
+      "type": "string"
+    },
+    "rel_tol": {
+      "minimum": 0,
+      "title": "Rel Tol",
+      "type": "number"
+    },
+    "resolution": {
+      "minimum": 0,
+      "title": "Resolution",
+      "type": "number"
+    }
+  },
+  "required": [
+    "attribute",
+    "abs_tol",
+    "rel_tol",
+    "resolution"
+  ],
+  "title": "Tolerance",
+  "type": "object"
+}

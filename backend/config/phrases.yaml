@@ -1,0 +1,12 @@
+# Qualitative phrase -> class, quantifier, attribute group, scope channels (PRD 10.4).
+# Attribute-group names are TODO(confirm): the docs name the quantifiers and scopes, not the groups.
+phrases:
+  - {phrase: ran normally, phrase_class: operating_normal, quantifier: forall, attribute_group: operating_state, scope_channels: [volt, rotate, pressure, vibration], side: both}
+  - {phrase: no issues, phrase_class: operating_normal, quantifier: forall, attribute_group: operating_state, scope_channels: [volt, rotate, pressure, vibration], side: both}
+  - {phrase: all good, phrase_class: operating_normal, quantifier: forall, attribute_group: operating_state, scope_channels: [volt, rotate, pressure, vibration], side: both}
+  - {phrase: high vibration, phrase_class: vibration_high, quantifier: exists, attribute_group: vibration, scope_channels: [vibration], side: upper}
+  - {phrase: shaking, phrase_class: vibration_high, quantifier: exists, attribute_group: vibration, scope_channels: [vibration], side: upper}
+  - {phrase: vibration noticed, phrase_class: vibration_high, quantifier: exists, attribute_group: vibration, scope_channels: [vibration], side: upper}
+  - {phrase: pressure low, phrase_class: pressure_low, quantifier: exists, attribute_group: pressure, scope_channels: [pressure], side: lower}
+  - {phrase: stopped, phrase_class: machine_stopped, quantifier: exists, attribute_group: operating_state, scope_channels: [rotate], side: both}
+  - {phrase: down, phrase_class: machine_stopped, quantifier: exists, attribute_group: operating_state, scope_channels: [rotate], side: both}

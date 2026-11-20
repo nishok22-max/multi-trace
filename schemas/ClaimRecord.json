@@ -1,0 +1,1155 @@
+{
+  "$defs": {
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "features": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Features",
+          "type": "object"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "vetoed": {
+          "default": false,
+          "title": "Vetoed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "entity_id",
+        "score"
+      ],
+      "title": "Candidate",
+      "type": "object"
+    },
+    "Confidence": {
+      "additionalProperties": false,
+      "properties": {
+        "calibrated": {
+          "default": false,
+          "title": "Calibrated",
+          "type": "boolean"
+        },
+        "calibration_fit_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calibration Fit Id"
+        },
+        "components": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Components",
+          "type": "object"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "stage": {
+          "default": "pre",
+          "enum": [
+            "pre",
+            "final"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Confidence",
+      "type": "object"
+    },
+    "HumanDecisionPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "base_version": {
+          "minimum": 0,
+          "title": "Base Version",
+          "type": "integer"
+        },
+        "decision_id": {
+          "pattern": "^dec_[0-9a-f]{24}$",
+          "title": "Decision Id",
+          "type": "string"
+        },
+        "display_name_snapshot": {
+          "title": "Display Name Snapshot",
+          "type": "string"
+        },
+        "kind": {
+          "const": "human_decision",
+          "default": "human_decision",
+          "title": "Kind",
+          "type": "string"
+        },
+        "principal": {
+          "$ref": "#/$defs/Principal"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "role_snapshot": {
+          "enum": [
+            "viewer",
+            "reviewer",
+            "senior_reviewer",
+            "ingestor",
+            "evaluator"
+          ],
+          "title": "Role Snapshot",
+          "type": "string"
+        },
+        "shown_evidence_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Shown Evidence Hash",
+          "type": "string"
+        },
+        "timestamp": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decision_id",
+        "principal",
+        "display_name_snapshot",
+        "role_snapshot",
+        "reason",
+        "base_version",
+        "shown_evidence_hash",
+        "timestamp"
+      ],
+      "title": "HumanDecisionPointer",
+      "type": "object"
+    },
+    "ImageRegionPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/Rect"
+        },
+        "coord_space": {
+          "const": "oriented_px",
+          "default": "oriented_px",
+          "title": "Coord Space",
+          "type": "string"
+        },
+        "crop_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Crop Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "image_region",
+          "default": "image_region",
+          "title": "Kind",
+          "type": "string"
+        },
+        "read_text": {
+          "title": "Read Text",
+          "type": "string"
+        },
+        "reader": {
+          "enum": [
+            "ocr",
+            "vlm"
+          ],
+          "title": "Reader",
+          "type": "string"
+        },
+        "reread_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reread Text"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "sha256",
+        "bbox",
+        "reader",
+        "read_text",
+        "crop_sha256"
+      ],
+      "title": "ImageRegionPointer",
+      "type": "object"
+    },
+    "Interval": {
+      "additionalProperties": false,
+      "description": "Half-open valid-time interval `[start, end)`.",
+      "properties": {
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "granularity": {
+          "enum": [
+            "hour",
+            "shift",
+            "day"
+          ],
+          "title": "Granularity",
+          "type": "string"
+        },
+        "resolved_from": {
+          "title": "Resolved From",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "granularity",
+        "resolved_from"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "MentionKey": {
+      "additionalProperties": false,
+      "description": "Stable key `(source_sha256, locator)` that decisions attach to.",
+      "properties": {
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "locator"
+      ],
+      "title": "MentionKey",
+      "type": "object"
+    },
+    "Method": {
+      "additionalProperties": false,
+      "properties": {
+        "extractor": {
+          "title": "Extractor",
+          "type": "string"
+        },
+        "extractor_version": {
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "llm_used": {
+          "default": false,
+          "title": "Llm Used",
+          "type": "boolean"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        }
+      },
+      "required": [
+        "extractor",
+        "extractor_version"
+      ],
+      "title": "Method",
+      "type": "object"
+    },
+    "ObservedTime": {
+      "additionalProperties": false,
+      "description": "When the claim was observed. `file_timestamp` is not allowed (promise 7).",
+      "properties": {
+        "at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "At"
+        },
+        "basis": {
+          "enum": [
+            "document_date",
+            "sensor_timestamp",
+            "ingest_time"
+          ],
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis"
+      ],
+      "title": "ObservedTime",
+      "type": "object"
+    },
+    "Principal": {
+      "additionalProperties": false,
+      "description": "Identity from the session only (promise 9). MVP `iss` is \"local\".",
+      "properties": {
+        "iss": {
+          "title": "Iss",
+          "type": "string"
+        },
+        "sub": {
+          "title": "Sub",
+          "type": "string"
+        }
+      },
+      "required": [
+        "iss",
+        "sub"
+      ],
+      "title": "Principal",
+      "type": "object"
+    },
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    },
+    "RectPx": {
+      "additionalProperties": false,
+      "description": "Pixel rectangle (integers).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "integer"
+        },
+        "w": {
+          "title": "W",
+          "type": "integer"
+        },
+        "x": {
+          "title": "X",
+          "type": "integer"
+        },
+        "y": {
+          "title": "Y",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "RectPx",
+      "type": "object"
+    },
+    "SensorWindowPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Channels",
+          "type": "array"
+        },
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "envelope_id": {
+          "anyOf": [
+            {
+              "pattern": "^env_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Envelope Id"
+        },
+        "expected_points": {
+          "minimum": 0,
+          "title": "Expected Points",
+          "type": "integer"
+        },
+        "granularity": {
+          "enum": [
+            "hour",
+            "shift",
+            "day"
+          ],
+          "title": "Granularity",
+          "type": "string"
+        },
+        "kind": {
+          "const": "sensor_window",
+          "default": "sensor_window",
+          "title": "Kind",
+          "type": "string"
+        },
+        "n_points": {
+          "minimum": 0,
+          "title": "N Points",
+          "type": "integer"
+        },
+        "partition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Partition Sha256",
+          "type": "string"
+        },
+        "series_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$",
+          "title": "Series Id",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        },
+        "statistic": {
+          "title": "Statistic",
+          "type": "string"
+        },
+        "window_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Window Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "series_id",
+        "partition_sha256",
+        "channels",
+        "start",
+        "end",
+        "n_points",
+        "expected_points",
+        "statistic",
+        "granularity",
+        "window_sha256"
+      ],
+      "title": "SensorWindowPointer",
+      "type": "object"
+    },
+    "Subject": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/Candidate"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "entity_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Id"
+        },
+        "link_status": {
+          "enum": [
+            "resolved",
+            "ambiguous",
+            "unresolved"
+          ],
+          "title": "Link Status",
+          "type": "string"
+        },
+        "mention": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mention"
+        },
+        "mention_key": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MentionKey"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "link_status"
+      ],
+      "title": "Subject",
+      "type": "object"
+    },
+    "TableCellPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "title": "Column",
+          "type": "string"
+        },
+        "kind": {
+          "const": "table_cell",
+          "default": "table_cell",
+          "title": "Kind",
+          "type": "string"
+        },
+        "raw_value": {
+          "title": "Raw Value",
+          "type": "string"
+        },
+        "row": {
+          "minimum": 0,
+          "title": "Row",
+          "type": "integer"
+        },
+        "row_byte_offset": {
+          "minimum": 0,
+          "title": "Row Byte Offset",
+          "type": "integer"
+        },
+        "row_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Row Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "sheet": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sheet"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "sha256",
+        "row",
+        "column",
+        "raw_value",
+        "row_sha256",
+        "row_byte_offset"
+      ],
+      "title": "TableCellPointer",
+      "type": "object"
+    },
+    "Temporal": {
+      "additionalProperties": false,
+      "properties": {
+        "observed_time": {
+          "$ref": "#/$defs/ObservedTime"
+        },
+        "timezone_original": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timezone Original"
+        },
+        "valid_time": {
+          "discriminator": {
+            "mapping": {
+              "day": "#/$defs/Interval",
+              "hour": "#/$defs/Interval",
+              "shift": "#/$defs/Interval",
+              "unknown": "#/$defs/UnknownTime"
+            },
+            "propertyName": "granularity"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Interval"
+            },
+            {
+              "$ref": "#/$defs/UnknownTime"
+            }
+          ],
+          "title": "Valid Time"
+        }
+      },
+      "required": [
+        "valid_time",
+        "observed_time"
+      ],
+      "title": "Temporal",
+      "type": "object"
+    },
+    "TextSpanPointer": {
+      "additionalProperties": false,
+      "properties": {
+        "char_end": {
+          "minimum": 0,
+          "title": "Char End",
+          "type": "integer"
+        },
+        "char_start": {
+          "minimum": 0,
+          "title": "Char Start",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "text_span",
+          "default": "text_span",
+          "title": "Kind",
+          "type": "string"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "line_rects_pt": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Rect"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Rects Pt"
+        },
+        "line_rects_px": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/RectPx"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Rects Px"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "page_text_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Page Text Sha256",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "quote_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Quote Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "text_canon_version": {
+          "title": "Text Canon Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "sha256",
+        "page_text_sha256",
+        "text_canon_version",
+        "char_start",
+        "char_end",
+        "quote",
+        "quote_sha256"
+      ],
+      "title": "TextSpanPointer",
+      "type": "object"
+    },
+    "UnknownTime": {
+      "additionalProperties": false,
+      "description": "No document date. Deliberately has no bounds (file mtime is never used).",
+      "properties": {
+        "granularity": {
+          "const": "unknown",
+          "default": "unknown",
+          "title": "Granularity",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "title": "UnknownTime",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attribute": {
+      "title": "Attribute",
+      "type": "string"
+    },
+    "case_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "claim_id": {
+      "pattern": "^clm_[0-9a-f]{24}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "claim_type": {
+      "enum": [
+        "extracted",
+        "inferred"
+      ],
+      "title": "Claim Type",
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "created_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Created At"
+    },
+    "derived_from": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Derived From",
+      "type": "array"
+    },
+    "evidence": {
+      "anyOf": [
+        {
+          "discriminator": {
+            "mapping": {
+              "human_decision": "#/$defs/HumanDecisionPointer",
+              "image_region": "#/$defs/ImageRegionPointer",
+              "sensor_window": "#/$defs/SensorWindowPointer",
+              "table_cell": "#/$defs/TableCellPointer",
+              "text_span": "#/$defs/TextSpanPointer"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TextSpanPointer"
+            },
+            {
+              "$ref": "#/$defs/ImageRegionPointer"
+            },
+            {
+              "$ref": "#/$defs/TableCellPointer"
+            },
+            {
+              "$ref": "#/$defs/SensorWindowPointer"
+            },
+            {
+              "$ref": "#/$defs/HumanDecisionPointer"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Evidence"
+    },
+    "label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Label"
+    },
+    "method": {
+      "$ref": "#/$defs/Method"
+    },
+    "modality": {
+      "enum": [
+        "text",
+        "table",
+        "image",
+        "sensor",
+        "decision"
+      ],
+      "title": "Modality",
+      "type": "string"
+    },
+    "normalized_unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Normalized Unit"
+    },
+    "normalized_value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Normalized Value"
+    },
+    "record_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Record Hash",
+      "type": "string"
+    },
+    "statement": {
+      "title": "Statement",
+      "type": "string"
+    },
+    "subject": {
+      "$ref": "#/$defs/Subject"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "pattern": "^clm_[0-9a-f]{24}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    },
+    "temporal": {
+      "$ref": "#/$defs/Temporal"
+    },
+    "unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unit"
+    },
+    "unit_status": {
+      "enum": [
+        "known",
+        "unknown",
+        "sensor_native",
+        "not_applicable"
+      ],
+      "title": "Unit Status",
+      "type": "string"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Value"
+    },
+    "value_type": {
+      "enum": [
+        "categorical",
+        "numeric",
+        "text",
+        "boolean",
+        "structured"
+      ],
+      "title": "Value Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "case_id",
+    "claim_type",
+    "statement",
+    "subject",
+    "attribute",
+    "value",
+    "value_type",
+    "unit_status",
+    "temporal",
+    "modality",
+    "method",
+    "confidence",
+    "record_hash"
+  ],
+  "title": "ClaimRecord",
+  "type": "object"
+}

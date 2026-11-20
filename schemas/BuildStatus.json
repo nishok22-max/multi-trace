@@ -1,0 +1,73 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "build_id": {
+      "title": "Build Id",
+      "type": "string"
+    },
+    "case_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "counters": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Counters",
+      "type": "object"
+    },
+    "heartbeat_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heartbeat At"
+    },
+    "stage_ms": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Stage Ms",
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "running",
+        "done",
+        "failed",
+        "failed_stale",
+        "failed_timeout",
+        "failed_resource"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Version"
+    }
+  },
+  "required": [
+    "build_id",
+    "case_id",
+    "status"
+  ],
+  "title": "BuildStatus",
+  "type": "object"
+}

@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "description": "When the claim was observed. `file_timestamp` is not allowed (promise 7).",
+  "properties": {
+    "at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "At"
+    },
+    "basis": {
+      "enum": [
+        "document_date",
+        "sensor_timestamp",
+        "ingest_time"
+      ],
+      "title": "Basis",
+      "type": "string"
+    }
+  },
+  "required": [
+    "basis"
+  ],
+  "title": "ObservedTime",
+  "type": "object"
+}

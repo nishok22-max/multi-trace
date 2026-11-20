@@ -1,0 +1,43 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "observed": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Observed"
+    },
+    "statistic": {
+      "title": "Statistic",
+      "type": "string"
+    },
+    "threshold": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Threshold"
+    },
+    "unit": {
+      "title": "Unit",
+      "type": "string"
+    }
+  },
+  "required": [
+    "statistic",
+    "unit"
+  ],
+  "title": "Magnitude",
+  "type": "object"
+}

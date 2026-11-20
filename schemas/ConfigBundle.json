@@ -1,0 +1,557 @@
+{
+  "$defs": {
+    "AliasEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Aliases",
+          "type": "array"
+        },
+        "canonical_name": {
+          "title": "Canonical Name",
+          "type": "string"
+        },
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_id",
+        "canonical_name",
+        "aliases"
+      ],
+      "title": "AliasEntry",
+      "type": "object"
+    },
+    "AttributeDef": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical Unit"
+        },
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "telemetry_sensor_native": {
+          "default": false,
+          "title": "Telemetry Sensor Native",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "dimension"
+      ],
+      "title": "AttributeDef",
+      "type": "object"
+    },
+    "CaseConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "calendar": {
+          "$ref": "#/$defs/WorkingCalendar"
+        },
+        "h0_decision": {
+          "anyOf": [
+            {
+              "enum": [
+                "real_day",
+                "another_real_day",
+                "planted"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "H0 Decision"
+        },
+        "plant_tz": {
+          "title": "Plant Tz",
+          "type": "string"
+        },
+        "shifts": {
+          "items": {
+            "$ref": "#/$defs/Shift"
+          },
+          "title": "Shifts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "plant_tz",
+        "shifts",
+        "calendar"
+      ],
+      "title": "CaseConfig",
+      "type": "object"
+    },
+    "EnvelopeConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "alpha": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "drift_ratio": {
+          "exclusiveMinimum": 0,
+          "title": "Drift Ratio",
+          "type": "number"
+        },
+        "flatline_epsilon_factor": {
+          "exclusiveMinimum": 0,
+          "title": "Flatline Epsilon Factor",
+          "type": "number"
+        },
+        "flatline_min_hours": {
+          "minimum": 1,
+          "title": "Flatline Min Hours",
+          "type": "integer"
+        },
+        "margin_days": {
+          "minimum": 0,
+          "title": "Margin Days",
+          "type": "integer"
+        },
+        "min_quiet_days_own_scale": {
+          "minimum": 1,
+          "title": "Min Quiet Days Own Scale",
+          "type": "integer"
+        },
+        "min_quiet_days_own_t_star": {
+          "minimum": 1,
+          "title": "Min Quiet Days Own T Star",
+          "type": "integer"
+        },
+        "thin_history_factor": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Thin History Factor",
+          "type": "number"
+        },
+        "training_policy": {
+          "enum": [
+            "all_except_case_window",
+            "before_only"
+          ],
+          "title": "Training Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "alpha",
+        "margin_days",
+        "training_policy",
+        "flatline_epsilon_factor",
+        "flatline_min_hours",
+        "min_quiet_days_own_t_star",
+        "min_quiet_days_own_scale",
+        "drift_ratio",
+        "thin_history_factor"
+      ],
+      "title": "EnvelopeConfig",
+      "type": "object"
+    },
+    "GateConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "cadence_hours": {
+          "minimum": 1,
+          "title": "Cadence Hours",
+          "type": "integer"
+        },
+        "delta_link": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delta Link",
+          "type": "number"
+        },
+        "image_extractor_prior": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Image Extractor Prior",
+          "type": "number"
+        },
+        "lambda_corroboration": {
+          "minimum": 0,
+          "title": "Lambda Corroboration",
+          "type": "number"
+        },
+        "min_coverage": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Min Coverage",
+          "type": "number"
+        },
+        "tau_link": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tau Link",
+          "type": "number"
+        },
+        "tau_review": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tau Review",
+          "type": "number"
+        },
+        "text_extractor_prior": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Text Extractor Prior",
+          "type": "number"
+        }
+      },
+      "required": [
+        "tau_link",
+        "delta_link",
+        "tau_review",
+        "lambda_corroboration",
+        "min_coverage",
+        "cadence_hours",
+        "image_extractor_prior",
+        "text_extractor_prior"
+      ],
+      "title": "GateConfig",
+      "type": "object"
+    },
+    "Gauge": {
+      "additionalProperties": false,
+      "properties": {
+        "attribute": {
+          "title": "Attribute",
+          "type": "string"
+        },
+        "gauge_id": {
+          "title": "Gauge Id",
+          "type": "string"
+        },
+        "max_value": {
+          "title": "Max Value",
+          "type": "number"
+        },
+        "min_value": {
+          "title": "Min Value",
+          "type": "number"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "gauge_id",
+        "attribute",
+        "unit",
+        "min_value",
+        "max_value"
+      ],
+      "title": "Gauge",
+      "type": "object"
+    },
+    "LlmConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "llm_mode": {
+          "default": "off",
+          "enum": [
+            "off",
+            "record",
+            "replay"
+          ],
+          "title": "Llm Mode",
+          "type": "string"
+        },
+        "max_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Max Calls",
+          "type": "integer"
+        },
+        "max_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Max Tokens",
+          "type": "integer"
+        },
+        "text_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text Model"
+        },
+        "vision_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vision Model"
+        },
+        "vlm_mode": {
+          "default": "off",
+          "enum": [
+            "off",
+            "record",
+            "replay"
+          ],
+          "title": "Vlm Mode",
+          "type": "string"
+        }
+      },
+      "title": "LlmConfig",
+      "type": "object"
+    },
+    "Ontology": {
+      "additionalProperties": false,
+      "properties": {
+        "attributes": {
+          "items": {
+            "$ref": "#/$defs/AttributeDef"
+          },
+          "title": "Attributes",
+          "type": "array"
+        },
+        "phrases": {
+          "items": {
+            "$ref": "#/$defs/PhraseRule"
+          },
+          "title": "Phrases",
+          "type": "array"
+        }
+      },
+      "required": [
+        "attributes",
+        "phrases"
+      ],
+      "title": "Ontology",
+      "type": "object"
+    },
+    "PhraseRule": {
+      "additionalProperties": false,
+      "description": "Qualitative phrase -> class, quantifier, attribute group, scope channels (PRD 10.4).",
+      "properties": {
+        "attribute_group": {
+          "title": "Attribute Group",
+          "type": "string"
+        },
+        "phrase": {
+          "title": "Phrase",
+          "type": "string"
+        },
+        "phrase_class": {
+          "title": "Phrase Class",
+          "type": "string"
+        },
+        "quantifier": {
+          "enum": [
+            "forall",
+            "exists"
+          ],
+          "title": "Quantifier",
+          "type": "string"
+        },
+        "scope_channels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scope Channels",
+          "type": "array"
+        },
+        "side": {
+          "default": "both",
+          "enum": [
+            "both",
+            "upper",
+            "lower"
+          ],
+          "title": "Side",
+          "type": "string"
+        }
+      },
+      "required": [
+        "phrase",
+        "phrase_class",
+        "quantifier",
+        "attribute_group",
+        "scope_channels"
+      ],
+      "title": "PhraseRule",
+      "type": "object"
+    },
+    "Shift": {
+      "additionalProperties": false,
+      "properties": {
+        "end_hour": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "End Hour",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "start_hour": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Start Hour",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "start_hour",
+        "end_hour"
+      ],
+      "title": "Shift",
+      "type": "object"
+    },
+    "Tolerance": {
+      "additionalProperties": false,
+      "properties": {
+        "abs_tol": {
+          "minimum": 0,
+          "title": "Abs Tol",
+          "type": "number"
+        },
+        "attribute": {
+          "title": "Attribute",
+          "type": "string"
+        },
+        "rel_tol": {
+          "minimum": 0,
+          "title": "Rel Tol",
+          "type": "number"
+        },
+        "resolution": {
+          "minimum": 0,
+          "title": "Resolution",
+          "type": "number"
+        }
+      },
+      "required": [
+        "attribute",
+        "abs_tol",
+        "rel_tol",
+        "resolution"
+      ],
+      "title": "Tolerance",
+      "type": "object"
+    },
+    "WorkingCalendar": {
+      "additionalProperties": false,
+      "properties": {
+        "escalation_working_days": {
+          "minimum": 1,
+          "title": "Escalation Working Days",
+          "type": "integer"
+        },
+        "holidays": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Holidays",
+          "type": "array"
+        },
+        "working_weekdays": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Working Weekdays",
+          "type": "array"
+        }
+      },
+      "required": [
+        "working_weekdays",
+        "escalation_working_days"
+      ],
+      "title": "WorkingCalendar",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "aliases": {
+      "items": {
+        "$ref": "#/$defs/AliasEntry"
+      },
+      "title": "Aliases",
+      "type": "array"
+    },
+    "case": {
+      "$ref": "#/$defs/CaseConfig"
+    },
+    "envelope": {
+      "$ref": "#/$defs/EnvelopeConfig"
+    },
+    "gate": {
+      "$ref": "#/$defs/GateConfig"
+    },
+    "gauges": {
+      "items": {
+        "$ref": "#/$defs/Gauge"
+      },
+      "title": "Gauges",
+      "type": "array"
+    },
+    "llm": {
+      "$ref": "#/$defs/LlmConfig"
+    },
+    "ontology": {
+      "$ref": "#/$defs/Ontology"
+    },
+    "tolerances": {
+      "items": {
+        "$ref": "#/$defs/Tolerance"
+      },
+      "title": "Tolerances",
+      "type": "array"
+    }
+  },
+  "required": [
+    "case",
+    "ontology",
+    "aliases",
+    "tolerances",
+    "gauges",
+    "envelope",
+    "gate",
+    "llm"
+  ],
+  "title": "ConfigBundle",
+  "type": "object"
+}

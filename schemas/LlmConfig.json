@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "llm_mode": {
+      "default": "off",
+      "enum": [
+        "off",
+        "record",
+        "replay"
+      ],
+      "title": "Llm Mode",
+      "type": "string"
+    },
+    "max_calls": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Max Calls",
+      "type": "integer"
+    },
+    "max_tokens": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Max Tokens",
+      "type": "integer"
+    },
+    "text_model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Text Model"
+    },
+    "vision_model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vision Model"
+    },
+    "vlm_mode": {
+      "default": "off",
+      "enum": [
+        "off",
+        "record",
+        "replay"
+      ],
+      "title": "Vlm Mode",
+      "type": "string"
+    }
+  },
+  "title": "LlmConfig",
+  "type": "object"
+}

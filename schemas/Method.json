@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "extractor": {
+      "title": "Extractor",
+      "type": "string"
+    },
+    "extractor_version": {
+      "title": "Extractor Version",
+      "type": "string"
+    },
+    "llm_used": {
+      "default": false,
+      "title": "Llm Used",
+      "type": "boolean"
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    },
+    "rule_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rule Id"
+    }
+  },
+  "required": [
+    "extractor",
+    "extractor_version"
+  ],
+  "title": "Method",
+  "type": "object"
+}

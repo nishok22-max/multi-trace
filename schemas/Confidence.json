@@ -1,0 +1,61 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "calibrated": {
+      "default": false,
+      "title": "Calibrated",
+      "type": "boolean"
+    },
+    "calibration_fit_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Calibration Fit Id"
+    },
+    "components": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Components",
+      "type": "object"
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Note"
+    },
+    "stage": {
+      "default": "pre",
+      "enum": [
+        "pre",
+        "final"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "value": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Value",
+      "type": "number"
+    }
+  },
+  "required": [
+    "value"
+  ],
+  "title": "Confidence",
+  "type": "object"
+}

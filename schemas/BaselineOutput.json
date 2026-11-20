@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "description": "The baseline's actual output, recorded and shown. Never typed in.",
+  "properties": {
+    "answer_text": {
+      "title": "Answer Text",
+      "type": "string"
+    },
+    "name": {
+      "enum": [
+        "tfidf",
+        "fusion",
+        "nogate"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "provenance_correct": {
+      "title": "Provenance Correct",
+      "type": "boolean"
+    },
+    "score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Score"
+    },
+    "surfaced_conflict": {
+      "title": "Surfaced Conflict",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "answer_text",
+    "surfaced_conflict",
+    "provenance_correct"
+  ],
+  "title": "BaselineOutput",
+  "type": "object"
+}

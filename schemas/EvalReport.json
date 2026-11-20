@@ -1,0 +1,318 @@
+{
+  "$defs": {
+    "BaselineOutput": {
+      "additionalProperties": false,
+      "description": "The baseline's actual output, recorded and shown. Never typed in.",
+      "properties": {
+        "answer_text": {
+          "title": "Answer Text",
+          "type": "string"
+        },
+        "name": {
+          "enum": [
+            "tfidf",
+            "fusion",
+            "nogate"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "provenance_correct": {
+          "title": "Provenance Correct",
+          "type": "boolean"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score"
+        },
+        "surfaced_conflict": {
+          "title": "Surfaced Conflict",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "answer_text",
+        "surfaced_conflict",
+        "provenance_correct"
+      ],
+      "title": "BaselineOutput",
+      "type": "object"
+    },
+    "CalibrationBin": {
+      "additionalProperties": false,
+      "properties": {
+        "accuracy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Accuracy"
+        },
+        "hi": {
+          "title": "Hi",
+          "type": "number"
+        },
+        "lo": {
+          "title": "Lo",
+          "type": "number"
+        },
+        "mean_confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean Confidence"
+        },
+        "n": {
+          "minimum": 0,
+          "title": "N",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "lo",
+        "hi",
+        "n"
+      ],
+      "title": "CalibrationBin",
+      "type": "object"
+    },
+    "Prf": {
+      "additionalProperties": false,
+      "properties": {
+        "f1": {
+          "title": "F1",
+          "type": "number"
+        },
+        "n": {
+          "minimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "precision": {
+          "title": "Precision",
+          "type": "number"
+        },
+        "recall": {
+          "title": "Recall",
+          "type": "number"
+        }
+      },
+      "required": [
+        "precision",
+        "recall",
+        "f1",
+        "n"
+      ],
+      "title": "Prf",
+      "type": "object"
+    },
+    "Wilson": {
+      "additionalProperties": false,
+      "description": "Proportion with a Wilson 95% interval.",
+      "properties": {
+        "lower": {
+          "title": "Lower",
+          "type": "number"
+        },
+        "n": {
+          "minimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "point": {
+          "title": "Point",
+          "type": "number"
+        },
+        "upper": {
+          "title": "Upper",
+          "type": "number"
+        }
+      },
+      "required": [
+        "point",
+        "lower",
+        "upper",
+        "n"
+      ],
+      "title": "Wilson",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "averaged_outputs": {
+      "minimum": 0,
+      "title": "Averaged Outputs",
+      "type": "integer"
+    },
+    "baselines": {
+      "items": {
+        "$ref": "#/$defs/BaselineOutput"
+      },
+      "title": "Baselines",
+      "type": "array"
+    },
+    "bins": {
+      "items": {
+        "$ref": "#/$defs/CalibrationBin"
+      },
+      "title": "Bins",
+      "type": "array"
+    },
+    "brier_after": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Brier After"
+    },
+    "brier_before": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Brier Before"
+    },
+    "config_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Hash",
+      "type": "string"
+    },
+    "ece_after": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ece After"
+    },
+    "ece_before": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ece Before"
+    },
+    "engine_sha": {
+      "title": "Engine Sha",
+      "type": "string"
+    },
+    "entity_accuracy_at1": {
+      "title": "Entity Accuracy At1",
+      "type": "number"
+    },
+    "entity_accuracy_at3": {
+      "title": "Entity Accuracy At3",
+      "type": "number"
+    },
+    "extraction_accuracy": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Extraction Accuracy",
+      "type": "object"
+    },
+    "false_conflict_rate": {
+      "$ref": "#/$defs/Wilson"
+    },
+    "gaps_read_as_normal": {
+      "minimum": 0,
+      "title": "Gaps Read As Normal",
+      "type": "integer"
+    },
+    "lockfile_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lockfile Hash",
+      "type": "string"
+    },
+    "overall": {
+      "$ref": "#/$defs/Prf"
+    },
+    "per_fault": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Prf"
+      },
+      "title": "Per Fault",
+      "type": "object"
+    },
+    "provenance_reresolve_rate": {
+      "title": "Provenance Reresolve Rate",
+      "type": "number"
+    },
+    "quiet_day_false_alarm": {
+      "$ref": "#/$defs/Wilson"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "split": {
+      "enum": [
+        "dev",
+        "holdout"
+      ],
+      "title": "Split",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "split",
+    "config_hash",
+    "engine_sha",
+    "lockfile_hash",
+    "overall",
+    "per_fault",
+    "false_conflict_rate",
+    "quiet_day_false_alarm",
+    "entity_accuracy_at1",
+    "entity_accuracy_at3",
+    "extraction_accuracy",
+    "provenance_reresolve_rate",
+    "gaps_read_as_normal",
+    "averaged_outputs",
+    "bins",
+    "baselines"
+  ],
+  "title": "EvalReport",
+  "type": "object"
+}

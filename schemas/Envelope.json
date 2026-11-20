@@ -1,0 +1,219 @@
+{
+  "$defs": {
+    "EnvelopeConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "alpha": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "drift_ratio": {
+          "exclusiveMinimum": 0,
+          "title": "Drift Ratio",
+          "type": "number"
+        },
+        "flatline_epsilon_factor": {
+          "exclusiveMinimum": 0,
+          "title": "Flatline Epsilon Factor",
+          "type": "number"
+        },
+        "flatline_min_hours": {
+          "minimum": 1,
+          "title": "Flatline Min Hours",
+          "type": "integer"
+        },
+        "margin_days": {
+          "minimum": 0,
+          "title": "Margin Days",
+          "type": "integer"
+        },
+        "min_quiet_days_own_scale": {
+          "minimum": 1,
+          "title": "Min Quiet Days Own Scale",
+          "type": "integer"
+        },
+        "min_quiet_days_own_t_star": {
+          "minimum": 1,
+          "title": "Min Quiet Days Own T Star",
+          "type": "integer"
+        },
+        "thin_history_factor": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Thin History Factor",
+          "type": "number"
+        },
+        "training_policy": {
+          "enum": [
+            "all_except_case_window",
+            "before_only"
+          ],
+          "title": "Training Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "alpha",
+        "margin_days",
+        "training_policy",
+        "flatline_epsilon_factor",
+        "flatline_min_hours",
+        "min_quiet_days_own_t_star",
+        "min_quiet_days_own_scale",
+        "drift_ratio",
+        "thin_history_factor"
+      ],
+      "title": "EnvelopeConfig",
+      "type": "object"
+    },
+    "QuietDay": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "title": "Date",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "t_d": {
+          "title": "T D",
+          "type": "number"
+        }
+      },
+      "required": [
+        "date",
+        "reasons",
+        "t_d"
+      ],
+      "title": "QuietDay",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "T_star": {
+      "title": "T Star",
+      "type": "number"
+    },
+    "degenerate_channels": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Degenerate Channels",
+      "type": "array"
+    },
+    "envelope_id": {
+      "pattern": "^env_[0-9a-f]{24}$",
+      "title": "Envelope Id",
+      "type": "string"
+    },
+    "granularity": {
+      "const": "day",
+      "default": "day",
+      "title": "Granularity",
+      "type": "string"
+    },
+    "machine": {
+      "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+      "title": "Machine",
+      "type": "string"
+    },
+    "mad": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Mad",
+      "type": "object"
+    },
+    "med": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Med",
+      "type": "object"
+    },
+    "n": {
+      "minimum": 0,
+      "title": "N",
+      "type": "integer"
+    },
+    "params": {
+      "$ref": "#/$defs/EnvelopeConfig"
+    },
+    "partition_hashes": {
+      "additionalProperties": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Partition Hashes",
+      "type": "object"
+    },
+    "pool_members": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+        "type": "string"
+      },
+      "title": "Pool Members",
+      "type": "array"
+    },
+    "pooled": {
+      "enum": [
+        "none",
+        "t_star_model",
+        "model_level"
+      ],
+      "title": "Pooled",
+      "type": "string"
+    },
+    "quiet_days": {
+      "items": {
+        "$ref": "#/$defs/QuietDay"
+      },
+      "title": "Quiet Days",
+      "type": "array"
+    },
+    "scope": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scope",
+      "type": "array"
+    },
+    "series_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$",
+      "title": "Series Id",
+      "type": "string"
+    },
+    "statistic": {
+      "const": "robust_max_z",
+      "default": "robust_max_z",
+      "title": "Statistic",
+      "type": "string"
+    }
+  },
+  "required": [
+    "envelope_id",
+    "machine",
+    "series_id",
+    "scope",
+    "quiet_days",
+    "n",
+    "med",
+    "mad",
+    "T_star",
+    "pooled",
+    "pool_members",
+    "degenerate_channels",
+    "params",
+    "partition_hashes"
+  ],
+  "title": "Envelope",
+  "type": "object"
+}

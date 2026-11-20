@@ -1,0 +1,6 @@
+# Entity aliases (PRD 9.2). 'Press 21' is deliberately NOT an alias (Demo 2 ambiguity).
+# TODO(confirm): the full registry comes from PdM_machines; only the documented machine is listed.
+aliases:
+  - entity_id: "machine:21"
+    canonical_name: Machine 21
+    aliases: [M21, M-21, "machine #21", SN-0021]

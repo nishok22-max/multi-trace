@@ -1,0 +1,12 @@
+# Attribute ontology (PRD 9.6). Units are never guessed: no documented unit -> null.
+attributes:
+  - {name: pressure, dimension: pressure, canonical_unit: kPa, telemetry_sensor_native: true}
+  - {name: vibration, dimension: vibration, canonical_unit: null, telemetry_sensor_native: true}
+  - {name: voltage, dimension: electric_potential, canonical_unit: V, telemetry_sensor_native: true}
+  - {name: rotation, dimension: angular_speed, canonical_unit: rpm, telemetry_sensor_native: true}
+  - {name: temperature, dimension: temperature, canonical_unit: degC}   # synthetic, authored
+  - {name: operating_state, dimension: categorical, canonical_unit: null}
+  - {name: error_event, dimension: event_code, canonical_unit: null}
+  - {name: maintenance_action, dimension: event, canonical_unit: null}
+  - {name: failure_event, dimension: event, canonical_unit: null}
+  - {name: data_availability, dimension: categorical, canonical_unit: null}

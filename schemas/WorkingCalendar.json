@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "escalation_working_days": {
+      "minimum": 1,
+      "title": "Escalation Working Days",
+      "type": "integer"
+    },
+    "holidays": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Holidays",
+      "type": "array"
+    },
+    "working_weekdays": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Working Weekdays",
+      "type": "array"
+    }
+  },
+  "required": [
+    "working_weekdays",
+    "escalation_working_days"
+  ],
+  "title": "WorkingCalendar",
+  "type": "object"
+}

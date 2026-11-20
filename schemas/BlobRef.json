@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "size": {
+      "minimum": 0,
+      "title": "Size",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "sha256",
+    "size"
+  ],
+  "title": "BlobRef",
+  "type": "object"
+}

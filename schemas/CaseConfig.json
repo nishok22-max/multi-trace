@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "Shift": {
+      "additionalProperties": false,
+      "properties": {
+        "end_hour": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "End Hour",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "start_hour": {
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Start Hour",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "start_hour",
+        "end_hour"
+      ],
+      "title": "Shift",
+      "type": "object"
+    },
+    "WorkingCalendar": {
+      "additionalProperties": false,
+      "properties": {
+        "escalation_working_days": {
+          "minimum": 1,
+          "title": "Escalation Working Days",
+          "type": "integer"
+        },
+        "holidays": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Holidays",
+          "type": "array"
+        },
+        "working_weekdays": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Working Weekdays",
+          "type": "array"
+        }
+      },
+      "required": [
+        "working_weekdays",
+        "escalation_working_days"
+      ],
+      "title": "WorkingCalendar",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "calendar": {
+      "$ref": "#/$defs/WorkingCalendar"
+    },
+    "h0_decision": {
+      "anyOf": [
+        {
+          "enum": [
+            "real_day",
+            "another_real_day",
+            "planted"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "H0 Decision"
+    },
+    "plant_tz": {
+      "title": "Plant Tz",
+      "type": "string"
+    },
+    "shifts": {
+      "items": {
+        "$ref": "#/$defs/Shift"
+      },
+      "title": "Shifts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "plant_tz",
+    "shifts",
+    "calendar"
+  ],
+  "title": "CaseConfig",
+  "type": "object"
+}

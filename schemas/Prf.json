@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "f1": {
+      "title": "F1",
+      "type": "number"
+    },
+    "n": {
+      "minimum": 0,
+      "title": "N",
+      "type": "integer"
+    },
+    "precision": {
+      "title": "Precision",
+      "type": "number"
+    },
+    "recall": {
+      "title": "Recall",
+      "type": "number"
+    }
+  },
+  "required": [
+    "precision",
+    "recall",
+    "f1",
+    "n"
+  ],
+  "title": "Prf",
+  "type": "object"
+}

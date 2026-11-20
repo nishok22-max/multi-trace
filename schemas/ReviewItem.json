@@ -1,0 +1,140 @@
+{
+  "$defs": {
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "features": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Features",
+          "type": "object"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "vetoed": {
+          "default": false,
+          "title": "Vetoed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "entity_id",
+        "score"
+      ],
+      "title": "Candidate",
+      "type": "object"
+    },
+    "MentionKey": {
+      "additionalProperties": false,
+      "description": "Stable key `(source_sha256, locator)` that decisions attach to.",
+      "properties": {
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "locator"
+      ],
+      "title": "MentionKey",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidates": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/Candidate"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Candidates"
+    },
+    "claim_ids": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "evidence_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Hash",
+      "type": "string"
+    },
+    "mention_keys": {
+      "items": {
+        "$ref": "#/$defs/MentionKey"
+      },
+      "title": "Mention Keys",
+      "type": "array"
+    },
+    "opened_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Opened At",
+      "type": "string"
+    },
+    "review_id": {
+      "pattern": "^rv_[0-9a-f]{24}$",
+      "title": "Review Id",
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "ambiguous_entity",
+        "reader_disagreement",
+        "implausible_value",
+        "hidden_text",
+        "envelope_drift",
+        "low_confidence",
+        "unknown_unit",
+        "llm_only_interpretation",
+        "no_text_layer",
+        "unsupported_page",
+        "pdf_page_cap",
+        "conflict_explain"
+      ],
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "review_id",
+    "type",
+    "claim_ids",
+    "mention_keys",
+    "evidence_hash",
+    "opened_at"
+  ],
+  "title": "ReviewItem",
+  "type": "object"
+}

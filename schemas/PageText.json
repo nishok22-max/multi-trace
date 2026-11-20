@@ -1,0 +1,168 @@
+{
+  "$defs": {
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Raw page text plus per-offset geometry. All per-offset lists have len(text) items.\n\n`text` is a Python str (code points; surrogate pairs joined). `char_to_offset[i]` maps the\ni-th PDFium char index to its offset in `text`. Generated chars are kept and flagged.",
+  "properties": {
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Capabilities",
+      "type": "array",
+      "uniqueItems": true
+    },
+    "char_boxes_pt": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Rect"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Char Boxes Pt",
+      "type": "array"
+    },
+    "char_to_offset": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Char To Offset",
+      "type": "array"
+    },
+    "cropbox": {
+      "$ref": "#/$defs/Rect"
+    },
+    "fill_alpha": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fill Alpha"
+    },
+    "font_sizes": {
+      "items": {
+        "type": "number"
+      },
+      "title": "Font Sizes",
+      "type": "array"
+    },
+    "generated": {
+      "items": {
+        "type": "boolean"
+      },
+      "title": "Generated",
+      "type": "array"
+    },
+    "loose_boxes_pt": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Rect"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Loose Boxes Pt",
+      "type": "array"
+    },
+    "page_text_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Page Text Sha256",
+      "type": "string"
+    },
+    "render_mode": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Render Mode"
+    },
+    "rotation": {
+      "title": "Rotation",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "text_canon_version": {
+      "title": "Text Canon Version",
+      "type": "string"
+    },
+    "text_object_ids": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Text Object Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "text",
+    "page_text_sha256",
+    "text_canon_version",
+    "char_to_offset",
+    "char_boxes_pt",
+    "loose_boxes_pt",
+    "font_sizes",
+    "generated",
+    "text_object_ids",
+    "capabilities",
+    "cropbox",
+    "rotation"
+  ],
+  "title": "PageText",
+  "type": "object"
+}

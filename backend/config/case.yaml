@@ -1,0 +1,7 @@
+# Case configuration (ConfigBundle.case). Documented values only.
+plant_tz: Asia/Kolkata            # PRD 9.1 / A7 (demo plant time zone)
+calendar:
+  working_weekdays: [0, 1, 2, 3, 4]   # TODO(confirm): Monday-Friday is an assumption, not documented
+  holidays: []                        # TODO(confirm)
+  escalation_working_days: 1          # PRD A6: unresolved items escalate after 1 working day
+h0_decision: null                     # set by task D-01 (real_day | another_real_day | planted)

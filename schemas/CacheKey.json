@@ -1,0 +1,36 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "binary_version": {
+      "title": "Binary Version",
+      "type": "string"
+    },
+    "extractor_id": {
+      "title": "Extractor Id",
+      "type": "string"
+    },
+    "extractor_version": {
+      "title": "Extractor Version",
+      "type": "string"
+    },
+    "input_sha": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Sha",
+      "type": "string"
+    },
+    "params_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Params Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "input_sha",
+    "extractor_id",
+    "extractor_version",
+    "params_hash",
+    "binary_version"
+  ],
+  "title": "CacheKey",
+  "type": "object"
+}

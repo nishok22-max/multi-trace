@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "StoryStep": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_ids": {
+          "items": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Claim Ids",
+          "type": "array"
+        },
+        "comparison_ids": {
+          "items": {
+            "pattern": "^cmp_[0-9a-f]{24}$",
+            "type": "string"
+          },
+          "title": "Comparison Ids",
+          "type": "array"
+        },
+        "n": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "N",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "n",
+        "title",
+        "text"
+      ],
+      "title": "StoryStep",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Five-step story. Numbers in `text` are computed, never typed (promise 8).",
+  "properties": {
+    "headline_outcome": {
+      "anyOf": [
+        {
+          "enum": [
+            "agree",
+            "disagree",
+            "cant_compare",
+            "cant_tell"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Headline Outcome"
+    },
+    "steps": {
+      "items": {
+        "$ref": "#/$defs/StoryStep"
+      },
+      "title": "Steps",
+      "type": "array"
+    }
+  },
+  "required": [
+    "steps"
+  ],
+  "title": "Story",
+  "type": "object"
+}

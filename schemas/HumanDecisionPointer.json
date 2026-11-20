@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "Principal": {
+      "additionalProperties": false,
+      "description": "Identity from the session only (promise 9). MVP `iss` is \"local\".",
+      "properties": {
+        "iss": {
+          "title": "Iss",
+          "type": "string"
+        },
+        "sub": {
+          "title": "Sub",
+          "type": "string"
+        }
+      },
+      "required": [
+        "iss",
+        "sub"
+      ],
+      "title": "Principal",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "base_version": {
+      "minimum": 0,
+      "title": "Base Version",
+      "type": "integer"
+    },
+    "decision_id": {
+      "pattern": "^dec_[0-9a-f]{24}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "display_name_snapshot": {
+      "title": "Display Name Snapshot",
+      "type": "string"
+    },
+    "kind": {
+      "const": "human_decision",
+      "default": "human_decision",
+      "title": "Kind",
+      "type": "string"
+    },
+    "principal": {
+      "$ref": "#/$defs/Principal"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "role_snapshot": {
+      "enum": [
+        "viewer",
+        "reviewer",
+        "senior_reviewer",
+        "ingestor",
+        "evaluator"
+      ],
+      "title": "Role Snapshot",
+      "type": "string"
+    },
+    "shown_evidence_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Shown Evidence Hash",
+      "type": "string"
+    },
+    "timestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_id",
+    "principal",
+    "display_name_snapshot",
+    "role_snapshot",
+    "reason",
+    "base_version",
+    "shown_evidence_hash",
+    "timestamp"
+  ],
+  "title": "HumanDecisionPointer",
+  "type": "object"
+}

@@ -1,0 +1,95 @@
+{
+  "$defs": {
+    "OcrWord": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/Rect"
+        },
+        "conf": {
+          "title": "Conf",
+          "type": "number"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "bbox",
+        "conf"
+      ],
+      "title": "OcrWord",
+      "type": "object"
+    },
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "engine_version": {
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "traineddata_sha": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Traineddata Sha"
+    },
+    "words": {
+      "items": {
+        "$ref": "#/$defs/OcrWord"
+      },
+      "title": "Words",
+      "type": "array"
+    }
+  },
+  "required": [
+    "words",
+    "text",
+    "engine_version"
+  ],
+  "title": "OcrResult",
+  "type": "object"
+}

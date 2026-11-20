@@ -1,0 +1,4 @@
+# Shifts (PRD 21.2 item 3): two 12-hour shifts for the demo, configurable.
+shifts:
+  - {name: shift_1, start_hour: 0, end_hour: 12}
+  - {name: shift_2, start_hour: 12, end_hour: 24}

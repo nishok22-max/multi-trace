@@ -1,0 +1,9 @@
+# Comparability gate and confidence (PRD 10.1, 10.6, 10.8).
+tau_link: 0.85
+delta_link: 0.15
+tau_review: 0.5                       # TODO(confirm): NOT documented; placeholder, tune on dev seeds only
+lambda_corroboration: 0.2
+min_coverage: 0.8                     # PRD 10.6: only controls how a gap is labelled
+cadence_hours: 1
+image_extractor_prior: 0.8            # PRD 10.8
+text_extractor_prior: 0.95            # PRD 10.8

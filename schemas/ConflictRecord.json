@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "Magnitude": {
+      "additionalProperties": false,
+      "properties": {
+        "observed": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed"
+        },
+        "statistic": {
+          "title": "Statistic",
+          "type": "string"
+        },
+        "threshold": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Threshold"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statistic",
+        "unit"
+      ],
+      "title": "Magnitude",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Status is derived from review events, never stored. Values are never averaged.",
+  "properties": {
+    "averaged": {
+      "const": false,
+      "default": false,
+      "title": "Averaged",
+      "type": "boolean"
+    },
+    "comparison_ids": {
+      "items": {
+        "pattern": "^cmp_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Comparison Ids",
+      "type": "array"
+    },
+    "conflict_id": {
+      "pattern": "^cf_[0-9a-f]{24}$",
+      "title": "Conflict Id",
+      "type": "string"
+    },
+    "magnitude": {
+      "$ref": "#/$defs/Magnitude"
+    },
+    "sides": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Sides",
+      "type": "array"
+    },
+    "supporting_context": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Supporting Context",
+      "type": "array"
+    }
+  },
+  "required": [
+    "conflict_id",
+    "comparison_ids",
+    "sides",
+    "magnitude"
+  ],
+  "title": "ConflictRecord",
+  "type": "object"
+}

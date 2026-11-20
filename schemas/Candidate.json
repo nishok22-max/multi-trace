@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "entity_id": {
+      "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+      "title": "Entity Id",
+      "type": "string"
+    },
+    "features": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Features",
+      "type": "object"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "score": {
+      "title": "Score",
+      "type": "number"
+    },
+    "vetoed": {
+      "default": false,
+      "title": "Vetoed",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "entity_id",
+    "score"
+  ],
+  "title": "Candidate",
+  "type": "object"
+}

@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "explanation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Explanation"
+    },
+    "type": {
+      "const": "explain",
+      "default": "explain",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "title": "ExplainChoice",
+  "type": "object"
+}

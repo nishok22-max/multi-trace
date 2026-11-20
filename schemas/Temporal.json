@@ -1,0 +1,139 @@
+{
+  "$defs": {
+    "Interval": {
+      "additionalProperties": false,
+      "description": "Half-open valid-time interval `[start, end)`.",
+      "properties": {
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "granularity": {
+          "enum": [
+            "hour",
+            "shift",
+            "day"
+          ],
+          "title": "Granularity",
+          "type": "string"
+        },
+        "resolved_from": {
+          "title": "Resolved From",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "granularity",
+        "resolved_from"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "ObservedTime": {
+      "additionalProperties": false,
+      "description": "When the claim was observed. `file_timestamp` is not allowed (promise 7).",
+      "properties": {
+        "at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "At"
+        },
+        "basis": {
+          "enum": [
+            "document_date",
+            "sensor_timestamp",
+            "ingest_time"
+          ],
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "basis"
+      ],
+      "title": "ObservedTime",
+      "type": "object"
+    },
+    "UnknownTime": {
+      "additionalProperties": false,
+      "description": "No document date. Deliberately has no bounds (file mtime is never used).",
+      "properties": {
+        "granularity": {
+          "const": "unknown",
+          "default": "unknown",
+          "title": "Granularity",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "title": "UnknownTime",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "observed_time": {
+      "$ref": "#/$defs/ObservedTime"
+    },
+    "timezone_original": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Timezone Original"
+    },
+    "valid_time": {
+      "discriminator": {
+        "mapping": {
+          "day": "#/$defs/Interval",
+          "hour": "#/$defs/Interval",
+          "shift": "#/$defs/Interval",
+          "unknown": "#/$defs/UnknownTime"
+        },
+        "propertyName": "granularity"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Interval"
+        },
+        {
+          "$ref": "#/$defs/UnknownTime"
+        }
+      ],
+      "title": "Valid Time"
+    }
+  },
+  "required": [
+    "valid_time",
+    "observed_time"
+  ],
+  "title": "Temporal",
+  "type": "object"
+}

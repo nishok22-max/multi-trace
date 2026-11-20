@@ -1,0 +1,6503 @@
+{
+  "components": {
+    "schemas": {
+      "BaselineOutput": {
+        "additionalProperties": false,
+        "description": "The baseline's actual output, recorded and shown. Never typed in.",
+        "properties": {
+          "answer_text": {
+            "title": "Answer Text",
+            "type": "string"
+          },
+          "name": {
+            "enum": [
+              "tfidf",
+              "fusion",
+              "nogate"
+            ],
+            "title": "Name",
+            "type": "string"
+          },
+          "provenance_correct": {
+            "title": "Provenance Correct",
+            "type": "boolean"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "surfaced_conflict": {
+            "title": "Surfaced Conflict",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "answer_text",
+          "surfaced_conflict",
+          "provenance_correct"
+        ],
+        "title": "BaselineOutput",
+        "type": "object"
+      },
+      "Body_uploadSource": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_uploadSource",
+        "type": "object"
+      },
+      "BuildAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "build_id": {
+            "title": "Build Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "build_id"
+        ],
+        "title": "BuildAccepted",
+        "type": "object"
+      },
+      "BuildStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "build_id": {
+            "title": "Build Id",
+            "type": "string"
+          },
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "counters": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Counters",
+            "type": "object"
+          },
+          "heartbeat_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heartbeat At"
+          },
+          "stage_ms": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Stage Ms",
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed",
+              "failed_stale",
+              "failed_timeout",
+              "failed_resource"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "build_id",
+          "case_id",
+          "status"
+        ],
+        "title": "BuildStatus",
+        "type": "object"
+      },
+      "CalibrationBin": {
+        "additionalProperties": false,
+        "properties": {
+          "accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accuracy"
+          },
+          "hi": {
+            "title": "Hi",
+            "type": "number"
+          },
+          "lo": {
+            "title": "Lo",
+            "type": "number"
+          },
+          "mean_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Confidence"
+          },
+          "n": {
+            "minimum": 0.0,
+            "title": "N",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "lo",
+          "hi",
+          "n"
+        ],
+        "title": "CalibrationBin",
+        "type": "object"
+      },
+      "Candidate": {
+        "additionalProperties": false,
+        "properties": {
+          "entity_id": {
+            "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "features": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Features",
+            "type": "object"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "vetoed": {
+            "default": false,
+            "title": "Vetoed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "entity_id",
+          "score"
+        ],
+        "title": "Candidate",
+        "type": "object"
+      },
+      "Case": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "created_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Created At",
+            "type": "string"
+          },
+          "entities": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "type": "string"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "plant_tz": {
+            "title": "Plant Tz",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "window_end": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "title",
+          "entities",
+          "window_start",
+          "window_end",
+          "plant_tz",
+          "created_at"
+        ],
+        "title": "Case",
+        "type": "object"
+      },
+      "CaseCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "entities": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "type": "string"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "plant_tz": {
+            "title": "Plant Tz",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "window_end": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "title",
+          "entities",
+          "window_start",
+          "window_end",
+          "plant_tz"
+        ],
+        "title": "CaseCreate",
+        "type": "object"
+      },
+      "CaseList": {
+        "additionalProperties": false,
+        "properties": {
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/Case"
+            },
+            "title": "Cases",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cases"
+        ],
+        "title": "CaseList",
+        "type": "object"
+      },
+      "CaseState": {
+        "additionalProperties": false,
+        "description": "Unified Case State (PRD 9.1), reduced to ids. Entities, events, measurements and\nrelations are views over claims and are projected later (M2/M3).",
+        "properties": {
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "claim_ids": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Claim Ids",
+            "type": "array"
+          },
+          "comparison_ids": {
+            "items": {
+              "pattern": "^cmp_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Comparison Ids",
+            "type": "array"
+          },
+          "conflict_ids": {
+            "items": {
+              "pattern": "^cf_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Conflict Ids",
+            "type": "array"
+          },
+          "decision_ids": {
+            "items": {
+              "pattern": "^dec_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Decision Ids",
+            "type": "array"
+          },
+          "gap_claim_ids": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Gap Claim Ids",
+            "type": "array"
+          },
+          "manifest_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Manifest Hash",
+            "type": "string"
+          },
+          "plant_tz": {
+            "title": "Plant Tz",
+            "type": "string"
+          },
+          "review_ids": {
+            "items": {
+              "pattern": "^rv_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Review Ids",
+            "type": "array"
+          },
+          "scope_entities": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "type": "string"
+            },
+            "title": "Scope Entities",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          },
+          "window_end": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "version",
+          "manifest_hash",
+          "plant_tz",
+          "scope_entities",
+          "window_start",
+          "window_end",
+          "sources",
+          "claim_ids",
+          "comparison_ids",
+          "conflict_ids",
+          "gap_claim_ids",
+          "decision_ids",
+          "review_ids"
+        ],
+        "title": "CaseState",
+        "type": "object"
+      },
+      "CaseVersion": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_status": {
+            "enum": [
+              "off",
+              "used"
+            ],
+            "title": "Ai Status",
+            "type": "string"
+          },
+          "canon_version": {
+            "title": "Canon Version",
+            "type": "string"
+          },
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "config_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Config Hash",
+            "type": "string"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "engine_sha": {
+            "title": "Engine Sha",
+            "type": "string"
+          },
+          "llm_mode": {
+            "enum": [
+              "off",
+              "record",
+              "replay"
+            ],
+            "title": "Llm Mode",
+            "type": "string"
+          },
+          "lockfile_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Lockfile Hash",
+            "type": "string"
+          },
+          "manifest_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Manifest Hash",
+            "type": "string"
+          },
+          "parent_manifest_hash": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Manifest Hash"
+          },
+          "pdfium_version": {
+            "title": "Pdfium Version",
+            "type": "string"
+          },
+          "records": {
+            "$ref": "#/components/schemas/VersionRecords"
+          },
+          "tesseract_version": {
+            "title": "Tesseract Version",
+            "type": "string"
+          },
+          "traineddata_sha": {
+            "title": "Traineddata Sha",
+            "type": "string"
+          },
+          "tzdata_version": {
+            "title": "Tzdata Version",
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          },
+          "views": {
+            "$ref": "#/components/schemas/Views"
+          }
+        },
+        "required": [
+          "case_id",
+          "version",
+          "manifest_hash",
+          "config_hash",
+          "engine_sha",
+          "lockfile_hash",
+          "canon_version",
+          "tesseract_version",
+          "traineddata_sha",
+          "pdfium_version",
+          "tzdata_version",
+          "llm_mode",
+          "ai_status",
+          "records",
+          "views"
+        ],
+        "title": "CaseVersion",
+        "type": "object"
+      },
+      "ClaimDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "children": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Children",
+            "type": "array"
+          },
+          "claim": {
+            "$ref": "#/components/schemas/ClaimRecord"
+          },
+          "parents": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Parents",
+            "type": "array"
+          }
+        },
+        "required": [
+          "claim",
+          "parents",
+          "children"
+        ],
+        "title": "ClaimDetail",
+        "type": "object"
+      },
+      "ClaimRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "attribute": {
+            "title": "Attribute",
+            "type": "string"
+          },
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "claim_id": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "title": "Claim Id",
+            "type": "string"
+          },
+          "claim_type": {
+            "enum": [
+              "extracted",
+              "inferred"
+            ],
+            "title": "Claim Type",
+            "type": "string"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "derived_from": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Derived From",
+            "type": "array"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "human_decision": "#/components/schemas/HumanDecisionPointer",
+                    "image_region": "#/components/schemas/ImageRegionPointer",
+                    "sensor_window": "#/components/schemas/SensorWindowPointer",
+                    "table_cell": "#/components/schemas/TableCellPointer",
+                    "text_span": "#/components/schemas/TextSpanPointer"
+                  },
+                  "propertyName": "kind"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/TextSpanPointer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ImageRegionPointer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TableCellPointer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SensorWindowPointer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HumanDecisionPointer"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "method": {
+            "$ref": "#/components/schemas/Method"
+          },
+          "modality": {
+            "enum": [
+              "text",
+              "table",
+              "image",
+              "sensor",
+              "decision"
+            ],
+            "title": "Modality",
+            "type": "string"
+          },
+          "normalized_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalized Unit"
+          },
+          "normalized_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalized Value"
+          },
+          "record_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Record Hash",
+            "type": "string"
+          },
+          "statement": {
+            "title": "Statement",
+            "type": "string"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Subject"
+          },
+          "supersedes": {
+            "anyOf": [
+              {
+                "pattern": "^clm_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes"
+          },
+          "temporal": {
+            "$ref": "#/components/schemas/Temporal"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "unit_status": {
+            "enum": [
+              "known",
+              "unknown",
+              "sensor_native",
+              "not_applicable"
+            ],
+            "title": "Unit Status",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "value_type": {
+            "enum": [
+              "categorical",
+              "numeric",
+              "text",
+              "boolean",
+              "structured"
+            ],
+            "title": "Value Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_id",
+          "case_id",
+          "claim_type",
+          "statement",
+          "subject",
+          "attribute",
+          "value",
+          "value_type",
+          "unit_status",
+          "temporal",
+          "modality",
+          "method",
+          "confidence",
+          "record_hash"
+        ],
+        "title": "ClaimRecord",
+        "type": "object"
+      },
+      "ClaimsPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "offset",
+          "limit",
+          "total"
+        ],
+        "title": "ClaimsPage",
+        "type": "object"
+      },
+      "ComparisonRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/GateCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "claim_a": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "title": "Claim A",
+            "type": "string"
+          },
+          "claim_b": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "title": "Claim B",
+            "type": "string"
+          },
+          "comparison_id": {
+            "pattern": "^cmp_[0-9a-f]{24}$",
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "config_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Config Hash",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "agree",
+              "disagree",
+              "cant_compare",
+              "cant_tell"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "claim_a",
+          "claim_b",
+          "config_hash",
+          "checks",
+          "outcome",
+          "reason"
+        ],
+        "title": "ComparisonRecord",
+        "type": "object"
+      },
+      "ComparisonsPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ComparisonsPage",
+        "type": "object"
+      },
+      "Confidence": {
+        "additionalProperties": false,
+        "properties": {
+          "calibrated": {
+            "default": false,
+            "title": "Calibrated",
+            "type": "boolean"
+          },
+          "calibration_fit_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calibration Fit Id"
+          },
+          "components": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Components",
+            "type": "object"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "stage": {
+            "default": "pre",
+            "enum": [
+              "pre",
+              "final"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "value": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "Confidence",
+        "type": "object"
+      },
+      "ConflictRecord": {
+        "additionalProperties": false,
+        "description": "Status is derived from review events, never stored. Values are never averaged.",
+        "properties": {
+          "averaged": {
+            "const": false,
+            "default": false,
+            "title": "Averaged",
+            "type": "boolean"
+          },
+          "comparison_ids": {
+            "items": {
+              "pattern": "^cmp_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Comparison Ids",
+            "type": "array"
+          },
+          "conflict_id": {
+            "pattern": "^cf_[0-9a-f]{24}$",
+            "title": "Conflict Id",
+            "type": "string"
+          },
+          "magnitude": {
+            "$ref": "#/components/schemas/Magnitude"
+          },
+          "sides": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Sides",
+            "type": "array"
+          },
+          "supporting_context": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Supporting Context",
+            "type": "array"
+          }
+        },
+        "required": [
+          "conflict_id",
+          "comparison_ids",
+          "sides",
+          "magnitude"
+        ],
+        "title": "ConflictRecord",
+        "type": "object"
+      },
+      "ConflictsPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ConflictRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ConflictsPage",
+        "type": "object"
+      },
+      "CoveragePeriod": {
+        "additionalProperties": false,
+        "description": "Dates an event log is complete for (half-open, UTC).",
+        "properties": {
+          "end": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "CoveragePeriod",
+        "type": "object"
+      },
+      "Decision": {
+        "additionalProperties": false,
+        "description": "A stored human decision. Identity fields come from the session (promise 9).",
+        "properties": {
+          "at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "At",
+            "type": "string"
+          },
+          "base_version": {
+            "minimum": 0.0,
+            "title": "Base Version",
+            "type": "integer"
+          },
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "choice": {
+            "discriminator": {
+              "mapping": {
+                "entity": "#/components/schemas/EntityChoice",
+                "escalate": "#/components/schemas/EscalateChoice",
+                "explain": "#/components/schemas/ExplainChoice",
+                "reading": "#/components/schemas/ReadingChoice"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EntityChoice"
+              },
+              {
+                "$ref": "#/components/schemas/ReadingChoice"
+              },
+              {
+                "$ref": "#/components/schemas/ExplainChoice"
+              },
+              {
+                "$ref": "#/components/schemas/EscalateChoice"
+              }
+            ],
+            "title": "Choice"
+          },
+          "decision_id": {
+            "pattern": "^dec_[0-9a-f]{24}$",
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "display_name_snapshot": {
+            "title": "Display Name Snapshot",
+            "type": "string"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/Principal"
+          },
+          "reason": {
+            "minLength": 15,
+            "title": "Reason",
+            "type": "string"
+          },
+          "review_id": {
+            "pattern": "^rv_[0-9a-f]{24}$",
+            "title": "Review Id",
+            "type": "string"
+          },
+          "role_snapshot": {
+            "enum": [
+              "viewer",
+              "reviewer",
+              "senior_reviewer",
+              "ingestor",
+              "evaluator"
+            ],
+            "title": "Role Snapshot",
+            "type": "string"
+          },
+          "shown_evidence_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Shown Evidence Hash",
+            "type": "string"
+          },
+          "supersedes": {
+            "anyOf": [
+              {
+                "pattern": "^dec_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes"
+          }
+        },
+        "required": [
+          "decision_id",
+          "case_id",
+          "review_id",
+          "principal",
+          "display_name_snapshot",
+          "role_snapshot",
+          "choice",
+          "reason",
+          "base_version",
+          "shown_evidence_hash",
+          "at"
+        ],
+        "title": "Decision",
+        "type": "object"
+      },
+      "DecisionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "base_version": {
+            "minimum": 0.0,
+            "title": "Base Version",
+            "type": "integer"
+          },
+          "choice": {
+            "discriminator": {
+              "mapping": {
+                "entity": "#/components/schemas/EntityChoice",
+                "escalate": "#/components/schemas/EscalateChoice",
+                "explain": "#/components/schemas/ExplainChoice",
+                "reading": "#/components/schemas/ReadingChoice"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EntityChoice"
+              },
+              {
+                "$ref": "#/components/schemas/ReadingChoice"
+              },
+              {
+                "$ref": "#/components/schemas/ExplainChoice"
+              },
+              {
+                "$ref": "#/components/schemas/EscalateChoice"
+              }
+            ],
+            "title": "Choice"
+          },
+          "reason": {
+            "minLength": 15,
+            "title": "Reason",
+            "type": "string"
+          },
+          "shown_evidence_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Shown Evidence Hash",
+            "type": "string"
+          },
+          "supersedes": {
+            "anyOf": [
+              {
+                "pattern": "^dec_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes"
+          }
+        },
+        "required": [
+          "choice",
+          "reason",
+          "base_version",
+          "shown_evidence_hash"
+        ],
+        "title": "DecisionRequest",
+        "type": "object"
+      },
+      "DecisionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "decision_id": {
+            "pattern": "^dec_[0-9a-f]{24}$",
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "manifest_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Manifest Hash",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "decision_id",
+          "version",
+          "manifest_hash"
+        ],
+        "title": "DecisionResponse",
+        "type": "object"
+      },
+      "EntityChoice": {
+        "additionalProperties": false,
+        "properties": {
+          "entity_id": {
+            "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "entity",
+            "default": "entity",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_id"
+        ],
+        "title": "EntityChoice",
+        "type": "object"
+      },
+      "Envelope": {
+        "additionalProperties": false,
+        "properties": {
+          "T_star": {
+            "title": "T Star",
+            "type": "number"
+          },
+          "degenerate_channels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Degenerate Channels",
+            "type": "array"
+          },
+          "envelope_id": {
+            "pattern": "^env_[0-9a-f]{24}$",
+            "title": "Envelope Id",
+            "type": "string"
+          },
+          "granularity": {
+            "const": "day",
+            "default": "day",
+            "title": "Granularity",
+            "type": "string"
+          },
+          "machine": {
+            "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+            "title": "Machine",
+            "type": "string"
+          },
+          "mad": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Mad",
+            "type": "object"
+          },
+          "med": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Med",
+            "type": "object"
+          },
+          "n": {
+            "minimum": 0.0,
+            "title": "N",
+            "type": "integer"
+          },
+          "params": {
+            "$ref": "#/components/schemas/EnvelopeConfig"
+          },
+          "partition_hashes": {
+            "additionalProperties": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "title": "Partition Hashes",
+            "type": "object"
+          },
+          "pool_members": {
+            "items": {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "type": "string"
+            },
+            "title": "Pool Members",
+            "type": "array"
+          },
+          "pooled": {
+            "enum": [
+              "none",
+              "t_star_model",
+              "model_level"
+            ],
+            "title": "Pooled",
+            "type": "string"
+          },
+          "quiet_days": {
+            "items": {
+              "$ref": "#/components/schemas/QuietDay"
+            },
+            "title": "Quiet Days",
+            "type": "array"
+          },
+          "scope": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scope",
+            "type": "array"
+          },
+          "series_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$",
+            "title": "Series Id",
+            "type": "string"
+          },
+          "statistic": {
+            "const": "robust_max_z",
+            "default": "robust_max_z",
+            "title": "Statistic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "envelope_id",
+          "machine",
+          "series_id",
+          "scope",
+          "quiet_days",
+          "n",
+          "med",
+          "mad",
+          "T_star",
+          "pooled",
+          "pool_members",
+          "degenerate_channels",
+          "params",
+          "partition_hashes"
+        ],
+        "title": "Envelope",
+        "type": "object"
+      },
+      "EnvelopeConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "alpha": {
+            "exclusiveMaximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Alpha",
+            "type": "number"
+          },
+          "drift_ratio": {
+            "exclusiveMinimum": 0.0,
+            "title": "Drift Ratio",
+            "type": "number"
+          },
+          "flatline_epsilon_factor": {
+            "exclusiveMinimum": 0.0,
+            "title": "Flatline Epsilon Factor",
+            "type": "number"
+          },
+          "flatline_min_hours": {
+            "minimum": 1.0,
+            "title": "Flatline Min Hours",
+            "type": "integer"
+          },
+          "margin_days": {
+            "minimum": 0.0,
+            "title": "Margin Days",
+            "type": "integer"
+          },
+          "min_quiet_days_own_scale": {
+            "minimum": 1.0,
+            "title": "Min Quiet Days Own Scale",
+            "type": "integer"
+          },
+          "min_quiet_days_own_t_star": {
+            "minimum": 1.0,
+            "title": "Min Quiet Days Own T Star",
+            "type": "integer"
+          },
+          "thin_history_factor": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Thin History Factor",
+            "type": "number"
+          },
+          "training_policy": {
+            "enum": [
+              "all_except_case_window",
+              "before_only"
+            ],
+            "title": "Training Policy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alpha",
+          "margin_days",
+          "training_policy",
+          "flatline_epsilon_factor",
+          "flatline_min_hours",
+          "min_quiet_days_own_t_star",
+          "min_quiet_days_own_scale",
+          "drift_ratio",
+          "thin_history_factor"
+        ],
+        "title": "EnvelopeConfig",
+        "type": "object"
+      },
+      "EscalateChoice": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "const": "escalate",
+            "default": "escalate",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "title": "EscalateChoice",
+        "type": "object"
+      },
+      "EvalReport": {
+        "additionalProperties": false,
+        "properties": {
+          "averaged_outputs": {
+            "minimum": 0.0,
+            "title": "Averaged Outputs",
+            "type": "integer"
+          },
+          "baselines": {
+            "items": {
+              "$ref": "#/components/schemas/BaselineOutput"
+            },
+            "title": "Baselines",
+            "type": "array"
+          },
+          "bins": {
+            "items": {
+              "$ref": "#/components/schemas/CalibrationBin"
+            },
+            "title": "Bins",
+            "type": "array"
+          },
+          "brier_after": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brier After"
+          },
+          "brier_before": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brier Before"
+          },
+          "config_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Config Hash",
+            "type": "string"
+          },
+          "ece_after": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ece After"
+          },
+          "ece_before": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ece Before"
+          },
+          "engine_sha": {
+            "title": "Engine Sha",
+            "type": "string"
+          },
+          "entity_accuracy_at1": {
+            "title": "Entity Accuracy At1",
+            "type": "number"
+          },
+          "entity_accuracy_at3": {
+            "title": "Entity Accuracy At3",
+            "type": "number"
+          },
+          "extraction_accuracy": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Extraction Accuracy",
+            "type": "object"
+          },
+          "false_conflict_rate": {
+            "$ref": "#/components/schemas/Wilson"
+          },
+          "gaps_read_as_normal": {
+            "minimum": 0.0,
+            "title": "Gaps Read As Normal",
+            "type": "integer"
+          },
+          "lockfile_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Lockfile Hash",
+            "type": "string"
+          },
+          "overall": {
+            "$ref": "#/components/schemas/Prf"
+          },
+          "per_fault": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Prf"
+            },
+            "title": "Per Fault",
+            "type": "object"
+          },
+          "provenance_reresolve_rate": {
+            "title": "Provenance Reresolve Rate",
+            "type": "number"
+          },
+          "quiet_day_false_alarm": {
+            "$ref": "#/components/schemas/Wilson"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "split": {
+            "enum": [
+              "dev",
+              "holdout"
+            ],
+            "title": "Split",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "split",
+          "config_hash",
+          "engine_sha",
+          "lockfile_hash",
+          "overall",
+          "per_fault",
+          "false_conflict_rate",
+          "quiet_day_false_alarm",
+          "entity_accuracy_at1",
+          "entity_accuracy_at3",
+          "extraction_accuracy",
+          "provenance_reresolve_rate",
+          "gaps_read_as_normal",
+          "averaged_outputs",
+          "bins",
+          "baselines"
+        ],
+        "title": "EvalReport",
+        "type": "object"
+      },
+      "EvalRunAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "EvalRunAccepted",
+        "type": "object"
+      },
+      "EvidenceRender": {
+        "additionalProperties": false,
+        "description": "What the proof view needs. PNGs are served from cache only: a miss is 404 render-missing.",
+        "properties": {
+          "claim_id": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "title": "Claim Id",
+            "type": "string"
+          },
+          "crop_png": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop Png"
+          },
+          "page_png": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Png"
+          },
+          "pointer": {
+            "discriminator": {
+              "mapping": {
+                "human_decision": "#/components/schemas/HumanDecisionPointer",
+                "image_region": "#/components/schemas/ImageRegionPointer",
+                "sensor_window": "#/components/schemas/SensorWindowPointer",
+                "table_cell": "#/components/schemas/TableCellPointer",
+                "text_span": "#/components/schemas/TextSpanPointer"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TextSpanPointer"
+              },
+              {
+                "$ref": "#/components/schemas/ImageRegionPointer"
+              },
+              {
+                "$ref": "#/components/schemas/TableCellPointer"
+              },
+              {
+                "$ref": "#/components/schemas/SensorWindowPointer"
+              },
+              {
+                "$ref": "#/components/schemas/HumanDecisionPointer"
+              }
+            ],
+            "title": "Pointer"
+          },
+          "render_status": {
+            "enum": [
+              "cached",
+              "missing"
+            ],
+            "title": "Render Status",
+            "type": "string"
+          },
+          "window_rows": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window Rows"
+          }
+        },
+        "required": [
+          "claim_id",
+          "pointer",
+          "render_status"
+        ],
+        "title": "EvidenceRender",
+        "type": "object"
+      },
+      "ExplainChoice": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "type": {
+            "const": "explain",
+            "default": "explain",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "title": "ExplainChoice",
+        "type": "object"
+      },
+      "GateCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "n": {
+            "maximum": 6.0,
+            "minimum": 1.0,
+            "title": "N",
+            "type": "integer"
+          },
+          "name": {
+            "enum": [
+              "same_entity",
+              "same_attribute",
+              "time_overlap",
+              "comparable_terms",
+              "data_both_sides",
+              "beyond_variation"
+            ],
+            "title": "Name",
+            "type": "string"
+          },
+          "pass": {
+            "title": "Pass",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "n",
+          "name",
+          "pass",
+          "detail"
+        ],
+        "title": "GateCheck",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "HumanDecisionPointer": {
+        "additionalProperties": false,
+        "properties": {
+          "base_version": {
+            "minimum": 0.0,
+            "title": "Base Version",
+            "type": "integer"
+          },
+          "decision_id": {
+            "pattern": "^dec_[0-9a-f]{24}$",
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "display_name_snapshot": {
+            "title": "Display Name Snapshot",
+            "type": "string"
+          },
+          "kind": {
+            "const": "human_decision",
+            "default": "human_decision",
+            "title": "Kind",
+            "type": "string"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/Principal"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "role_snapshot": {
+            "enum": [
+              "viewer",
+              "reviewer",
+              "senior_reviewer",
+              "ingestor",
+              "evaluator"
+            ],
+            "title": "Role Snapshot",
+            "type": "string"
+          },
+          "shown_evidence_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Shown Evidence Hash",
+            "type": "string"
+          },
+          "timestamp": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision_id",
+          "principal",
+          "display_name_snapshot",
+          "role_snapshot",
+          "reason",
+          "base_version",
+          "shown_evidence_hash",
+          "timestamp"
+        ],
+        "title": "HumanDecisionPointer",
+        "type": "object"
+      },
+      "ImageRegionPointer": {
+        "additionalProperties": false,
+        "properties": {
+          "bbox": {
+            "$ref": "#/components/schemas/Rect"
+          },
+          "coord_space": {
+            "const": "oriented_px",
+            "default": "oriented_px",
+            "title": "Coord Space",
+            "type": "string"
+          },
+          "crop_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Crop Sha256",
+            "type": "string"
+          },
+          "kind": {
+            "const": "image_region",
+            "default": "image_region",
+            "title": "Kind",
+            "type": "string"
+          },
+          "read_text": {
+            "title": "Read Text",
+            "type": "string"
+          },
+          "reader": {
+            "enum": [
+              "ocr",
+              "vlm"
+            ],
+            "title": "Reader",
+            "type": "string"
+          },
+          "reread_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reread Text"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "sha256",
+          "bbox",
+          "reader",
+          "read_text",
+          "crop_sha256"
+        ],
+        "title": "ImageRegionPointer",
+        "type": "object"
+      },
+      "IntegrityResult": {
+        "additionalProperties": false,
+        "properties": {
+          "chain_ok": {
+            "title": "Chain Ok",
+            "type": "boolean"
+          },
+          "failures": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Failures",
+            "type": "array"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "records_ok": {
+            "title": "Records Ok",
+            "type": "boolean"
+          },
+          "snapshot_ok": {
+            "title": "Snapshot Ok",
+            "type": "boolean"
+          },
+          "version": {
+            "minimum": 1.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ok",
+          "version",
+          "chain_ok",
+          "snapshot_ok",
+          "records_ok"
+        ],
+        "title": "IntegrityResult",
+        "type": "object"
+      },
+      "Interval": {
+        "additionalProperties": false,
+        "description": "Half-open valid-time interval `[start, end)`.",
+        "properties": {
+          "end": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "End",
+            "type": "string"
+          },
+          "granularity": {
+            "enum": [
+              "hour",
+              "shift",
+              "day"
+            ],
+            "title": "Granularity",
+            "type": "string"
+          },
+          "resolved_from": {
+            "title": "Resolved From",
+            "type": "string"
+          },
+          "start": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "granularity",
+          "resolved_from"
+        ],
+        "title": "Interval",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          },
+          "username": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "Magnitude": {
+        "additionalProperties": false,
+        "properties": {
+          "observed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed"
+          },
+          "statistic": {
+            "title": "Statistic",
+            "type": "string"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "statistic",
+          "unit"
+        ],
+        "title": "Magnitude",
+        "type": "object"
+      },
+      "MeResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "viewer",
+              "reviewer",
+              "senior_reviewer",
+              "ingestor",
+              "evaluator"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "display_name",
+          "role"
+        ],
+        "title": "MeResponse",
+        "type": "object"
+      },
+      "MentionKey": {
+        "additionalProperties": false,
+        "description": "Stable key `(source_sha256, locator)` that decisions attach to.",
+        "properties": {
+          "locator": {
+            "title": "Locator",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_sha256",
+          "locator"
+        ],
+        "title": "MentionKey",
+        "type": "object"
+      },
+      "Method": {
+        "additionalProperties": false,
+        "properties": {
+          "extractor": {
+            "title": "Extractor",
+            "type": "string"
+          },
+          "extractor_version": {
+            "title": "Extractor Version",
+            "type": "string"
+          },
+          "llm_used": {
+            "default": false,
+            "title": "Llm Used",
+            "type": "boolean"
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Id"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          }
+        },
+        "required": [
+          "extractor",
+          "extractor_version"
+        ],
+        "title": "Method",
+        "type": "object"
+      },
+      "ObservedTime": {
+        "additionalProperties": false,
+        "description": "When the claim was observed. `file_timestamp` is not allowed (promise 7).",
+        "properties": {
+          "at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "basis": {
+            "enum": [
+              "document_date",
+              "sensor_timestamp",
+              "ingest_time"
+            ],
+            "title": "Basis",
+            "type": "string"
+          }
+        },
+        "required": [
+          "basis"
+        ],
+        "title": "ObservedTime",
+        "type": "object"
+      },
+      "Prf": {
+        "additionalProperties": false,
+        "properties": {
+          "f1": {
+            "title": "F1",
+            "type": "number"
+          },
+          "n": {
+            "minimum": 0.0,
+            "title": "N",
+            "type": "integer"
+          },
+          "precision": {
+            "title": "Precision",
+            "type": "number"
+          },
+          "recall": {
+            "title": "Recall",
+            "type": "number"
+          }
+        },
+        "required": [
+          "precision",
+          "recall",
+          "f1",
+          "n"
+        ],
+        "title": "Prf",
+        "type": "object"
+      },
+      "Principal": {
+        "additionalProperties": false,
+        "description": "Identity from the session only (promise 9). MVP `iss` is \"local\".",
+        "properties": {
+          "iss": {
+            "title": "Iss",
+            "type": "string"
+          },
+          "sub": {
+            "title": "Sub",
+            "type": "string"
+          }
+        },
+        "required": [
+          "iss",
+          "sub"
+        ],
+        "title": "Principal",
+        "type": "object"
+      },
+      "Problem": {
+        "additionalProperties": false,
+        "description": "RFC 9457 problem+json. Bodies never carry exception text.",
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "existing_decision_id": {
+            "anyOf": [
+              {
+                "pattern": "^dec_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Existing Decision Id"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instance"
+          },
+          "retry_after": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry After"
+          },
+          "status": {
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status"
+        ],
+        "title": "Problem",
+        "type": "object"
+      },
+      "QuietDay": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "t_d": {
+            "title": "T D",
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "reasons",
+          "t_d"
+        ],
+        "title": "QuietDay",
+        "type": "object"
+      },
+      "ReadingChoice": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "const": "reading",
+            "default": "reading",
+            "title": "Type",
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "accept",
+              "reject"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "verdict"
+        ],
+        "title": "ReadingChoice",
+        "type": "object"
+      },
+      "ReadyResponse": {
+        "additionalProperties": false,
+        "description": "Readiness probe: every flag must be true for 200.",
+        "properties": {
+          "blobs_writable": {
+            "title": "Blobs Writable",
+            "type": "boolean"
+          },
+          "db_writable": {
+            "title": "Db Writable",
+            "type": "boolean"
+          },
+          "disk_ok": {
+            "title": "Disk Ok",
+            "type": "boolean"
+          },
+          "tesseract_present": {
+            "title": "Tesseract Present",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "db_writable",
+          "blobs_writable",
+          "tesseract_present",
+          "disk_ok"
+        ],
+        "title": "ReadyResponse",
+        "type": "object"
+      },
+      "RecheckResult": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_sha_ok": {
+            "title": "Artifact Sha Ok",
+            "type": "boolean"
+          },
+          "input_sha_ok": {
+            "title": "Input Sha Ok",
+            "type": "boolean"
+          },
+          "match": {
+            "title": "Match",
+            "type": "boolean"
+          },
+          "source_sha_ok": {
+            "title": "Source Sha Ok",
+            "type": "boolean"
+          },
+          "value_ok": {
+            "title": "Value Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "match",
+          "source_sha_ok",
+          "artifact_sha_ok",
+          "input_sha_ok",
+          "value_ok"
+        ],
+        "title": "RecheckResult",
+        "type": "object"
+      },
+      "Rect": {
+        "additionalProperties": false,
+        "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+        "properties": {
+          "h": {
+            "title": "H",
+            "type": "number"
+          },
+          "w": {
+            "title": "W",
+            "type": "number"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "title": "Rect",
+        "type": "object"
+      },
+      "RectPx": {
+        "additionalProperties": false,
+        "description": "Pixel rectangle (integers).",
+        "properties": {
+          "h": {
+            "title": "H",
+            "type": "integer"
+          },
+          "w": {
+            "title": "W",
+            "type": "integer"
+          },
+          "x": {
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "title": "Y",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "title": "RectPx",
+        "type": "object"
+      },
+      "Reliability": {
+        "additionalProperties": false,
+        "description": "Beta prior on source reliability (PRD 9.2). Neutral prior is alpha = beta = 1.",
+        "properties": {
+          "alpha": {
+            "default": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Alpha",
+            "type": "number"
+          },
+          "beta": {
+            "default": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Beta",
+            "type": "number"
+          }
+        },
+        "title": "Reliability",
+        "type": "object"
+      },
+      "ReplayResult": {
+        "additionalProperties": false,
+        "properties": {
+          "actual_manifest_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Actual Manifest Hash",
+            "type": "string"
+          },
+          "expected_manifest_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Expected Manifest Hash",
+            "type": "string"
+          },
+          "match": {
+            "title": "Match",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "match",
+          "expected_manifest_hash",
+          "actual_manifest_hash"
+        ],
+        "title": "ReplayResult",
+        "type": "object"
+      },
+      "ReviewItem": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Candidate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidates"
+          },
+          "claim_ids": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Claim Ids",
+            "type": "array"
+          },
+          "evidence_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Evidence Hash",
+            "type": "string"
+          },
+          "mention_keys": {
+            "items": {
+              "$ref": "#/components/schemas/MentionKey"
+            },
+            "title": "Mention Keys",
+            "type": "array"
+          },
+          "opened_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Opened At",
+            "type": "string"
+          },
+          "review_id": {
+            "pattern": "^rv_[0-9a-f]{24}$",
+            "title": "Review Id",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "ambiguous_entity",
+              "reader_disagreement",
+              "implausible_value",
+              "hidden_text",
+              "envelope_drift",
+              "low_confidence",
+              "unknown_unit",
+              "llm_only_interpretation",
+              "no_text_layer",
+              "unsupported_page",
+              "pdf_page_cap",
+              "conflict_explain"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "review_id",
+          "type",
+          "claim_ids",
+          "mention_keys",
+          "evidence_hash",
+          "opened_at"
+        ],
+        "title": "ReviewItem",
+        "type": "object"
+      },
+      "ReviewQueueEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "explained": {
+            "default": false,
+            "title": "Explained",
+            "type": "boolean"
+          },
+          "item": {
+            "$ref": "#/components/schemas/ReviewItem"
+          },
+          "status": {
+            "enum": [
+              "open",
+              "decided",
+              "stale",
+              "escalated"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item",
+          "status"
+        ],
+        "title": "ReviewQueueEntry",
+        "type": "object"
+      },
+      "SensorWindowPointer": {
+        "additionalProperties": false,
+        "properties": {
+          "channels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "end": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "End",
+            "type": "string"
+          },
+          "envelope_id": {
+            "anyOf": [
+              {
+                "pattern": "^env_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Envelope Id"
+          },
+          "expected_points": {
+            "minimum": 0.0,
+            "title": "Expected Points",
+            "type": "integer"
+          },
+          "granularity": {
+            "enum": [
+              "hour",
+              "shift",
+              "day"
+            ],
+            "title": "Granularity",
+            "type": "string"
+          },
+          "kind": {
+            "const": "sensor_window",
+            "default": "sensor_window",
+            "title": "Kind",
+            "type": "string"
+          },
+          "n_points": {
+            "minimum": 0.0,
+            "title": "N Points",
+            "type": "integer"
+          },
+          "partition_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Partition Sha256",
+            "type": "string"
+          },
+          "series_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$",
+            "title": "Series Id",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "start": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Start",
+            "type": "string"
+          },
+          "statistic": {
+            "title": "Statistic",
+            "type": "string"
+          },
+          "window_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Window Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "series_id",
+          "partition_sha256",
+          "channels",
+          "start",
+          "end",
+          "n_points",
+          "expected_points",
+          "statistic",
+          "granularity",
+          "window_sha256"
+        ],
+        "title": "SensorWindowPointer",
+        "type": "object"
+      },
+      "Source": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "coverage_period": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CoveragePeriod"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "derived_from_sources": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+              "type": "string"
+            },
+            "title": "Derived From Sources",
+            "type": "array"
+          },
+          "held_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Held Reason"
+          },
+          "ingested_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+            "title": "Ingested At",
+            "type": "string"
+          },
+          "mime": {
+            "title": "Mime",
+            "type": "string"
+          },
+          "modality": {
+            "enum": [
+              "text",
+              "table",
+              "image",
+              "sensor"
+            ],
+            "title": "Modality",
+            "type": "string"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "reliability": {
+            "$ref": "#/components/schemas/Reliability"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size": {
+            "minimum": 0.0,
+            "title": "Size",
+            "type": "integer"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source_id",
+          "case_id",
+          "modality",
+          "sha256",
+          "origin",
+          "ingested_at",
+          "synthetic",
+          "mime",
+          "size"
+        ],
+        "title": "Source",
+        "type": "object"
+      },
+      "SourceUploaded": {
+        "additionalProperties": false,
+        "properties": {
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "sha256"
+        ],
+        "title": "SourceUploaded",
+        "type": "object"
+      },
+      "Story": {
+        "additionalProperties": false,
+        "description": "Five-step story. Numbers in `text` are computed, never typed (promise 8).",
+        "properties": {
+          "headline_outcome": {
+            "anyOf": [
+              {
+                "enum": [
+                  "agree",
+                  "disagree",
+                  "cant_compare",
+                  "cant_tell"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline Outcome"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StoryStep"
+            },
+            "title": "Steps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "steps"
+        ],
+        "title": "Story",
+        "type": "object"
+      },
+      "StoryStep": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_ids": {
+            "items": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Claim Ids",
+            "type": "array"
+          },
+          "comparison_ids": {
+            "items": {
+              "pattern": "^cmp_[0-9a-f]{24}$",
+              "type": "string"
+            },
+            "title": "Comparison Ids",
+            "type": "array"
+          },
+          "n": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "N",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "n",
+          "title",
+          "text"
+        ],
+        "title": "StoryStep",
+        "type": "object"
+      },
+      "Subject": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/Candidate"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "link_status": {
+            "enum": [
+              "resolved",
+              "ambiguous",
+              "unresolved"
+            ],
+            "title": "Link Status",
+            "type": "string"
+          },
+          "mention": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mention"
+          },
+          "mention_key": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MentionKey"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "link_status"
+        ],
+        "title": "Subject",
+        "type": "object"
+      },
+      "TableCellPointer": {
+        "additionalProperties": false,
+        "properties": {
+          "column": {
+            "title": "Column",
+            "type": "string"
+          },
+          "kind": {
+            "const": "table_cell",
+            "default": "table_cell",
+            "title": "Kind",
+            "type": "string"
+          },
+          "raw_value": {
+            "title": "Raw Value",
+            "type": "string"
+          },
+          "row": {
+            "minimum": 0.0,
+            "title": "Row",
+            "type": "integer"
+          },
+          "row_byte_offset": {
+            "minimum": 0.0,
+            "title": "Row Byte Offset",
+            "type": "integer"
+          },
+          "row_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Row Sha256",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "sheet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sheet"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "sha256",
+          "row",
+          "column",
+          "raw_value",
+          "row_sha256",
+          "row_byte_offset"
+        ],
+        "title": "TableCellPointer",
+        "type": "object"
+      },
+      "Temporal": {
+        "additionalProperties": false,
+        "properties": {
+          "observed_time": {
+            "$ref": "#/components/schemas/ObservedTime"
+          },
+          "timezone_original": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone Original"
+          },
+          "valid_time": {
+            "discriminator": {
+              "mapping": {
+                "day": "#/components/schemas/Interval",
+                "hour": "#/components/schemas/Interval",
+                "shift": "#/components/schemas/Interval",
+                "unknown": "#/components/schemas/UnknownTime"
+              },
+              "propertyName": "granularity"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Interval"
+              },
+              {
+                "$ref": "#/components/schemas/UnknownTime"
+              }
+            ],
+            "title": "Valid Time"
+          }
+        },
+        "required": [
+          "valid_time",
+          "observed_time"
+        ],
+        "title": "Temporal",
+        "type": "object"
+      },
+      "TextSpanPointer": {
+        "additionalProperties": false,
+        "properties": {
+          "char_end": {
+            "minimum": 0.0,
+            "title": "Char End",
+            "type": "integer"
+          },
+          "char_start": {
+            "minimum": 0.0,
+            "title": "Char Start",
+            "type": "integer"
+          },
+          "kind": {
+            "const": "text_span",
+            "default": "text_span",
+            "title": "Kind",
+            "type": "string"
+          },
+          "line": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line"
+          },
+          "line_rects_pt": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Rect"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Rects Pt"
+          },
+          "line_rects_px": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/RectPx"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Rects Px"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "page_text_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Page Text Sha256",
+            "type": "string"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "quote_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Quote Sha256",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "text_canon_version": {
+            "title": "Text Canon Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "sha256",
+          "page_text_sha256",
+          "text_canon_version",
+          "char_start",
+          "char_end",
+          "quote",
+          "quote_sha256"
+        ],
+        "title": "TextSpanPointer",
+        "type": "object"
+      },
+      "TimelineEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "attribute": {
+            "title": "Attribute",
+            "type": "string"
+          },
+          "claim_id": {
+            "pattern": "^clm_[0-9a-f]{24}$",
+            "title": "Claim Id",
+            "type": "string"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "string"
+          },
+          "granularity": {
+            "enum": [
+              "hour",
+              "shift",
+              "day",
+              "unknown"
+            ],
+            "title": "Granularity",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "modality": {
+            "enum": [
+              "text",
+              "table",
+              "image",
+              "sensor",
+              "decision"
+            ],
+            "title": "Modality",
+            "type": "string"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          }
+        },
+        "required": [
+          "entry_id",
+          "claim_id",
+          "granularity",
+          "attribute",
+          "modality",
+          "label"
+        ],
+        "title": "TimelineEntry",
+        "type": "object"
+      },
+      "UnknownTime": {
+        "additionalProperties": false,
+        "description": "No document date. Deliberately has no bounds (file mtime is never used).",
+        "properties": {
+          "granularity": {
+            "const": "unknown",
+            "default": "unknown",
+            "title": "Granularity",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "UnknownTime",
+        "type": "object"
+      },
+      "VersionManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "manifest",
+            "default": "manifest",
+            "title": "Kind",
+            "type": "string"
+          },
+          "manifest_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Manifest Hash",
+            "type": "string"
+          },
+          "version": {
+            "$ref": "#/components/schemas/CaseVersion"
+          }
+        },
+        "required": [
+          "version",
+          "manifest_hash"
+        ],
+        "title": "VersionManifest",
+        "type": "object"
+      },
+      "VersionRecords": {
+        "additionalProperties": false,
+        "properties": {
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimRecord"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonRecord"
+            },
+            "title": "Comparisons",
+            "type": "array"
+          },
+          "conflicts": {
+            "items": {
+              "$ref": "#/components/schemas/ConflictRecord"
+            },
+            "title": "Conflicts",
+            "type": "array"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/Decision"
+            },
+            "title": "Decisions",
+            "type": "array"
+          },
+          "envelopes": {
+            "items": {
+              "$ref": "#/components/schemas/Envelope"
+            },
+            "title": "Envelopes",
+            "type": "array"
+          },
+          "review_items": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewItem"
+            },
+            "title": "Review Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "claims",
+          "comparisons",
+          "conflicts",
+          "envelopes",
+          "review_items",
+          "decisions"
+        ],
+        "title": "VersionRecords",
+        "type": "object"
+      },
+      "Views": {
+        "additionalProperties": false,
+        "properties": {
+          "review": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewQueueEntry"
+            },
+            "title": "Review",
+            "type": "array"
+          },
+          "state": {
+            "$ref": "#/components/schemas/CaseState"
+          },
+          "story": {
+            "$ref": "#/components/schemas/Story"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "state",
+          "story",
+          "timeline",
+          "review"
+        ],
+        "title": "Views",
+        "type": "object"
+      },
+      "Wilson": {
+        "additionalProperties": false,
+        "description": "Proportion with a Wilson 95% interval.",
+        "properties": {
+          "lower": {
+            "title": "Lower",
+            "type": "number"
+          },
+          "n": {
+            "minimum": 0.0,
+            "title": "N",
+            "type": "integer"
+          },
+          "point": {
+            "title": "Point",
+            "type": "number"
+          },
+          "upper": {
+            "title": "Upper",
+            "type": "number"
+          }
+        },
+        "required": [
+          "point",
+          "lower",
+          "upper",
+          "n"
+        ],
+        "title": "Wilson",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "TRACE contract (contracts-v1). Errors are RFC 9457 problem+json.",
+    "title": "TRACE API",
+    "version": "1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "CSRF header + JSON body, login included. Cache-Control: no-store.",
+        "operationId": "login",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/cases": {
+      "get": {
+        "operationId": "listCases",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "List Cases",
+        "tags": [
+          "cases"
+        ]
+      },
+      "post": {
+        "description": "Role: ingestor.",
+        "operationId": "createCase",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Case"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Create Case",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/build": {
+      "post": {
+        "description": "Role: ingestor. Runs in a killable child process.",
+        "operationId": "startBuild",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "409": {
+            "description": "build-in-progress (Retry-After: 5)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Start Build",
+        "tags": [
+          "builds"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/builds/{bid}": {
+      "get": {
+        "operationId": "getBuild",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bid",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Bid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Build",
+        "tags": [
+          "builds"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/claims/{claim_id}/recheck": {
+      "post": {
+        "operationId": "recheckClaim",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecheckResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "429": {
+            "description": "rate-limited"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Recheck",
+        "tags": [
+          "claims"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/latest": {
+      "get": {
+        "operationId": "latestVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "307": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Latestversion"
+                }
+              }
+            },
+            "description": "Redirect to the latest versioned path (no-store)"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Latest",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/review/{rid}/decision": {
+      "post": {
+        "description": "Role: reviewer (senior_reviewer to supersede). Covers conflict_explain and escalate.",
+        "operationId": "decide",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rid",
+            "required": true,
+            "schema": {
+              "pattern": "^rv_[0-9a-f]{24}$",
+              "title": "Rid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "409": {
+            "description": "already-decided | evidence-changed | build-in-progress"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Decide",
+        "tags": [
+          "review"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/sources": {
+      "post": {
+        "description": "Role: ingestor. Streaming caps (25 MB documents, 200 MB telemetry) are enforced in ASGI\nmiddleware before the body is read; magic-byte allowlist PDF, PNG, JPEG, CSV, TXT, MD.",
+        "operationId": "uploadSource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_uploadSource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceUploaded"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Upload Source",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/sources/{sid}/original": {
+      "get": {
+        "description": "Served as attachment, octet-stream, nosniff, CSP sandbox, CORP same-origin.",
+        "operationId": "downloadOriginal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "sid",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+              "title": "Sid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Downloadoriginal"
+                }
+              },
+              "application/octet-stream": {}
+            },
+            "description": "Original bytes"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Download Original",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/claims": {
+      "get": {
+        "operationId": "listClaims",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "modality",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "text",
+                    "table",
+                    "image",
+                    "sensor",
+                    "decision"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Modality"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^(extracted|inferred)$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "entity",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimsPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "List Claims",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/claims/{claim_id}": {
+      "get": {
+        "operationId": "getClaim",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Claim",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/claims/{claim_id}/evidence": {
+      "get": {
+        "operationId": "getEvidence",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceRender"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Evidence",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/claims/{claim_id}/evidence/crop.png": {
+      "get": {
+        "operationId": "getEvidenceCropPng",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Getevidencecroppng"
+                }
+              },
+              "image/png": {}
+            },
+            "description": "Cached PNG"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "description": "render-missing: only pre-rendered pages and crops are served"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Evidence Crop",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/claims/{claim_id}/evidence/page.png": {
+      "get": {
+        "operationId": "getEvidencePagePng",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "pattern": "^clm_[0-9a-f]{24}$",
+              "title": "Claim Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Getevidencepagepng"
+                }
+              },
+              "image/png": {}
+            },
+            "description": "Cached PNG"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "description": "render-missing: only pre-rendered pages and crops are served"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Evidence Page",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/comparisons": {
+      "get": {
+        "operationId": "listComparisons",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonsPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "List Comparisons",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/conflicts": {
+      "get": {
+        "operationId": "listConflicts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictsPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "List Conflicts",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/entities/{eid}/envelope": {
+      "get": {
+        "operationId": "getEnvelope",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "eid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+              "title": "Eid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Envelope",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/integrity": {
+      "get": {
+        "description": "Verifies stored bytes against stored hashes and walks the chain.",
+        "operationId": "getIntegrity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrityResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Integrity",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/manifest": {
+      "get": {
+        "operationId": "getManifest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionManifest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Manifest",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/replay": {
+      "post": {
+        "description": "Role: evaluator. DB single-flight. Cache-Control: no-store.",
+        "operationId": "replayVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Replay",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/review": {
+      "get": {
+        "operationId": "getReviewQueue",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewQueueEntry"
+                  },
+                  "title": "Response Getreviewqueue",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Review",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/state": {
+      "get": {
+        "operationId": "getState",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get State",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/story": {
+      "get": {
+        "operationId": "getStory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Story",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/cases/{cid}/versions/{v}/timeline": {
+      "get": {
+        "operationId": "getTimeline",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cid",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+              "title": "Cid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "v",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "V",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TimelineEntry"
+                  },
+                  "title": "Response Gettimeline",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Timeline",
+        "tags": [
+          "versions"
+        ]
+      }
+    },
+    "/api/v1/eval/report": {
+      "get": {
+        "operationId": "getEvalReport",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvalReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Get Report",
+        "tags": [
+          "eval"
+        ]
+      }
+    },
+    "/api/v1/eval/run": {
+      "post": {
+        "operationId": "runEval",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-TRACE-CSRF",
+            "required": true,
+            "schema": {
+              "title": "X-Trace-Csrf",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvalRunAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Run Eval",
+        "tags": [
+          "eval"
+        ]
+      }
+    },
+    "/healthz": {
+      "get": {
+        "description": "Liveness. Always 200 while the process is up.",
+        "operationId": "healthz",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Healthz",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/readyz": {
+      "get": {
+        "description": "Readiness: DB writable, blob dir writable, Tesseract present, free disk > 1 GB.",
+        "operationId": "readyz",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not signed in"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Role not allowed"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown case or id (also for another case's id)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Contract stub: not implemented yet"
+          }
+        },
+        "summary": "Readyz",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

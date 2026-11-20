@@ -1,0 +1,61 @@
+{
+  "additionalProperties": false,
+  "description": "One LLM proposal. Never trusted: the 5-check verifier re-derives everything.",
+  "properties": {
+    "attribute": {
+      "title": "Attribute",
+      "type": "string"
+    },
+    "claim_class": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Claim Class"
+    },
+    "entity_mention": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entity Mention"
+    },
+    "quote": {
+      "title": "Quote",
+      "type": "string"
+    },
+    "unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unit"
+    },
+    "value": {
+      "title": "Value",
+      "type": "string"
+    }
+  },
+  "required": [
+    "quote",
+    "attribute",
+    "value"
+  ],
+  "title": "Proposal",
+  "type": "object"
+}

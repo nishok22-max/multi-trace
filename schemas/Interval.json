@@ -1,0 +1,37 @@
+{
+  "additionalProperties": false,
+  "description": "Half-open valid-time interval `[start, end)`.",
+  "properties": {
+    "end": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "End",
+      "type": "string"
+    },
+    "granularity": {
+      "enum": [
+        "hour",
+        "shift",
+        "day"
+      ],
+      "title": "Granularity",
+      "type": "string"
+    },
+    "resolved_from": {
+      "title": "Resolved From",
+      "type": "string"
+    },
+    "start": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Start",
+      "type": "string"
+    }
+  },
+  "required": [
+    "start",
+    "end",
+    "granularity",
+    "resolved_from"
+  ],
+  "title": "Interval",
+  "type": "object"
+}

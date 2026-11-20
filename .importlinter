@@ -1,0 +1,83 @@
+[importlinter]
+include_external_packages = True
+root_packages =
+    trace_core
+    trace_adapters
+    trace_api
+    trace_worker
+    trace_eval
+
+[importlinter:contract:core-independence]
+name = trace_core is independent of every other layer
+type = forbidden
+source_modules =
+    trace_core
+forbidden_modules =
+    trace_adapters
+    trace_api
+    trace_worker
+    trace_eval
+
+[importlinter:contract:core-forbidden-external]
+name = trace_core imports no I/O or network modules
+type = forbidden
+source_modules =
+    trace_core
+forbidden_modules =
+    sqlite3
+    pyarrow
+    pypdfium2
+    pytesseract
+    PIL
+    openai
+    httpx
+    socket
+    subprocess
+    requests
+allow_indirect_imports = True
+
+[importlinter:contract:layers]
+name = api -> worker -> adapters -> core
+type = layers
+layers =
+    trace_api
+    trace_worker
+    trace_adapters
+    trace_core
+
+[importlinter:contract:worker-not-api]
+name = trace_worker must not import trace_api
+type = forbidden
+source_modules =
+    trace_worker
+forbidden_modules =
+    trace_api
+
+[importlinter:contract:api-no-untrusted-decoding]
+name = trace_api never decodes untrusted files
+type = forbidden
+source_modules =
+    trace_api
+forbidden_modules =
+    pypdfium2
+    pytesseract
+    PIL
+    trace_adapters.pdfium_reader
+    trace_adapters.tesseract_ocr
+allow_indirect_imports = True
+
+[importlinter:contract:eval-not-api]
+name = trace_eval must not import trace_api
+type = forbidden
+source_modules =
+    trace_eval
+forbidden_modules =
+    trace_api
+
+[importlinter:contract:compare-not-read]
+name = trace_core.compare must not import trace_core.read
+type = forbidden
+source_modules =
+    trace_core.compare
+forbidden_modules =
+    trace_core.read

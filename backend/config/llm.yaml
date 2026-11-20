@@ -1,0 +1,8 @@
+# LLM/VLM are OFF by default (P1 opt-in). Model IDs come from env, never hard-coded.
+# (modes are quoted: bare off parses as boolean false in YAML 1.1)
+llm_mode: "off"
+vlm_mode: "off"
+text_model: null
+vision_model: null
+max_calls: 0                          # TODO(confirm): budget undocumented; 0 = no calls
+max_tokens: 0                         # TODO(confirm)

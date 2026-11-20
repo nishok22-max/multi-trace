@@ -1,0 +1,9 @@
+* text=auto eol=lf
+seed/** -text
+tests/**/fixtures/** -text
+backend/tests/**/fixtures/** -text
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.parquet binary

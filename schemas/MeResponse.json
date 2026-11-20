@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "role": {
+      "enum": [
+        "viewer",
+        "reviewer",
+        "senior_reviewer",
+        "ingestor",
+        "evaluator"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "user_id": {
+      "title": "User Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "display_name",
+    "role"
+  ],
+  "title": "MeResponse",
+  "type": "object"
+}

@@ -1,0 +1,259 @@
+{
+  "$defs": {
+    "CoveragePeriod": {
+      "additionalProperties": false,
+      "description": "Dates an event log is complete for (half-open, UTC).",
+      "properties": {
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "CoveragePeriod",
+      "type": "object"
+    },
+    "Reliability": {
+      "additionalProperties": false,
+      "description": "Beta prior on source reliability (PRD 9.2). Neutral prior is alpha = beta = 1.",
+      "properties": {
+        "alpha": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "beta": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Beta",
+          "type": "number"
+        }
+      },
+      "title": "Reliability",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "coverage_period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CoveragePeriod"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derived_from_sources": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "type": "string"
+          },
+          "title": "Derived From Sources",
+          "type": "array"
+        },
+        "held_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Held Reason"
+        },
+        "ingested_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Ingested At",
+          "type": "string"
+        },
+        "mime": {
+          "title": "Mime",
+          "type": "string"
+        },
+        "modality": {
+          "enum": [
+            "text",
+            "table",
+            "image",
+            "sensor"
+          ],
+          "title": "Modality",
+          "type": "string"
+        },
+        "origin": {
+          "title": "Origin",
+          "type": "string"
+        },
+        "reliability": {
+          "$ref": "#/$defs/Reliability"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size": {
+          "minimum": 0,
+          "title": "Size",
+          "type": "integer"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "synthetic": {
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source_id",
+        "case_id",
+        "modality",
+        "sha256",
+        "origin",
+        "ingested_at",
+        "synthetic",
+        "mime",
+        "size"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Unified Case State (PRD 9.1), reduced to ids. Entities, events, measurements and\nrelations are views over claims and are projected later (M2/M3).",
+  "properties": {
+    "case_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "claim_ids": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "comparison_ids": {
+      "items": {
+        "pattern": "^cmp_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Comparison Ids",
+      "type": "array"
+    },
+    "conflict_ids": {
+      "items": {
+        "pattern": "^cf_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Conflict Ids",
+      "type": "array"
+    },
+    "decision_ids": {
+      "items": {
+        "pattern": "^dec_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Decision Ids",
+      "type": "array"
+    },
+    "gap_claim_ids": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Gap Claim Ids",
+      "type": "array"
+    },
+    "manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Hash",
+      "type": "string"
+    },
+    "plant_tz": {
+      "title": "Plant Tz",
+      "type": "string"
+    },
+    "review_ids": {
+      "items": {
+        "pattern": "^rv_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Review Ids",
+      "type": "array"
+    },
+    "scope_entities": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+        "type": "string"
+      },
+      "title": "Scope Entities",
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "window_end": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Window End",
+      "type": "string"
+    },
+    "window_start": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Window Start",
+      "type": "string"
+    }
+  },
+  "required": [
+    "case_id",
+    "version",
+    "manifest_hash",
+    "plant_tz",
+    "scope_entities",
+    "window_start",
+    "window_end",
+    "sources",
+    "claim_ids",
+    "comparison_ids",
+    "conflict_ids",
+    "gap_claim_ids",
+    "decision_ids",
+    "review_ids"
+  ],
+  "title": "CaseState",
+  "type": "object"
+}

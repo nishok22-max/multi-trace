@@ -1,0 +1,36 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "canonical_unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Canonical Unit"
+    },
+    "dimension": {
+      "title": "Dimension",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "telemetry_sensor_native": {
+      "default": false,
+      "title": "Telemetry Sensor Native",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "dimension"
+  ],
+  "title": "AttributeDef",
+  "type": "object"
+}

@@ -1,0 +1,55 @@
+{
+  "$defs": {
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bbox": {
+      "$ref": "#/$defs/Rect"
+    },
+    "conf": {
+      "title": "Conf",
+      "type": "number"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "text",
+    "bbox",
+    "conf"
+  ],
+  "title": "OcrWord",
+  "type": "object"
+}

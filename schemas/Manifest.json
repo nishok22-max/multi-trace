@@ -1,0 +1,217 @@
+{
+  "$defs": {
+    "Case": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "entities": {
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+            "type": "string"
+          },
+          "title": "Entities",
+          "type": "array"
+        },
+        "plant_tz": {
+          "title": "Plant Tz",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "window_end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Window End",
+          "type": "string"
+        },
+        "window_start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Window Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "title",
+        "entities",
+        "window_start",
+        "window_end",
+        "plant_tz",
+        "created_at"
+      ],
+      "title": "Case",
+      "type": "object"
+    },
+    "CoveragePeriod": {
+      "additionalProperties": false,
+      "description": "Dates an event log is complete for (half-open, UTC).",
+      "properties": {
+        "end": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "CoveragePeriod",
+      "type": "object"
+    },
+    "Reliability": {
+      "additionalProperties": false,
+      "description": "Beta prior on source reliability (PRD 9.2). Neutral prior is alpha = beta = 1.",
+      "properties": {
+        "alpha": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "beta": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Beta",
+          "type": "number"
+        }
+      },
+      "title": "Reliability",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "coverage_period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CoveragePeriod"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derived_from_sources": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "type": "string"
+          },
+          "title": "Derived From Sources",
+          "type": "array"
+        },
+        "held_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Held Reason"
+        },
+        "ingested_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "title": "Ingested At",
+          "type": "string"
+        },
+        "mime": {
+          "title": "Mime",
+          "type": "string"
+        },
+        "modality": {
+          "enum": [
+            "text",
+            "table",
+            "image",
+            "sensor"
+          ],
+          "title": "Modality",
+          "type": "string"
+        },
+        "origin": {
+          "title": "Origin",
+          "type": "string"
+        },
+        "reliability": {
+          "$ref": "#/$defs/Reliability"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size": {
+          "minimum": 0,
+          "title": "Size",
+          "type": "integer"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "synthetic": {
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source_id",
+        "case_id",
+        "modality",
+        "sha256",
+        "origin",
+        "ingested_at",
+        "synthetic",
+        "mime",
+        "size"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Input to build_case: the case and its sources (including derived telemetry sources).",
+  "properties": {
+    "case": {
+      "$ref": "#/$defs/Case"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "case",
+    "sources"
+  ],
+  "title": "Manifest",
+  "type": "object"
+}

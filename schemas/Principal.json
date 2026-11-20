@@ -1,0 +1,20 @@
+{
+  "additionalProperties": false,
+  "description": "Identity from the session only (promise 9). MVP `iss` is \"local\".",
+  "properties": {
+    "iss": {
+      "title": "Iss",
+      "type": "string"
+    },
+    "sub": {
+      "title": "Sub",
+      "type": "string"
+    }
+  },
+  "required": [
+    "iss",
+    "sub"
+  ],
+  "title": "Principal",
+  "type": "object"
+}

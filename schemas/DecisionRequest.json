@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "EntityChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "entity",
+          "default": "entity",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_id"
+      ],
+      "title": "EntityChoice",
+      "type": "object"
+    },
+    "EscalateChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "escalate",
+          "default": "escalate",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "EscalateChoice",
+      "type": "object"
+    },
+    "ExplainChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "explanation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "type": {
+          "const": "explain",
+          "default": "explain",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "ExplainChoice",
+      "type": "object"
+    },
+    "ReadingChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "reading",
+          "default": "reading",
+          "title": "Type",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "accept",
+            "reject"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict"
+      ],
+      "title": "ReadingChoice",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "base_version": {
+      "minimum": 0,
+      "title": "Base Version",
+      "type": "integer"
+    },
+    "choice": {
+      "discriminator": {
+        "mapping": {
+          "entity": "#/$defs/EntityChoice",
+          "escalate": "#/$defs/EscalateChoice",
+          "explain": "#/$defs/ExplainChoice",
+          "reading": "#/$defs/ReadingChoice"
+        },
+        "propertyName": "type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EntityChoice"
+        },
+        {
+          "$ref": "#/$defs/ReadingChoice"
+        },
+        {
+          "$ref": "#/$defs/ExplainChoice"
+        },
+        {
+          "$ref": "#/$defs/EscalateChoice"
+        }
+      ],
+      "title": "Choice"
+    },
+    "reason": {
+      "minLength": 15,
+      "title": "Reason",
+      "type": "string"
+    },
+    "shown_evidence_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Shown Evidence Hash",
+      "type": "string"
+    },
+    "supersedes": {
+      "anyOf": [
+        {
+          "pattern": "^dec_[0-9a-f]{24}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes"
+    }
+  },
+  "required": [
+    "choice",
+    "reason",
+    "base_version",
+    "shown_evidence_hash"
+  ],
+  "title": "DecisionRequest",
+  "type": "object"
+}

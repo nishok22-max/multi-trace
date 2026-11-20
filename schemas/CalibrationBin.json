@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accuracy": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Accuracy"
+    },
+    "hi": {
+      "title": "Hi",
+      "type": "number"
+    },
+    "lo": {
+      "title": "Lo",
+      "type": "number"
+    },
+    "mean_confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mean Confidence"
+    },
+    "n": {
+      "minimum": 0,
+      "title": "N",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "lo",
+    "hi",
+    "n"
+  ],
+  "title": "CalibrationBin",
+  "type": "object"
+}

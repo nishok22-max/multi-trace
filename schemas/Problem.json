@@ -1,0 +1,74 @@
+{
+  "additionalProperties": false,
+  "description": "RFC 9457 problem+json. Bodies never carry exception text.",
+  "properties": {
+    "detail": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Detail"
+    },
+    "existing_decision_id": {
+      "anyOf": [
+        {
+          "pattern": "^dec_[0-9a-f]{24}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Existing Decision Id"
+    },
+    "instance": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Instance"
+    },
+    "retry_after": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retry After"
+    },
+    "status": {
+      "title": "Status",
+      "type": "integer"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "type": {
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "status"
+  ],
+  "title": "Problem",
+  "type": "object"
+}

@@ -1,0 +1,128 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trace"
+version = "0.0.0"
+description = "TRACE: Traceable Reasoning Across Cross-modal Evidence"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "fastapi>=0.115,<1.0",
+  "starlette>=0.40",
+  "uvicorn[standard]>=0.32,<1.0",
+  "pydantic>=2.9,<3",
+  "pydantic-settings>=2.6,<3",
+  "orjson>=3.10,<4",
+  "structlog>=24.4",
+  "pandas>=2.2,<3",
+  "pyarrow>=17,<22",
+  "numpy>=1.26,<3",
+  "pint>=0.24,<1",
+  "rapidfuzz>=3.10,<4",
+  "dateparser>=1.2,<2",
+  "python-dateutil>=2.9",
+  "tzdata>=2024.2",
+  "rfc8785>=0.1.4",
+  "pypdfium2>=4.30,<5",
+  "pytesseract>=0.3.13",
+  "Pillow>=11.0,<12",
+  "argon2-cffi>=23.1",
+  "python-multipart>=0.0.18",
+  "PyYAML>=6.0.2",
+]
+
+[project.optional-dependencies]
+# Not installed by default.
+llm = ["openai>=1.50,<2"]
+pilot = [
+  "psycopg[binary,pool]>=3.2",
+  "boto3>=1.35",
+  "authlib>=1.3",
+  "opentelemetry-sdk>=1.27",
+  "opentelemetry-instrumentation-fastapi>=0.48b0",
+  "prometheus-client>=0.21",
+]
+
+[project.scripts]
+trace-api = "trace_api.main:run"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-xdist>=3.6",
+  "pytest-cov>=5",
+  "pytest-socket>=0.7",
+  "hypothesis>=6.112",
+  "httpx>=0.27",
+  "mypy>=1.13",
+  "ruff>=0.7",
+  "import-linter>=2.1",
+  "pre-commit>=4.0",
+  "reportlab>=4.2",
+  "types-PyYAML",
+]
+eval = ["scikit-learn>=1.5,<2"]
+
+[tool.uv]
+default-groups = ["dev", "eval"]
+
+[tool.setuptools]
+packages = [
+  "trace_core",
+  "trace_adapters",
+  "trace_api",
+  "trace_worker",
+  "trace_eval",
+  "tools",
+]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "DTZ", "TID251"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"datetime.datetime.now".msg = "Use the Clock port (trace_core is pure)."
+"time.time".msg = "Use the Clock port (trace_core is pure)."
+"os.environ".msg = "No environment access in trace_core."
+"builtins.open".msg = "No I/O in trace_core."
+"requests".msg = "No network in trace_core."
+
+[tool.ruff.lint.per-file-ignores]
+# The bans above apply to trace_core only.
+"trace_adapters/**" = ["TID251"]
+"trace_api/**" = ["TID251"]
+"trace_worker/**" = ["TID251"]
+"trace_eval/**" = ["TID251"]
+"tools/**" = ["TID251", "S603", "S607", "S101"]
+"tests/**" = ["TID251", "S101", "S105", "S106"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["trace_core", "trace_api", "trace_worker"]
+python_version = "3.11"
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+# -------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "prop_*.py"]
+addopts = "--disable-socket --allow-unix-socket -ra"
+markers = [
+  "holdout: run only by make eval-holdout",
+  "perf: performance budgets (serial)",
+  "e2e: browser end-to-end",
+  "slow: slow tests",
+]

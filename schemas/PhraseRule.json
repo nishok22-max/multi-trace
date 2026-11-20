@@ -1,0 +1,52 @@
+{
+  "additionalProperties": false,
+  "description": "Qualitative phrase -> class, quantifier, attribute group, scope channels (PRD 10.4).",
+  "properties": {
+    "attribute_group": {
+      "title": "Attribute Group",
+      "type": "string"
+    },
+    "phrase": {
+      "title": "Phrase",
+      "type": "string"
+    },
+    "phrase_class": {
+      "title": "Phrase Class",
+      "type": "string"
+    },
+    "quantifier": {
+      "enum": [
+        "forall",
+        "exists"
+      ],
+      "title": "Quantifier",
+      "type": "string"
+    },
+    "scope_channels": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Scope Channels",
+      "type": "array"
+    },
+    "side": {
+      "default": "both",
+      "enum": [
+        "both",
+        "upper",
+        "lower"
+      ],
+      "title": "Side",
+      "type": "string"
+    }
+  },
+  "required": [
+    "phrase",
+    "phrase_class",
+    "quantifier",
+    "attribute_group",
+    "scope_channels"
+  ],
+  "title": "PhraseRule",
+  "type": "object"
+}

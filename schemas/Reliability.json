@@ -1,0 +1,20 @@
+{
+  "additionalProperties": false,
+  "description": "Beta prior on source reliability (PRD 9.2). Neutral prior is alpha = beta = 1.",
+  "properties": {
+    "alpha": {
+      "default": 1.0,
+      "exclusiveMinimum": 0,
+      "title": "Alpha",
+      "type": "number"
+    },
+    "beta": {
+      "default": 1.0,
+      "exclusiveMinimum": 0,
+      "title": "Beta",
+      "type": "number"
+    }
+  },
+  "title": "Reliability",
+  "type": "object"
+}

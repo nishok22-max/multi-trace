@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "description": "Pixel rectangle (integers).",
+  "properties": {
+    "h": {
+      "title": "H",
+      "type": "integer"
+    },
+    "w": {
+      "title": "W",
+      "type": "integer"
+    },
+    "x": {
+      "title": "X",
+      "type": "integer"
+    },
+    "y": {
+      "title": "Y",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "x",
+    "y",
+    "w",
+    "h"
+  ],
+  "title": "RectPx",
+  "type": "object"
+}

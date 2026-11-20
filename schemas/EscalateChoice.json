@@ -1,0 +1,13 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "const": "escalate",
+      "default": "escalate",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "title": "EscalateChoice",
+  "type": "object"
+}

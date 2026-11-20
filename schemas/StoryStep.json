@@ -1,0 +1,42 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_ids": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "comparison_ids": {
+      "items": {
+        "pattern": "^cmp_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Comparison Ids",
+      "type": "array"
+    },
+    "n": {
+      "maximum": 5,
+      "minimum": 1,
+      "title": "N",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "n",
+    "title",
+    "text"
+  ],
+  "title": "StoryStep",
+  "type": "object"
+}

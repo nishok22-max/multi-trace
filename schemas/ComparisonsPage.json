@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "ComparisonRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/GateCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        },
+        "claim_a": {
+          "pattern": "^clm_[0-9a-f]{24}$",
+          "title": "Claim A",
+          "type": "string"
+        },
+        "claim_b": {
+          "pattern": "^clm_[0-9a-f]{24}$",
+          "title": "Claim B",
+          "type": "string"
+        },
+        "comparison_id": {
+          "pattern": "^cmp_[0-9a-f]{24}$",
+          "title": "Comparison Id",
+          "type": "string"
+        },
+        "config_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Config Hash",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "agree",
+            "disagree",
+            "cant_compare",
+            "cant_tell"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "comparison_id",
+        "claim_a",
+        "claim_b",
+        "config_hash",
+        "checks",
+        "outcome",
+        "reason"
+      ],
+      "title": "ComparisonRecord",
+      "type": "object"
+    },
+    "GateCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "n": {
+          "maximum": 6,
+          "minimum": 1,
+          "title": "N",
+          "type": "integer"
+        },
+        "name": {
+          "enum": [
+            "same_entity",
+            "same_attribute",
+            "time_overlap",
+            "comparable_terms",
+            "data_both_sides",
+            "beyond_variation"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "pass": {
+          "title": "Pass",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "n",
+        "name",
+        "pass",
+        "detail"
+      ],
+      "title": "GateCheck",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "items": {
+        "$ref": "#/$defs/ComparisonRecord"
+      },
+      "title": "Items",
+      "type": "array"
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "title": "ComparisonsPage",
+  "type": "object"
+}

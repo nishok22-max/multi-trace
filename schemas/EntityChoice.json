@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "entity_id": {
+      "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+      "title": "Entity Id",
+      "type": "string"
+    },
+    "type": {
+      "const": "entity",
+      "default": "entity",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_id"
+  ],
+  "title": "EntityChoice",
+  "type": "object"
+}

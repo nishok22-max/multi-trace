@@ -1,0 +1,26 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "actual_manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Actual Manifest Hash",
+      "type": "string"
+    },
+    "expected_manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Manifest Hash",
+      "type": "string"
+    },
+    "match": {
+      "title": "Match",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "match",
+    "expected_manifest_hash",
+    "actual_manifest_hash"
+  ],
+  "title": "ReplayResult",
+  "type": "object"
+}

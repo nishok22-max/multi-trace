@@ -1,0 +1,92 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attribute": {
+      "title": "Attribute",
+      "type": "string"
+    },
+    "claim_id": {
+      "pattern": "^clm_[0-9a-f]{24}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "end": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "End"
+    },
+    "entity_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entity Id"
+    },
+    "entry_id": {
+      "title": "Entry Id",
+      "type": "string"
+    },
+    "granularity": {
+      "enum": [
+        "hour",
+        "shift",
+        "day",
+        "unknown"
+      ],
+      "title": "Granularity",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "modality": {
+      "enum": [
+        "text",
+        "table",
+        "image",
+        "sensor",
+        "decision"
+      ],
+      "title": "Modality",
+      "type": "string"
+    },
+    "start": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Start"
+    }
+  },
+  "required": [
+    "entry_id",
+    "claim_id",
+    "granularity",
+    "attribute",
+    "modality",
+    "label"
+  ],
+  "title": "TimelineEntry",
+  "type": "object"
+}

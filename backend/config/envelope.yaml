@@ -1,0 +1,10 @@
+# Operating envelope (PRD 10.3, 10.6). All values are documented defaults.
+alpha: 0.05
+margin_days: 3                        # quiet day: no error/maint/failure within +-3 days
+training_policy: all_except_case_window
+flatline_epsilon_factor: 0.000001     # eps = 1e-6 * s_c (PRD 10.6)
+flatline_min_hours: 6                 # PRD 10.6
+min_quiet_days_own_t_star: 19         # n < 19: T* pooled across the model (PRD 10.3)
+min_quiet_days_own_scale: 10          # n < 10: med and s_c also from the model level
+drift_ratio: 0.10                     # review item when T* moves > 10% between versions
+thin_history_factor: 0.8              # history_factor for thin history (PRD 10.8)

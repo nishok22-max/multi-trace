@@ -1,0 +1,101 @@
+{
+  "$defs": {
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box: x, y, width, height (points or pixels depending on context).",
+      "properties": {
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bbox": {
+      "$ref": "#/$defs/Rect"
+    },
+    "coord_space": {
+      "const": "oriented_px",
+      "default": "oriented_px",
+      "title": "Coord Space",
+      "type": "string"
+    },
+    "crop_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Crop Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "image_region",
+      "default": "image_region",
+      "title": "Kind",
+      "type": "string"
+    },
+    "read_text": {
+      "title": "Read Text",
+      "type": "string"
+    },
+    "reader": {
+      "enum": [
+        "ocr",
+        "vlm"
+      ],
+      "title": "Reader",
+      "type": "string"
+    },
+    "reread_text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reread Text"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "source_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "title": "Source Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "sha256",
+    "bbox",
+    "reader",
+    "read_text",
+    "crop_sha256"
+  ],
+  "title": "ImageRegionPointer",
+  "type": "object"
+}

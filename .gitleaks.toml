@@ -1,0 +1,10 @@
+title = "TRACE gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "groq-api-key"
+description = "Groq API key"
+regex = '''gsk_[A-Za-z0-9]{20,}'''
+tags = ["key", "groq"]

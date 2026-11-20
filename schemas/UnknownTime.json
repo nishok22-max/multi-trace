@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "description": "No document date. Deliberately has no bounds (file mtime is never used).",
+  "properties": {
+    "granularity": {
+      "const": "unknown",
+      "default": "unknown",
+      "title": "Granularity",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "reason"
+  ],
+  "title": "UnknownTime",
+  "type": "object"
+}

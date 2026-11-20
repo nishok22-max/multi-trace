@@ -1,0 +1,26 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": {
+      "pattern": "^dec_[0-9a-f]{24}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Hash",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "decision_id",
+    "version",
+    "manifest_hash"
+  ],
+  "title": "DecisionResponse",
+  "type": "object"
+}

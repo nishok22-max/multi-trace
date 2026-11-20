@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "cadence_hours": {
+      "minimum": 1,
+      "title": "Cadence Hours",
+      "type": "integer"
+    },
+    "delta_link": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Delta Link",
+      "type": "number"
+    },
+    "image_extractor_prior": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Image Extractor Prior",
+      "type": "number"
+    },
+    "lambda_corroboration": {
+      "minimum": 0,
+      "title": "Lambda Corroboration",
+      "type": "number"
+    },
+    "min_coverage": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Min Coverage",
+      "type": "number"
+    },
+    "tau_link": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Tau Link",
+      "type": "number"
+    },
+    "tau_review": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Tau Review",
+      "type": "number"
+    },
+    "text_extractor_prior": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Text Extractor Prior",
+      "type": "number"
+    }
+  },
+  "required": [
+    "tau_link",
+    "delta_link",
+    "tau_review",
+    "lambda_corroboration",
+    "min_coverage",
+    "cadence_hours",
+    "image_extractor_prior",
+    "text_extractor_prior"
+  ],
+  "title": "GateConfig",
+  "type": "object"
+}

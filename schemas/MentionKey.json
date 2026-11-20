@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "description": "Stable key `(source_sha256, locator)` that decisions attach to.",
+  "properties": {
+    "locator": {
+      "title": "Locator",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_sha256",
+    "locator"
+  ],
+  "title": "MentionKey",
+  "type": "object"
+}

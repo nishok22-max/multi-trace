@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "detail": {
+      "title": "Detail",
+      "type": "string"
+    },
+    "n": {
+      "maximum": 6,
+      "minimum": 1,
+      "title": "N",
+      "type": "integer"
+    },
+    "name": {
+      "enum": [
+        "same_entity",
+        "same_attribute",
+        "time_overlap",
+        "comparable_terms",
+        "data_both_sides",
+        "beyond_variation"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "pass": {
+      "title": "Pass",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "n",
+    "name",
+    "pass",
+    "detail"
+  ],
+  "title": "GateCheck",
+  "type": "object"
+}

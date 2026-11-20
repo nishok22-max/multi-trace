@@ -1,0 +1,99 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "channels": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Channels",
+      "type": "array"
+    },
+    "end": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "End",
+      "type": "string"
+    },
+    "envelope_id": {
+      "anyOf": [
+        {
+          "pattern": "^env_[0-9a-f]{24}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Envelope Id"
+    },
+    "expected_points": {
+      "minimum": 0,
+      "title": "Expected Points",
+      "type": "integer"
+    },
+    "granularity": {
+      "enum": [
+        "hour",
+        "shift",
+        "day"
+      ],
+      "title": "Granularity",
+      "type": "string"
+    },
+    "kind": {
+      "const": "sensor_window",
+      "default": "sensor_window",
+      "title": "Kind",
+      "type": "string"
+    },
+    "n_points": {
+      "minimum": 0,
+      "title": "N Points",
+      "type": "integer"
+    },
+    "partition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Partition Sha256",
+      "type": "string"
+    },
+    "series_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$",
+      "title": "Series Id",
+      "type": "string"
+    },
+    "source_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "title": "Source Id",
+      "type": "string"
+    },
+    "start": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Start",
+      "type": "string"
+    },
+    "statistic": {
+      "title": "Statistic",
+      "type": "string"
+    },
+    "window_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Window Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "series_id",
+    "partition_sha256",
+    "channels",
+    "start",
+    "end",
+    "n_points",
+    "expected_points",
+    "statistic",
+    "granularity",
+    "window_sha256"
+  ],
+  "title": "SensorWindowPointer",
+  "type": "object"
+}

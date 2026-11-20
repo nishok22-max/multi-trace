@@ -1,0 +1,34 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_sha_ok": {
+      "title": "Artifact Sha Ok",
+      "type": "boolean"
+    },
+    "input_sha_ok": {
+      "title": "Input Sha Ok",
+      "type": "boolean"
+    },
+    "match": {
+      "title": "Match",
+      "type": "boolean"
+    },
+    "source_sha_ok": {
+      "title": "Source Sha Ok",
+      "type": "boolean"
+    },
+    "value_ok": {
+      "title": "Value Ok",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "match",
+    "source_sha_ok",
+    "artifact_sha_ok",
+    "input_sha_ok",
+    "value_ok"
+  ],
+  "title": "RecheckResult",
+  "type": "object"
+}

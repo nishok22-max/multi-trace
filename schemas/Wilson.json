@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "description": "Proportion with a Wilson 95% interval.",
+  "properties": {
+    "lower": {
+      "title": "Lower",
+      "type": "number"
+    },
+    "n": {
+      "minimum": 0,
+      "title": "N",
+      "type": "integer"
+    },
+    "point": {
+      "title": "Point",
+      "type": "number"
+    },
+    "upper": {
+      "title": "Upper",
+      "type": "number"
+    }
+  },
+  "required": [
+    "point",
+    "lower",
+    "upper",
+    "n"
+  ],
+  "title": "Wilson",
+  "type": "object"
+}

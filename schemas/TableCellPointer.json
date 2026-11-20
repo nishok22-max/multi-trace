@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "column": {
+      "title": "Column",
+      "type": "string"
+    },
+    "kind": {
+      "const": "table_cell",
+      "default": "table_cell",
+      "title": "Kind",
+      "type": "string"
+    },
+    "raw_value": {
+      "title": "Raw Value",
+      "type": "string"
+    },
+    "row": {
+      "minimum": 0,
+      "title": "Row",
+      "type": "integer"
+    },
+    "row_byte_offset": {
+      "minimum": 0,
+      "title": "Row Byte Offset",
+      "type": "integer"
+    },
+    "row_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Row Sha256",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "sheet": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sheet"
+    },
+    "source_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "title": "Source Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "sha256",
+    "row",
+    "column",
+    "raw_value",
+    "row_sha256",
+    "row_byte_offset"
+  ],
+  "title": "TableCellPointer",
+  "type": "object"
+}

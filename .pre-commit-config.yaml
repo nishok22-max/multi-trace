@@ -1,0 +1,46 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: [--config, backend/pyproject.toml]
+      - id: ruff-format
+        args: [--config, backend/pyproject.toml]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        args: [--config, .gitleaks.toml]
+  - repo: local
+    hooks:
+      - id: mypy-core
+        name: mypy (core, api, worker)
+        entry: uv run --directory backend mypy
+        language: system
+        pass_filenames: false
+        files: ^backend/(trace_core|trace_api|trace_worker)/
+      - id: import-linter
+        name: import-linter
+        entry: uv run --directory backend lint-imports --config ../.importlinter
+        language: system
+        pass_filenames: false
+        files: ^(backend/trace_|\.importlinter)
+      - id: check-no-mean
+        name: check_no_mean
+        entry: uv run --directory backend python -m tools.check_no_mean
+        language: system
+        pass_filenames: false
+        files: ^backend/(trace_core|trace_adapters)/
+      - id: contracts-check
+        name: contracts-check (schemas + openapi + schema.d.ts)
+        entry: uv run --directory backend python -m tools.task contracts-check
+        language: system
+        pass_filenames: false
+        files: ^(backend/(trace_core/models|trace_api)/|schemas/)

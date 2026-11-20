@@ -1,0 +1,37 @@
+{
+  "additionalProperties": false,
+  "description": "Contents of `version_claims` for one version.",
+  "properties": {
+    "claim_ids": {
+      "items": {
+        "pattern": "^clm_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "comparison_ids": {
+      "items": {
+        "pattern": "^cmp_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Comparison Ids",
+      "type": "array"
+    },
+    "conflict_ids": {
+      "items": {
+        "pattern": "^cf_[0-9a-f]{24}$",
+        "type": "string"
+      },
+      "title": "Conflict Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "claim_ids",
+    "comparison_ids",
+    "conflict_ids"
+  ],
+  "title": "VersionMembers",
+  "type": "object"
+}

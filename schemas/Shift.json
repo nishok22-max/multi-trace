@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "end_hour": {
+      "maximum": 24,
+      "minimum": 0,
+      "title": "End Hour",
+      "type": "integer"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "start_hour": {
+      "maximum": 24,
+      "minimum": 0,
+      "title": "Start Hour",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "name",
+    "start_hour",
+    "end_hour"
+  ],
+  "title": "Shift",
+  "type": "object"
+}

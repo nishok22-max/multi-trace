@@ -1,0 +1,46 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "entities": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*:[A-Za-z0-9][A-Za-z0-9_.-]*(/[A-Za-z0-9_.-]+)*$",
+        "type": "string"
+      },
+      "title": "Entities",
+      "type": "array"
+    },
+    "plant_tz": {
+      "title": "Plant Tz",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "window_end": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Window End",
+      "type": "string"
+    },
+    "window_start": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "title": "Window Start",
+      "type": "string"
+    }
+  },
+  "required": [
+    "case_id",
+    "title",
+    "entities",
+    "window_start",
+    "window_end",
+    "plant_tz"
+  ],
+  "title": "CaseCreate",
+  "type": "object"
+}

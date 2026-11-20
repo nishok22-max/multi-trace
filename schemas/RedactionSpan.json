@@ -1,0 +1,29 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "original_end": {
+      "title": "Original End",
+      "type": "integer"
+    },
+    "original_start": {
+      "title": "Original Start",
+      "type": "integer"
+    },
+    "redacted_end": {
+      "title": "Redacted End",
+      "type": "integer"
+    },
+    "redacted_start": {
+      "title": "Redacted Start",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "redacted_start",
+    "redacted_end",
+    "original_start",
+    "original_end"
+  ],
+  "title": "RedactionSpan",
+  "type": "object"
+}

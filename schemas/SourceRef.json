@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "source_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "title": "Source Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "sha256"
+  ],
+  "title": "SourceRef",
+  "type": "object"
+}
