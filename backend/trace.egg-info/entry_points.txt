@@ -1,2 +1,0 @@
-[console_scripts]
-trace-api = trace_api.main:run
