@@ -1,0 +1,9 @@
+# The M2 walking-skeleton case. The machine-day was chosen by the h0 reality check
+# (data/h0_report.json, decision "another_real_day" pinned in backend/config/case.yaml):
+# the real M-21 on 14 Mar 2015 sits inside its envelope, M-21 on 5 Aug 2015 does not.
+case_id: case-m21-2015-08-05
+title: Machine 21, 5 August 2015
+entity_id: "machine:21"
+machine: 21
+day: "2015-08-05"
+report: authored/reports/report_0805.pdf

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
+from trace_api.problems import register_handlers
 from trace_api.routers import auth, builds, cases, claims, health, review, sources, versions
 from trace_api.routers import eval as eval_router
 
@@ -23,6 +24,7 @@ def build_contract_app() -> FastAPI:
         docs_url=None,
         redoc_url=None,
     )
+    register_handlers(app)
     app.include_router(health.router)  # probes are not versioned
     for module in (auth, cases, sources, builds, versions, claims, review, eval_router):
         app.include_router(module.router, prefix=API_PREFIX)

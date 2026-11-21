@@ -5,9 +5,11 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 
-from trace_api.problems import not_implemented
+from trace_api.deps import AuthDep, StoreDep
+from trace_api.http import versioned
+from trace_api.problems import not_found, not_implemented
 from trace_api.routers._common import (
     ERRORS,
     Cid,
@@ -28,6 +30,7 @@ from trace_core.models.api_io import (
 )
 from trace_core.models.case import (
     CaseState,
+    CaseVersion,
     EvidenceRender,
     IntegrityResult,
     ReviewQueueEntry,
@@ -39,6 +42,14 @@ from trace_core.models.records import Envelope
 
 router = APIRouter(prefix="/cases/{cid}/versions/{v}", tags=["versions"])
 
+
+def _load(store: StoreDep, cid: str, v: int) -> CaseVersion:
+    version = store.get_version(cid, v)
+    if version is None:
+        raise not_found()
+    return version
+
+
 PNG = {
     **ERRORS,
     200: {"content": {"image/png": {}}, "description": "Cached PNG"},
@@ -47,33 +58,50 @@ PNG = {
 
 
 @router.get("/state", response_model=CaseState, responses=ERRORS, operation_id="getState")
-def get_state(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def get_state(cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep) -> object:
+    version = _load(store, cid, v)
+    return versioned(request, version, version.views.state)
 
 
 @router.get("/story", response_model=Story, responses=ERRORS, operation_id="getStory")
-def get_story(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def get_story(cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep) -> object:
+    version = _load(store, cid, v)
+    return versioned(request, version, version.views.story)
 
 
 @router.get(
     "/timeline", response_model=list[TimelineEntry], responses=ERRORS, operation_id="getTimeline"
 )
-def get_timeline(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def get_timeline(cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep) -> object:
+    version = _load(store, cid, v)
+    return versioned(request, version, version.views.timeline)
 
 
 @router.get("/claims", response_model=ClaimsPage, responses=ERRORS, operation_id="listClaims")
 def list_claims(
     cid: Cid,
     v: Version,
+    request: Request,
+    auth: AuthDep,
+    store: StoreDep,
     modality: Annotated[Modality | None, Query()] = None,
     type: Annotated[str | None, Query(pattern="^(extracted|inferred)$")] = None,  # noqa: A002
     entity: Annotated[str | None, Query(max_length=128)] = None,
     offset: Offset = 0,
     limit: Limit = 100,
 ) -> object:
-    return not_implemented()
+    version = _load(store, cid, v)
+    rows = [
+        c
+        for c in version.records.claims
+        if (modality is None or c.modality == modality)
+        and (type is None or c.claim_type == type)
+        and (entity is None or c.subject.entity_id == entity)
+    ]
+    page = ClaimsPage(
+        items=rows[offset : offset + limit], offset=offset, limit=limit, total=len(rows)
+    )
+    return versioned(request, version, page)
 
 
 @router.get(
@@ -82,15 +110,21 @@ def list_claims(
     responses=ERRORS,
     operation_id="listComparisons",
 )
-def list_comparisons(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def list_comparisons(
+    cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep
+) -> object:
+    version = _load(store, cid, v)
+    return versioned(request, version, ComparisonsPage(items=version.records.comparisons))
 
 
 @router.get(
     "/conflicts", response_model=ConflictsPage, responses=ERRORS, operation_id="listConflicts"
 )
-def list_conflicts(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def list_conflicts(
+    cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep
+) -> object:
+    version = _load(store, cid, v)
+    return versioned(request, version, ConflictsPage(items=version.records.conflicts))
 
 
 @router.get(
@@ -99,15 +133,19 @@ def list_conflicts(cid: Cid, v: Version) -> object:
     responses=ERRORS,
     operation_id="getReviewQueue",
 )
-def get_review(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def get_review(cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep) -> object:
+    version = _load(store, cid, v)
+    return versioned(request, version, version.views.review)
 
 
 @router.get(
     "/manifest", response_model=VersionManifest, responses=ERRORS, operation_id="getManifest"
 )
-def get_manifest(cid: Cid, v: Version) -> object:
-    return not_implemented()
+def get_manifest(cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep) -> object:
+    version = _load(store, cid, v)
+    return versioned(
+        request, version, VersionManifest(version=version, manifest_hash=version.manifest_hash)
+    )
 
 
 @router.get(
@@ -121,8 +159,21 @@ def get_integrity(cid: Cid, v: Version) -> object:
 @router.get(
     "/claims/{claim_id}", response_model=ClaimDetail, responses=ERRORS, operation_id="getClaim"
 )
-def get_claim(cid: Cid, v: Version, claim_id: ClaimPath) -> object:
-    return not_implemented()
+def get_claim(
+    cid: Cid, v: Version, claim_id: ClaimPath, request: Request, auth: AuthDep, store: StoreDep
+) -> object:
+    version = _load(store, cid, v)
+    claims = version.records.claims
+    claim = next((c for c in claims if c.claim_id == claim_id), None)
+    if claim is None:
+        raise not_found()  # another version's or another case's id is a 404
+    known = {c.claim_id for c in claims}
+    detail = ClaimDetail(
+        claim=claim,
+        parents=[p for p in claim.derived_from if p in known],
+        children=sorted(c.claim_id for c in claims if claim_id in c.derived_from),
+    )
+    return versioned(request, version, detail)
 
 
 @router.get(
@@ -155,8 +206,14 @@ def get_evidence_crop(cid: Cid, v: Version, claim_id: ClaimPath) -> object:
     responses=ERRORS,
     operation_id="getEnvelope",
 )
-def get_envelope(cid: Cid, v: Version, eid: Eid) -> object:
-    return not_implemented()
+def get_envelope(
+    cid: Cid, v: Version, eid: Eid, request: Request, auth: AuthDep, store: StoreDep
+) -> object:
+    version = _load(store, cid, v)
+    envelope = next((e for e in version.records.envelopes if e.machine == eid), None)
+    if envelope is None:
+        raise not_found()
+    return versioned(request, version, envelope)
 
 
 @router.post("/replay", response_model=ReplayResult, responses=ERRORS, operation_id="replayVersion")

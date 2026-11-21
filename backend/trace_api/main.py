@@ -1,4 +1,5 @@
-"""Minimal M0 app: /healthz plus the built frontend served on the same origin."""
+"""The TRACE app: every contract route (stubs replaced by real services from M2 on) plus the
+built frontend on the same origin. Always binds loopback."""
 
 from __future__ import annotations
 
@@ -8,19 +9,20 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from trace_api.contract_app import build_contract_app
+
 DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 
-app = FastAPI(title="TRACE", docs_url=None, redoc_url=None, openapi_url=None)
+
+def create_app() -> FastAPI:
+    app = build_contract_app()
+    # Mounted last so it never shadows API routes.
+    if DIST.is_dir():
+        app.mount("/", StaticFiles(directory=DIST, html=True), name="frontend")
+    return app
 
 
-@app.get("/healthz")
-def healthz() -> dict[str, str]:
-    return {"status": "ok"}
-
-
-# Mounted last so it never shadows API routes.
-if DIST.is_dir():
-    app.mount("/", StaticFiles(directory=DIST, html=True), name="frontend")
+app = create_app()
 
 
 def run() -> None:

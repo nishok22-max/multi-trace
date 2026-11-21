@@ -21,7 +21,7 @@ from pathlib import Path
 from trace_adapters.sqlite.migrate import apply_migrations
 from trace_core.canonical import record_hash
 from trace_core.errors import AlreadyDecided, AppendOnlyViolation, EvidenceChanged, IntegrityError
-from trace_core.models.case import Case, CaseVersion, VersionMembers
+from trace_core.models.case import Case, CaseVersion, Manifest, VersionMembers
 from trace_core.models.claims import ClaimRecord
 from trace_core.models.records import (
     ComparisonRecord,
@@ -352,6 +352,44 @@ class SqliteClaimStore:
         with self._read() as conn:
             rows = conn.execute(sql + " ORDER BY review_id, seq", args).fetchall()
         return [ReviewEvent.model_validate_json(r[0]) for r in rows]
+
+    # ------------------------------------------------------------- build support (M2)
+    def get_case(self, case_id: str) -> Case | None:
+        with self._read() as conn:
+            row = conn.execute("SELECT body FROM cases WHERE case_id = ?", (case_id,)).fetchone()
+        return None if row is None else Case.model_validate_json(row[0])
+
+    def list_cases(self) -> list[Case]:
+        with self._read() as conn:
+            rows = conn.execute("SELECT body FROM cases ORDER BY case_id").fetchall()
+        return [Case.model_validate_json(r[0]) for r in rows]
+
+    def load_manifest(self, case_id: str) -> Manifest | None:
+        case = self.get_case(case_id)
+        if case is None:
+            return None
+        with self._read() as conn:
+            rows = conn.execute(
+                "SELECT body FROM sources WHERE case_id = ? ORDER BY source_id", (case_id,)
+            ).fetchall()
+        return Manifest(case=case, sources=[Source.model_validate_json(r[0]) for r in rows])
+
+    def commit_build(self, version: CaseVersion, manifest: Manifest) -> None:
+        """Every record of a build and its version row in ONE transaction (all or nothing)."""
+        records = version.records
+        everything: list[AppendableRecord] = [
+            manifest.case,
+            *manifest.sources,
+            *records.claims,
+            *records.comparisons,
+            *records.conflicts,
+            *records.envelopes,
+            *records.review_items,
+        ]
+        with self._write() as conn:
+            for rec in everything:
+                self._insert(conn, version.case_id, rec)
+            self._put_version(conn, version, VersionMembers.from_records(records))
 
     # ------------------------------------------------------------------- decisions
     def commit_decision(

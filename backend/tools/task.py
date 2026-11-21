@@ -91,6 +91,14 @@ def contracts_check() -> int:
     return _py("tools.export_contracts", "--check")
 
 
+def demo_skeleton() -> int:
+    return _py("tools.demo_skeleton")
+
+
+def h0() -> int:
+    return _py("tools.h0_reality")
+
+
 def test_fast() -> int:
     return _py("pytest", "-q", "-m", "not holdout and not perf and not e2e and not slow")
 
@@ -135,7 +143,8 @@ TASKS: dict[str, Callable[[], int]] = {
     "test": test,
     "check": check,
     # Stubs (IMPLEMENTATION_PLAN B.2)
-    "h0": _stub("M0 (D-01)"),
+    "h0": h0,
+    "demo-skeleton": demo_skeleton,
     "contracts": contracts,
     "contracts-check": contracts_check,
     "golden": _stub("M3"),

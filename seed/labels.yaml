@@ -1,0 +1,6 @@
+# Display labels (PRD 9.3): aliases only, never an input to an ID or an outcome.
+# Key: stable claim key (trace_core.labels.label_key).
+labels:
+  "text|report-0805|p1|l4|operating_state": C-17
+  "sensor|machine:21|operating_state|day|2015-08-05": S-88
+  "sensor|machine:21|hourly_peak|2015-08-05": S-88.1

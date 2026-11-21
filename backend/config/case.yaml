@@ -4,4 +4,4 @@ calendar:
   working_weekdays: [0, 1, 2, 3, 4]   # TODO(confirm): Monday-Friday is an assumption, not documented
   holidays: []                        # TODO(confirm)
   escalation_working_days: 1          # PRD A6: unresolved items escalate after 1 working day
-h0_decision: null                     # set by task D-01 (real_day | another_real_day | planted)
+h0_decision: another_real_day       # D-01: real M-21 14 Mar does not disagree (T_D < T*); M-21 2015-08-05 does (data/h0_report.json)
