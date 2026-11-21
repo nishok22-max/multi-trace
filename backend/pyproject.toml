@@ -110,6 +110,11 @@ plugins = ["pydantic.mypy"]
 files = ["trace_core", "trace_api", "trace_worker"]
 python_version = "3.11"
 
+# Third-party libraries without type stubs. Our own code stays under strict.
+[[tool.mypy.overrides]]
+module = ["pyarrow.*", "pypdfium2.*"]
+ignore_missing_imports = true
+
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true

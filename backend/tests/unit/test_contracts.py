@@ -114,9 +114,11 @@ def test_conflict_schema_pins_averaged_false_and_no_status() -> None:
 @pytest.mark.parametrize(
     ("method", "path", "kwargs"),
     [
-        ("get", f"/api/v1/cases/{CID}/versions/1/state", {}),
-        ("get", f"/api/v1/cases/{CID}/versions/1/claims/{CLAIM}", {}),
-        ("post", f"/api/v1/cases/{CID}/build", {"headers": CSRF}),
+        # M2 implements latest, state, story, timeline, claims, comparisons, conflicts, review,
+        # manifest, claim detail, envelope and build; these remain contract stubs.
+        ("get", f"/api/v1/cases/{CID}/versions/1/integrity", {}),
+        ("get", f"/api/v1/cases/{CID}/versions/1/claims/{CLAIM}/evidence", {}),
+        ("post", f"/api/v1/cases/{CID}/versions/1/replay", {"headers": CSRF}),
         ("post", "/api/v1/eval/run", {"headers": CSRF}),
     ],
 )

@@ -17,3 +17,6 @@ __pycache__/
 htmlcov/
 .astro/
 *.egg-info/
+
+# Third-party dataset CSVs are placed by hand and never committed
+seed/dataset/*.csv
