@@ -43,7 +43,7 @@ test('login rejects a wrong password and the review queue lists the ambiguous me
   await expect(page.getByTestId('candidate').first()).toContainText('machine:21');
 });
 
-test('expert view filters and the evaluation page says when nothing was run', async ({ page }) => {
+test('expert view filters and the evaluation page shows the report', async ({ page }) => {
   await login(page, 'eve');
   await page.goto('/case/expert/?id=case-main');
   await expect(page.getByTestId('claim-row').first()).toBeVisible();
@@ -57,7 +57,7 @@ test('expert view filters and the evaluation page says when nothing was run', as
   await page.getByTestId('replay-button').click();
   await expect(page.getByTestId('replay-result')).toHaveAttribute('data-match', 'true', { timeout: 60_000 });
   await page.goto('/eval/');
-  await expect(page.getByTestId('no-report')).toBeVisible();
+  await expect(page.getByTestId('report')).toBeVisible();
 });
 
 test('NFR-10: the proof is one click and the decision form two clicks from the case page', async ({ page }) => {

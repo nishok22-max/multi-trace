@@ -182,8 +182,41 @@ def authz() -> int:
 
 
 def eval_dev() -> int:
-    """Dev-set evaluation protocol checks only. The holdout never runs here."""
-    return _pytest("tests/eval", "-m", "not holdout")
+    """Dev-set evaluation: the protocol tests, then a dev run written to data/eval_report.json.
+    The holdout never runs here."""
+    rc = _pytest("tests/eval", "-m", "not holdout")
+    out = REPO / "data" / "eval_report.json"
+    return rc or _py("trace_eval.runner", "--out", str(out))
+
+
+def eval_holdout() -> int:
+    """The one-shot holdout run. Refuses unless the tree is clean and the config, engine and
+    lockfile hashes are on the remote; it never pushes anything itself."""
+    from trace_eval.holdout import HOLDOUT_ENV, allowed, check_holdout, run_git
+
+    def git(args: list[str]) -> str:
+        return run_git(args, REPO)
+
+    last = {
+        "config": "backend/config",
+        "engine": "backend/trace_core",
+        "lockfile": "backend/uv.lock",
+    }
+    inputs = {
+        label: git(["log", "-1", "--format=%H", "--", path]).strip() for label, path in last.items()
+    }
+    pre = check_holdout(git, {k: v for k, v in inputs.items() if v})
+    for item in pre:
+        print(f"{'ok  ' if item.ok else 'FAIL'} {item.name}: {item.detail}")
+    if not allowed(pre):
+        print("refusing: the holdout may run only from a clean tree with the hashes pushed")
+        return 2
+    return _pytest("tests/eval", "-m", "holdout", env={HOLDOUT_ENV: "1"})
+
+
+def audit() -> int:
+    """One-shot audit; results go to docs/MVP_FREEZE_NOTES.md (offline by default)."""
+    return _py("tools.audit")
 
 
 def e2e() -> int:
@@ -234,8 +267,8 @@ TASKS: dict[str, Callable[[], int]] = {
     "demo": _stub("M3"),
     "replay-verify": _stub("M3"),
     "eval-dev": eval_dev,
-    "eval-holdout": _stub("M6"),
-    "audit": _stub("M5"),
+    "eval-holdout": eval_holdout,
+    "audit": audit,
     "anchor": _stub("M6"),
     "run-native": _stub("M2"),
 }

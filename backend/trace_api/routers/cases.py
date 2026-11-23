@@ -5,13 +5,22 @@ from __future__ import annotations
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
-from trace_api.deps import AuthDep, AuthRepoDep, SettingsDep, StoreDep
+from trace_adapters.clock import SystemClock
+from trace_api.deps import (
+    AuthDep,
+    AuthRepoDep,
+    SessionDep,
+    SettingsDep,
+    StoreDep,
+    require_role,
+)
 from trace_api.http import NO_STORE
-from trace_api.problems import not_found, not_implemented, unauthenticated
+from trace_api.problems import PROBLEM_BASE, ProblemError, not_found, unauthenticated
 from trace_api.routers._common import ERRORS, Cid, CsrfHeader
 from trace_api.security.sessions import COOKIE
 from trace_core.models.api_io import CaseCreate, CaseList
 from trace_core.models.case import Case
+from trace_core.normalise.time import fmt_utc
 
 router = APIRouter(prefix="/cases", tags=["cases"])
 
@@ -27,9 +36,31 @@ def list_cases(
 
 
 @router.post("", response_model=Case, status_code=201, responses=ERRORS, operation_id="createCase")
-def create_case(body: CaseCreate, x_trace_csrf: CsrfHeader) -> object:
+def create_case(
+    body: CaseCreate, x_trace_csrf: CsrfHeader, auth: SessionDep, store: StoreDep
+) -> object:
     """Role: ingestor."""
-    return not_implemented()
+    require_role(auth, "ingestor")
+    if store.get_case(body.case_id) is not None:
+        raise ProblemError(
+            409,
+            "Case already exists",
+            type_=PROBLEM_BASE + "append-only",
+            headers={"Cache-Control": NO_STORE},
+        )  # a case is append-only evidence: it is never replaced
+    case = Case(
+        case_id=body.case_id,
+        title=body.title,
+        entities=body.entities,
+        window_start=body.window_start,
+        window_end=body.window_end,
+        plant_tz=body.plant_tz,
+        created_at=fmt_utc(SystemClock().now_utc()),
+    )
+    store.append(case.case_id, [case])
+    return JSONResponse(
+        case.model_dump(mode="json"), status_code=201, headers={"Cache-Control": NO_STORE}
+    )
 
 
 @router.get(

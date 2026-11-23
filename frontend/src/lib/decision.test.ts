@@ -22,7 +22,7 @@ describe('reasonProblem', () => {
 
 describe('buildDecision', () => {
   it('never carries a reviewer and keeps the evidence hash it was shown', () => {
-    const body = buildDecision({ type: 'entity', entity_id: 'machine:21' }, '  a long enough reason here  ', 3, 'h'.repeat(64));
+    const body = buildDecision({ type: 'entity', entity_id: 'machine:21' }, '  a long enough reason here  ', 3, 'h'.repeat(2 ** 6));
     expect(Object.keys(body).sort()).toEqual(['base_version', 'choice', 'reason', 'shown_evidence_hash']);
     expect(body.reason).toBe('a long enough reason here');
     expect(body.base_version).toBe(3);

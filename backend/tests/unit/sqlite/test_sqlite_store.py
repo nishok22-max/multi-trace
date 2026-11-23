@@ -54,7 +54,14 @@ EVIDENCE_TABLES = [
     "version_claims",
     "extraction_cache",
 ]
-OPERATIONAL_TABLES = {"users", "sessions", "login_attempts", "builds", "schema_migrations"}
+OPERATIONAL_TABLES = {
+    "users",
+    "sessions",
+    "login_attempts",
+    "builds",
+    "eval_runs",
+    "schema_migrations",
+}
 
 
 def _full_store(tmp_path: Path):  # type: ignore[no-untyped-def]
@@ -293,6 +300,7 @@ def test_migrations_apply_once_and_detect_changes(tmp_path: Path) -> None:
         "002_append_only_triggers.sql",
         "003_indexes.sql",
         "004_status_views.sql",
+        "005_eval_runs.sql",
     ]
     assert apply_migrations(conn) == []
     copy = tmp_path / "migrations"

@@ -133,6 +133,14 @@ def _relative(claim: ClaimRecord, cfg: ConfigBundle) -> Interval | None:
     return day_interval(day, tz, "relative")
 
 
+def overlaps(a: Interval | UnknownTime, b: Interval | UnknownTime) -> bool:
+    """Half-open overlap: `max(startA, startB) < min(endA, endB)`. An unknown time has no bounds,
+    so it overlaps nothing (never "now", never "always")."""
+    if isinstance(a, UnknownTime) or isinstance(b, UnknownTime):
+        return False
+    return max(a.start, b.start) < min(a.end, b.end)
+
+
 def resolve_time(claims: list[ClaimRecord], cfg: ConfigBundle) -> list[ClaimRecord]:
     """Fill the valid time of text claims whose date is relative to the document date.
     Everything already dated, and everything without a document date, is left unchanged."""

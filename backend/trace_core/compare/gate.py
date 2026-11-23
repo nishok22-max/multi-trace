@@ -29,7 +29,7 @@ from trace_core.models.records import (
     Outcome,
 )
 from trace_core.models.time import Interval
-from trace_core.normalise.time import local_date
+from trace_core.normalise.time import local_date, overlaps
 from trace_core.stage_types import GateContext
 
 
@@ -319,7 +319,7 @@ def gate(a: ClaimRecord, b: ClaimRecord, ctx: GateContext) -> ComparisonRecord:
     if not isinstance(ta, Interval) or not isinstance(tb, Interval):
         checks.append(_check(3, "time_overlap", False, "time unknown on at least one side"))
         return _stop(a, b, ctx, checks, "cant_compare", "They can't be compared: time unknown")
-    overlap = max(ta.start, tb.start) < min(ta.end, tb.end)
+    overlap = overlaps(ta, tb)
     same_granularity = ta.granularity == tb.granularity
     if not (overlap and same_granularity):
         why = (
