@@ -4,8 +4,10 @@ Never imports `trace_api`. Decoders (pypdfium2) are imported lazily inside `run_
 merely importing this module is safe for the API process. The child calls `build_case` and
 commits every record in ONE transaction, then writes status and a heartbeat to the builds row.
 
-TODO(M3/A-08): RLIMIT_AS, self-deadline thread, parent-liveness pipe, killpg, startup sweep
-(`trace_worker.sweep`), per-stage timings.
+Guards (`trace_worker.child_guard`): self-deadline and parent-liveness watch are started first, so
+a runaway or orphaned child ends itself. The parent kills the whole process tree on timeout and
+sweeps stale builds at start (`trace_worker.sweep`).
+TODO(M3/A-08): RLIMIT_AS (needs the measured peak VM), per-stage timings.
 """
 
 from __future__ import annotations
@@ -16,6 +18,7 @@ import time
 from dataclasses import dataclass
 
 HEARTBEAT_SECONDS = 5.0
+SELF_DEADLINE_SECONDS = 170.0  # a little under the parent's timeout (BUILD_TIMEOUT_SECONDS)
 _ALLOWED_ENV = frozenset(
     {
         "PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC", "TEMP", "TMP", "TMPDIR", "HOME",
@@ -47,12 +50,21 @@ def scrub_env() -> None:
 def run_build(paths: BuildPaths, case_id: str, build_id: str) -> None:
     """Spawn target. Exit code 0 on success; any failure marks the row `failed` and exits 1."""
     scrub_env()
+    import multiprocessing
+
+    from trace_worker.child_guard import start_deadline, start_parent_watch
+
+    start_deadline(SELF_DEADLINE_SECONDS)
+    parent = multiprocessing.parent_process()
+    if parent is not None:
+        start_parent_watch(parent.is_alive)
     from trace_adapters.blob_fs import FsBlobStore
     from trace_adapters.clock import SystemClock
     from trace_adapters.config_loader import load_config_bundle
     from trace_adapters.fakes.cache import DictExtractionCache
     from trace_adapters.fakes.llm import FakeLlm, IdentityRedactor
     from trace_adapters.fakes.ocr import FakeOcr
+    from trace_adapters.image_prep import PillowImagePrep
     from trace_adapters.pdfium_reader import PdfiumReader
     from trace_adapters.sqlite.builds import BuildRepository
     from trace_adapters.sqlite.store import SqliteClaimStore
@@ -88,6 +100,7 @@ def run_build(paths: BuildPaths, case_id: str, build_id: str) -> None:
             clock=clock,
             llm=FakeLlm(),
             redactor=IdentityRedactor(),
+            image_prep=PillowImagePrep(),
         )
         version = build_case(
             manifest,

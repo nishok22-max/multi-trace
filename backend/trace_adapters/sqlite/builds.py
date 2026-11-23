@@ -78,6 +78,31 @@ class BuildRepository:
             conn.close()
         return None if row is None else _status(row)
 
+    def in_flight(self, case_id: str) -> bool:
+        """True while a build of this case is queued or running."""
+        conn = connect(self._path)
+        try:
+            row = conn.execute(
+                "SELECT 1 FROM builds WHERE case_id = ? AND status IN ('queued','running') LIMIT 1",
+                (case_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        return row is not None
+
+    def stale_in_flight(self, before: str) -> list[str]:
+        """Queued or running builds whose last heartbeat is older than `before`."""
+        conn = connect(self._path)
+        try:
+            rows = conn.execute(
+                "SELECT build_id FROM builds WHERE status IN ('queued','running')"
+                " AND heartbeat_at < ? ORDER BY build_id",
+                (before,),
+            ).fetchall()
+        finally:
+            conn.close()
+        return [r[0] for r in rows]
+
     def create(self, build_id: str, case_id: str, build_key: str, now: str) -> None:
         try:
             self._exec(

@@ -9,7 +9,7 @@ provenance of the derived ones and are never read directly.
 from __future__ import annotations
 
 import io
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import yaml
@@ -22,7 +22,12 @@ from trace_adapters.sqlite.store import SqliteClaimStore
 from trace_adapters.telemetry_split import file_sha256, split_events, split_telemetry
 from trace_core.models.case import Case
 from trace_core.models.records import Source
-from trace_core.normalise.time import fmt_utc, local_day_bounds
+from trace_core.normalise.time import (
+    fmt_utc,
+    local_day_bounds,
+    local_naive_to_utc,
+    parse_utc,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 SEED = REPO / "seed"
@@ -33,6 +38,22 @@ LOGS = (("errors", "PdM_errors.csv"), ("maint", "PdM_maint.csv"), ("failures", "
 
 def skeleton_config() -> dict[str, str]:
     return yaml.safe_load((SEED / "skeleton_case.yaml").read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+
+
+def _log_coverage(telemetry_csv: Path, tz: str) -> dict[str, str]:
+    """Declared coverage of the event logs = the span of the hourly telemetry of the same
+    dataset (first reading to one hour after the last). TODO(confirm): the dataset README does
+    not state the logs' coverage; the shared collection period is an assumption."""
+    from datetime import datetime
+
+    lines = telemetry_csv.read_text(encoding="utf-8").splitlines()
+    stamps = [
+        datetime.strptime(ln.split(",", 1)[0], "%Y-%m-%d %H:%M:%S")  # noqa: DTZ007
+        for ln in (lines[1], lines[-1])
+    ]
+    start = local_naive_to_utc(stamps[0], tz)
+    end = fmt_utc(parse_utc(local_naive_to_utc(stamps[1], tz)) + timedelta(hours=1))
+    return {"start": start, "end": end}
 
 
 def seed_skeleton(data_dir: Path) -> str:
@@ -131,6 +152,7 @@ def seed_skeleton(data_dir: Path) -> str:
             )
         )
         part = split_events(raw, derived_dir / f"events_{kind}_m{machine}.csv", [machine])
+        coverage = _log_coverage(raw_tel, tz)
         sha, size = blob(part.path)
         sources.append(
             source(
@@ -141,6 +163,7 @@ def seed_skeleton(data_dir: Path) -> str:
                 mime="text/csv",
                 origin=f"derived:{name}",
                 derived_from_sources=[raw_id],
+                coverage_period=coverage,
             )
         )
 

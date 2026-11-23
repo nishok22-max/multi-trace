@@ -29,10 +29,22 @@ class SensorState:
     t_d: float
     t_star: float
     pointer: SensorWindowPointer
+    t_upper: float | None = None
+    t_lower: float | None = None
 
     @property
     def violated(self) -> bool:
         return self.t_d > self.t_star
+
+    def violated_on(self, side: str) -> bool:
+        """Violation on one side of the band. A one-sided check uses the signed statistic and
+        the same threshold T* (an upper excursion above T* is also a two-sided one, so the
+        false-alarm bound still holds). Without the signed value it falls back to two-sided."""
+        if side == "upper" and self.t_upper is not None:
+            return self.t_upper > self.t_star
+        if side == "lower" and self.t_lower is not None:
+            return self.t_lower > self.t_star
+        return self.violated
 
     @property
     def missing_points(self) -> int:
@@ -55,4 +67,12 @@ def sensor_state_of(claim: ClaimRecord) -> SensorState | None:
     t_d, t_star, state = value.get("T_D"), value.get("T_star"), value.get("state")
     if not isinstance(t_d, float | int) or not isinstance(t_star, float | int):
         return None
-    return SensorState(state=str(state), t_d=float(t_d), t_star=float(t_star), pointer=ev)
+    upper, lower = value.get("T_D_upper"), value.get("T_D_lower")
+    return SensorState(
+        state=str(state),
+        t_d=float(t_d),
+        t_star=float(t_star),
+        pointer=ev,
+        t_upper=float(upper) if isinstance(upper, float | int) else None,
+        t_lower=float(lower) if isinstance(lower, float | int) else None,
+    )

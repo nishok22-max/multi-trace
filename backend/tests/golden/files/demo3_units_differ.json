@@ -1,0 +1,31 @@
+{
+  "checks": [
+    [
+      1,
+      "same_entity",
+      true
+    ],
+    [
+      2,
+      "same_attribute",
+      true
+    ],
+    [
+      3,
+      "time_overlap",
+      true
+    ],
+    [
+      4,
+      "comparable_terms",
+      false
+    ]
+  ],
+  "gauge_normalised": [
+    "250.000000",
+    "kPa"
+  ],
+  "outcome": "cant_compare",
+  "reason": "They can't be compared: telemetry unit undocumented",
+  "telemetry_converted": null
+}

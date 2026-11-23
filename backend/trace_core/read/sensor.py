@@ -7,8 +7,8 @@ day-window claim (EXTRACTED: it carries a `SensorWindowPointer`) whose structure
 each present hourly timestamp (UTC) to its reading. Missing hours and conflicting duplicates
 become `GapClaim`s (`data_availability`), never a value (promise 4).
 
-TODO(M3): flatline detection (`detect_gaps`), the per-channel series ids of the PRD gap example
-and shift-level windows.
+Flatline detection lives in normalise/gaps.py (it reuses `make_gap`). TODO(M3): the per-channel
+series ids of the PRD gap example and shift-level windows.
 """
 
 from __future__ import annotations
@@ -180,7 +180,7 @@ def _day(
         for kind, hours in (("missing", missing), ("conflicting_readings", conflicting)):
             for run_start, run_end, length in _runs(expected, hours):
                 gaps.append(
-                    _gap(
+                    make_gap(
                         window,
                         entity,
                         channel,
@@ -196,7 +196,7 @@ def _day(
     return windows, gaps
 
 
-def _gap(
+def make_gap(
     window: ClaimRecord,
     entity: str,
     channel: str,

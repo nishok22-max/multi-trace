@@ -5,7 +5,8 @@ Everything shown is computed here from the window claims and the learned envelop
 `value` of the day claim is structured (`state`, `T_D`, `T_star`) because the frozen
 `SensorWindowPointer` has no field for the two numbers the gate and the card must show.
 
-TODO(M3): flatline/stop explanations, partial-day statements and per-shift windows.
+Unexplained flatline hours (normalise/gaps.py) do not count as coverage.
+TODO(M3): partial-day statements and per-shift windows.
 """
 
 from __future__ import annotations
@@ -66,15 +67,60 @@ def derive_sensor_state(
             groups.setdefault((entity, ev.series_id, ev.start), []).append(claim)
     out: list[ClaimRecord] = []
     for (entity, series, _start), members in sorted(groups.items()):
-        env = next((e for e in envelopes if e.machine == entity and e.series_id == series), None)
-        if env is None:
-            continue  # no envelope, no state claim (fail closed)
-        out.extend(_day_claims(entity, env, sorted(members, key=lambda c: c.claim_id), cfg, tz))
+        flat = [g for g in windows.gap_claims if _is_flatline(g, entity)]
+        every = {_pointer(c).channels[0] for c in members}
+        for env in sorted(envelopes, key=lambda e: (-len(e.scope), e.envelope_id)):
+            if env.machine != entity or env.series_id != series:
+                continue  # no envelope, no state claim (fail closed)
+            scoped = [c for c in members if _pointer(c).channels[0] in env.scope]
+            if not scoped:
+                continue
+            primary = set(env.scope) == every
+            if not primary and len(env.scope) != 1:
+                continue  # only the all-channel and single-channel scopes are judged
+            out.extend(
+                _day_claims(
+                    entity,
+                    env,
+                    sorted(scoped, key=lambda c: c.claim_id),
+                    cfg,
+                    tz,
+                    flat,
+                    primary=primary,
+                )
+            )
     return out
 
 
+def _is_flatline(gap: ClaimRecord, entity: str) -> bool:
+    return (
+        gap.subject.entity_id == entity
+        and gap.attribute == "data_availability"
+        and gap.value == "flatline"
+        and isinstance(gap.evidence, SensorWindowPointer)
+    )
+
+
+def _flat_hours(flat: Sequence[ClaimRecord], channel: str, start: str, end: str) -> int:
+    """Hours of `channel` inside [start, end) covered by an unexplained flatline: the readings
+    are present but frozen, so they do not count as coverage (no data is never normal)."""
+    total = 0
+    for gap in flat:
+        ev = gap.evidence
+        if isinstance(ev, SensorWindowPointer) and ev.channels == [channel]:
+            total += ev.expected_points if start <= ev.start and ev.end <= end else 0
+    return total
+
+
 def _day_claims(
-    entity: str, env: Envelope, members: list[ClaimRecord], cfg: ConfigBundle, tz: str
+    entity: str,
+    env: Envelope,
+    members: list[ClaimRecord],
+    cfg: ConfigBundle,
+    tz: str,
+    flat: Sequence[ClaimRecord] = (),
+    *,
+    primary: bool = True,
 ) -> list[ClaimRecord]:
     live = [c for c in env.scope if c not in env.degenerate_channels]
     scored: list[_Reading] = []
@@ -83,7 +129,7 @@ def _day_claims(
     for claim in members:
         ev = _pointer(claim)
         channel = ev.channels[0]
-        n_points += ev.n_points
+        n_points += max(0, ev.n_points - _flat_hours(flat, channel, ev.start, ev.end))
         expected += ev.expected_points
         if channel not in live or not isinstance(claim.value, dict):
             continue
@@ -134,13 +180,31 @@ def _day_claims(
         statement += (
             f"; largest excursion: {peak.channel} {_fmt(peak.value)} at {local_hhmm(peak.ts, tz)}"
         )
+    if primary:
+        attribute = "operating_state"
+        state_value: dict[str, float | str] = {"state": state, "T_D": t_d, "T_star": env.T_star}
+    else:
+        channel = env.scope[0]
+        attribute = CHANNEL_ATTRIBUTE.get(channel, channel)
+        signed = [(r.value - env.med[channel]) / (MAD_TO_SIGMA * env.mad[channel]) for r in scored]
+        state_value = {
+            "state": state,
+            "T_D": t_d,
+            "T_star": env.T_star,
+            "T_D_upper": max(signed),
+            "T_D_lower": -min(signed),
+        }
+        statement = (
+            f"{channel} of {entity} on {day_text} was {where} its learned alarm band "
+            f"(robust max-z T_D = {_fmt(t_d)} {comparator} T* = {_fmt(env.T_star)})"
+        )
     day_claim = build_claim(
         case_id=first.case_id,
         claim_type="inferred",
         statement=statement,
         subject=subject,
-        attribute="operating_state",
-        value={"state": state, "T_D": t_d, "T_star": env.T_star},
+        attribute=attribute,
+        value=state_value,
         value_type="structured",
         unit=None,
         unit_status="sensor_native",
@@ -169,7 +233,7 @@ def _day_claims(
         confidence=confidence,
     )
     result = [day_claim]
-    if abnormal:
+    if abnormal and primary:
         scale = MAD_TO_SIGMA * env.mad[peak.channel]
         band_low = env.med[peak.channel] - env.T_star * scale
         band_high = env.med[peak.channel] + env.T_star * scale

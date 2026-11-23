@@ -1,0 +1,21 @@
+{
+  "clean_claim_is_held_until_a_human_decides": [
+    1,
+    1
+  ],
+  "confidence": [
+    "0.000000"
+  ],
+  "decimal_drop": [
+    [
+      "implausible_value"
+    ],
+    0
+  ],
+  "disagreement": [
+    [
+      "reader_disagreement"
+    ],
+    0
+  ]
+}

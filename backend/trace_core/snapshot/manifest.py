@@ -8,6 +8,8 @@ wall-clock field dropped, so a rebuild at another time yields the same manifest 
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from trace_core.canonical import canonical_sha256, record_hash
 from trace_core.models.case import (
     Case,
@@ -42,6 +44,22 @@ def record_hashes(records: VersionRecords) -> list[str]:
     ):
         hashes.extend(record_hash(item) for item in group)
     return sorted(hashes)
+
+
+def manifest_hash_of(draft: CaseVersion, sources: Sequence[Source]) -> str:
+    """`manifest_hash` of a version whose manifest slots are zeroed (see module docstring).
+    `snapshot_sha256` drops every wall-clock field, so the clock never changes the hash."""
+    return canonical_sha256(
+        {
+            "parent": draft.parent_manifest_hash,
+            "records": record_hashes(draft.records),
+            "config_hash": draft.config_hash,
+            "engine_sha": draft.engine_sha,
+            "lockfile_hash": draft.lockfile_hash,
+            "sources": sorted(s.sha256 for s in sources),
+            "snapshot_sha256": canonical_sha256(draft),
+        }
+    )
 
 
 def snapshot(
@@ -96,18 +114,7 @@ def snapshot(
         ),
         created_at=fmt_utc(clock.now_utc()),
     )
-    snapshot_sha = canonical_sha256(draft)  # wall-clock fields are dropped by dump_body
-    manifest = canonical_sha256(
-        {
-            "parent": draft.parent_manifest_hash,
-            "records": record_hashes(records),
-            "config_hash": hashes.config_hash,
-            "engine_sha": hashes.engine_sha,
-            "lockfile_hash": hashes.lockfile_hash,
-            "sources": sorted(s.sha256 for s in sources),
-            "snapshot_sha256": snapshot_sha,
-        }
-    )
+    manifest = manifest_hash_of(draft, sources)
     final_state = state.model_copy(update={"manifest_hash": manifest})
     return draft.model_copy(
         update={

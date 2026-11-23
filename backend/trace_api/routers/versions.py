@@ -3,12 +3,17 @@ ETag = manifest_hash; Vary: Cookie."""
 
 from __future__ import annotations
 
+import hashlib
 from typing import Annotated
 
 from fastapi import APIRouter, Query, Request
+from fastapi.responses import JSONResponse
 
-from trace_api.deps import AuthDep, StoreDep
-from trace_api.http import versioned
+from trace_adapters.blob_fs import FsBlobStore
+from trace_adapters.clock import SystemClock
+from trace_adapters.config_loader import load_config_bundle
+from trace_api.deps import AuthDep, SettingsDep, StoreDep
+from trace_api.http import NO_STORE, versioned
 from trace_api.problems import not_found, not_implemented
 from trace_api.routers._common import (
     ERRORS,
@@ -39,6 +44,8 @@ from trace_core.models.case import (
 )
 from trace_core.models.claims import Modality
 from trace_core.models.records import Envelope
+from trace_core.review.status import derive_review_status
+from trace_core.snapshot.integrity import verify_chain
 
 router = APIRouter(prefix="/cases/{cid}/versions/{v}", tags=["versions"])
 
@@ -133,9 +140,24 @@ def list_conflicts(
     responses=ERRORS,
     operation_id="getReviewQueue",
 )
-def get_review(cid: Cid, v: Version, request: Request, auth: AuthDep, store: StoreDep) -> object:
+def get_review(cid: Cid, v: Version, auth: AuthDep, store: StoreDep) -> object:
+    # The queue with its derived status. Status depends on events and the clock, so unlike the
+    # frozen reads this answer is `no-store` (status is never stored, promise 6). A comment, not
+    # a docstring: docstrings are part of the frozen OpenAPI contract.
     version = _load(store, cid, v)
-    return versioned(request, version, version.views.review)
+    events = store.review_events(cid)
+    statuses = derive_review_status(
+        version.records.review_items, events, SystemClock(), load_config_bundle().case.calendar
+    )
+    explained = {e.review_id for e in events if e.kind == "explained"}
+    queue = [
+        ReviewQueueEntry(item=i, status=statuses[i.review_id], explained=i.review_id in explained)
+        for i in sorted(version.records.review_items, key=lambda i: i.review_id)
+    ]
+    return JSONResponse(
+        [q.model_dump(mode="json", by_alias=True) for q in queue],
+        headers={"Cache-Control": NO_STORE},
+    )
 
 
 @router.get(
@@ -151,9 +173,29 @@ def get_manifest(cid: Cid, v: Version, request: Request, auth: AuthDep, store: S
 @router.get(
     "/integrity", response_model=IntegrityResult, responses=ERRORS, operation_id="getIntegrity"
 )
-def get_integrity(cid: Cid, v: Version) -> object:
+def get_integrity(
+    cid: Cid, v: Version, auth: AuthDep, store: StoreDep, settings: SettingsDep
+) -> object:
     """Verifies stored bytes against stored hashes and walks the chain."""
-    return not_implemented()
+    chain: list[CaseVersion] = []
+    for n in range(1, v + 1):
+        version = store.get_version(cid, n)
+        if version is None:
+            raise not_found()
+        chain.append(version)
+    blobs = FsBlobStore(settings.blobs_dir)
+
+    def stored_sha(sha: str) -> str | None:
+        if not blobs.exists(sha):
+            return None
+        digest = hashlib.sha256()
+        with blobs.open(sha) as handle:
+            while chunk := handle.read(1 << 16):
+                digest.update(chunk)
+        return digest.hexdigest()
+
+    result = verify_chain(chain, stored_sha)
+    return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": NO_STORE})
 
 
 @router.get(

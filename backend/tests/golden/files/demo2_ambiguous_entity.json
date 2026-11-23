@@ -1,0 +1,20 @@
+{
+  "candidates": [
+    [
+      "machine:21",
+      "0.461538",
+      {
+        "fuzzy": "0.461538"
+      },
+      []
+    ]
+  ],
+  "link_status": "ambiguous",
+  "review": [
+    [
+      "ambiguous_entity",
+      1,
+      "rv_cc9810c9e2e012f61056c960"
+    ]
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "checks": [
+    [
+      1,
+      "same_entity",
+      true,
+      "machine:21 = Machine 21 (machine:21)"
+    ],
+    [
+      2,
+      "same_attribute",
+      true,
+      "'ran normally' (forall: all channels in scope + no error events) <-> operating_state"
+    ],
+    [
+      3,
+      "time_overlap",
+      true,
+      "both cover 05 Aug 2015 (plant-local), day granularity"
+    ],
+    [
+      4,
+      "comparable_terms",
+      true,
+      "sensor_native series telemetry/machine:21; statistic robust_max_z/day matches the envelope"
+    ],
+    [
+      5,
+      "data_both_sides",
+      true,
+      "note present; 96 of 96 readings present"
+    ],
+    [
+      6,
+      "beyond_variation",
+      true,
+      "T_D 15.30 vs T* 4.01 (envelope env_347d6e88b74c4373e4f9f749): violation observed"
+    ]
+  ],
+  "conflicts": [
+    [
+      "15.300982",
+      "4.008669"
+    ]
+  ],
+  "envelope": {
+    "T_star": "4.008669",
+    "mad": {
+      "pressure": "6.775663",
+      "rotate": "34.724913",
+      "vibration": "3.299550",
+      "volt": "10.283526"
+    },
+    "med": {
+      "pressure": "99.792866",
+      "rotate": "452.359242",
+      "vibration": "40.148927",
+      "volt": "169.890170"
+    },
+    "n": 95,
+    "pooled": "none",
+    "scope": [
+      "pressure",
+      "rotate",
+      "vibration",
+      "volt"
+    ]
+  },
+  "outcome": "disagree",
+  "reason": "∀ claim 'ran normally' violated: robust max-z 15.30 is above the alarm band threshold 4.01",
+  "state": {
+    "T_D": "15.300982",
+    "T_star": "4.008669",
+    "state": "abnormal"
+  }
+}

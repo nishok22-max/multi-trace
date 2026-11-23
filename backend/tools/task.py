@@ -124,6 +124,72 @@ def check() -> int:
     return 1 if failed else 0
 
 
+def _pytest(*args: str, env: dict[str, str] | None = None) -> int:
+    return _py("pytest", "-q", *args) if env is None else _run_env(env, "pytest", "-q", *args)
+
+
+def _run_env(extra: dict[str, str], *args: str) -> int:
+    import os
+
+    previous = {k: os.environ.get(k) for k in extra}
+    os.environ.update(extra)
+    try:
+        return _py(*args)
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def golden() -> int:
+    return _pytest("tests/golden")
+
+
+def golden_randseed() -> int:
+    """Goldens must not depend on the hash seed (determinism, promise 8)."""
+    return _pytest("tests/golden", env={"PYTHONHASHSEED": "12345"})
+
+
+def golden_bless() -> int:
+    """Rewrites the goldens. Only with CONFIRM=1, and only while the conformal oracle is green."""
+    import os
+
+    if os.environ.get("CONFIRM") != "1":
+        print("refusing: set CONFIRM=1 (the diff must be explained in the PR)")
+        return 2
+    if _pytest("tests/golden/test_conformal_oracle.py") != 0:
+        print("refusing: the conformal oracle test is not green")
+        return 1
+    return _pytest("tests/golden", env={"TRACE_GOLDEN_BLESS": "1"})
+
+
+def props() -> int:
+    return _pytest("tests/properties", "tests/unit/engine", "-k", "prop or properties")
+
+
+def hostile() -> int:
+    return _pytest("tests/hostile_corpus", "tests/unit/api/test_upload_security.py")
+
+
+def authz() -> int:
+    return _pytest(
+        "tests/unit/api/test_auth.py",
+        "tests/unit/api/test_decisions_api.py",
+        "tests/unit/api/test_sources_api.py",
+    )
+
+
+def eval_dev() -> int:
+    """Dev-set evaluation protocol checks only. The holdout never runs here."""
+    return _pytest("tests/eval", "-m", "not holdout")
+
+
+def check_perf() -> int:
+    return _pytest("tests/perf", "-m", "perf")
+
+
 def _stub(milestone: str) -> Callable[[], int]:
     def run() -> int:
         print(f"not implemented until {milestone}")
@@ -147,20 +213,20 @@ TASKS: dict[str, Callable[[], int]] = {
     "demo-skeleton": demo_skeleton,
     "contracts": contracts,
     "contracts-check": contracts_check,
-    "golden": _stub("M3"),
-    "golden-bless": _stub("M3"),
-    "golden-randseed": _stub("M3"),
-    "props": _stub("M1"),
-    "hostile": _stub("M3"),
-    "authz": _stub("M3"),
-    "check-perf": _stub("M3"),
+    "golden": golden,
+    "golden-bless": golden_bless,
+    "golden-randseed": golden_randseed,
+    "props": props,
+    "hostile": hostile,
+    "authz": authz,
+    "check-perf": check_perf,
     "e2e": _stub("M4"),
     "seed": _stub("M3"),
     "seed-gen": _stub("M3"),
     "record-cache": _stub("M3"),
     "demo": _stub("M3"),
     "replay-verify": _stub("M3"),
-    "eval-dev": _stub("M5"),
+    "eval-dev": eval_dev,
     "eval-holdout": _stub("M6"),
     "audit": _stub("M5"),
     "anchor": _stub("M6"),

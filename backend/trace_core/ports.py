@@ -123,6 +123,15 @@ class OcrReader(Protocol):
     def reread_region(self, png: bytes, bbox: Rect, cfg: OcrConfig) -> OcrResult: ...
 
 
+class ImagePrep(Protocol):
+    """Decoding stays in the build child: the adapter orients a photo (EXIF) and strips every
+    metadata block (GPS included), returning a clean PNG, and hashes pixel crops of it."""
+
+    def orient(self, blob: bytes) -> bytes: ...
+
+    def crop_sha256(self, png: bytes, bbox: Rect) -> str: ...
+
+
 class TelemetryReader(Protocol):
     def read(self, series_id: str, start: UtcStr, end: UtcStr) -> TableLike: ...
 
@@ -198,3 +207,4 @@ class EnginePorts:
     llm: LlmProposer
     redactor: Redactor
     vlm: VlmReader | None = None
+    image_prep: ImagePrep | None = None

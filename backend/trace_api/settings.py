@@ -39,3 +39,12 @@ def load_settings() -> Settings:
         data_dir=Path(data_dir) if data_dir else REPO / "data",
         dev_auth=os.environ.get("TRACE_DEV_AUTH") == "1",
     )
+
+
+LOOPBACK = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+def assert_safe_bind(host: str, tls: bool) -> None:
+    """Non-loopback binding (LAN) is refused unless TLS is configured (S1)."""
+    if host not in LOOPBACK and not tls:
+        raise RuntimeError("refusing to listen beyond loopback without TLS")

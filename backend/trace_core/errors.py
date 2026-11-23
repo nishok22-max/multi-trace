@@ -59,3 +59,7 @@ class IntegrityError(TraceError):
 
 class CapabilityMissing(TraceError):
     """The PDF engine lacks a required capability (probed, never assumed)."""
+
+
+class ThinHistoryError(TraceError):
+    """Too few quiet days to learn an envelope, and no usable same-model peers to pool with."""
