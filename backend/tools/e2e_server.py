@@ -88,6 +88,10 @@ def build_all(data_dir: Path) -> dict[str, object]:
         ("vik", "viewer"),
     ):
         repo.create_user(f"u-{user}", user, user.title(), role, PASSWORD)  # type: ignore[arg-type]
+    # a real dev evaluation (engine-computed, seeded) so the evaluation page has a report to show
+    from trace_eval.runner import run_dev
+
+    run_dev(data_dir / "eval_report.json", n_per_kind=1, seed=7)
     (data_dir / "e2e_info.json").write_text(json.dumps(info, indent=2), encoding="utf-8")
     return info
 

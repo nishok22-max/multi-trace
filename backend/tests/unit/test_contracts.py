@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from fastapi.testclient import TestClient
 
 from tools import export_contracts
@@ -109,25 +108,6 @@ def test_conflict_schema_pins_averaged_false_and_no_status() -> None:
     claim = json.loads(export_contracts.render_files()["ClaimRecord.json"])
     assert "status" not in claim["properties"] and "version" not in claim["properties"]
     assert claim["additionalProperties"] is False
-
-
-@pytest.mark.parametrize(
-    ("method", "path", "kwargs"),
-    [
-        # Implemented: latest, state, story, timeline, claims, comparisons, conflicts, review,
-        # manifest, integrity, claim detail, evidence, recheck, replay, envelope, build, sources,
-        # decisions, cases and the eval report. Only `POST /eval/run` remains a contract stub.
-        ("post", "/api/v1/eval/run", {"headers": CSRF}),
-    ],
-)
-def test_stubs_return_501_problem_json(
-    loopback_only: None, method: str, path: str, kwargs: dict[str, object]
-) -> None:
-    client = TestClient(build_contract_app())
-    res = getattr(client, method)(path, **kwargs)
-    assert res.status_code == 501
-    assert res.headers["content-type"].startswith("application/problem+json")
-    assert res.json()["type"] == "/problems/not-implemented"
 
 
 def test_healthz_is_live_and_problem_types_are_stable(loopback_only: None) -> None:

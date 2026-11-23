@@ -31,15 +31,22 @@ CONVERSIONS: dict[tuple[str, str], tuple[Decimal, Decimal]] = {
 }
 
 
-def convert(value: Decimal, unit: str, target: str) -> Decimal | None:
-    """The documented conversion, or None when there is none (never a guess)."""
+def convert(value: Decimal, unit: str, target: str, *, quantize: bool = True) -> Decimal | None:
+    """The documented conversion in either direction of a documented pair, or None when there is
+    none (never a guess). `quantize=False` keeps full precision (round-trip checks)."""
     if unit == target:
         return value
     rule = CONVERSIONS.get((unit, target))
-    if rule is None:
-        return None
-    factor, offset = rule
-    return (value * factor + offset).quantize(_SIX_DP)
+    if rule is not None:
+        factor, offset = rule
+        out = value * factor + offset
+    else:
+        inverse = CONVERSIONS.get((target, unit))
+        if inverse is None:
+            return None
+        factor, offset = inverse
+        out = (value - offset) / factor
+    return out.quantize(_SIX_DP) if quantize else out
 
 
 def _normalised(claim: ClaimRecord, canonical: dict[str, str | None]) -> ClaimRecord:

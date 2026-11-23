@@ -68,27 +68,33 @@ def get_auth_repo(settings: SettingsDep) -> AuthRepository:
 AuthRepoDep = Annotated[AuthRepository, Depends(get_auth_repo)]
 
 
-def resolve_case_and_authorize(
-    cid: Cid, request: Request, settings: SettingsDep, repo: AuthRepoDep
-) -> AuthContext:
+def authenticate(request: Request, settings: SettingsDep, repo: AuthRepoDep) -> AuthContext:
+    """The signed-in user (401 otherwise), with no case in scope: for routes like `POST /cases`."""
     if settings.dev_auth:
-        context = AuthContext(
+        return AuthContext(
             principal=Principal(iss="local", sub="dev-user"),
             role="ingestor",
             display_name="Dev User",
         )
-    else:
-        user = repo.lookup(request.cookies.get(COOKIE))
-        if user is None:
-            raise unauthenticated()
-        context = AuthContext(
-            principal=Principal(iss="local", sub=user.user_id),
-            role=user.role,
-            display_name=user.display_name,
-        )
+    user = repo.lookup(request.cookies.get(COOKIE))
+    if user is None:
+        raise unauthenticated()
+    return AuthContext(
+        principal=Principal(iss="local", sub=user.user_id),
+        role=user.role,
+        display_name=user.display_name,
+    )
+
+
+SessionDep = Annotated[AuthContext, Depends(authenticate)]
+
+
+def resolve_case_and_authorize(cid: Cid, settings: SettingsDep, session: SessionDep) -> AuthContext:
+    """The single door to every case route: authenticate first, then 404 for an unknown case."""
+    settings.data_dir.mkdir(parents=True, exist_ok=True)
     if _store_at(str(settings.db_path)).get_case(cid) is None:
         raise not_found()
-    return context
+    return session
 
 
 def require_role(auth: AuthContext, *roles: Role) -> None:

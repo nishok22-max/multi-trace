@@ -7,26 +7,32 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
-from trace_api.deps import AuthRepoDep, SettingsDep
-from trace_api.problems import not_found, not_implemented, unauthenticated
+from trace_adapters.sqlite.eval_runs import EvalInProgress, EvalRunRepository
+from trace_api.deps import AuthRepoDep, SettingsDep, StoreDep
+from trace_api.http import NO_STORE
+from trace_api.problems import PROBLEM_BASE, ProblemError, not_found, unauthenticated
 from trace_api.routers._common import ERRORS, CsrfHeader
 from trace_api.security.sessions import COOKIE
+from trace_api.services.eval_service import EvalService
 from trace_core.models.api_io import EvalRunAccepted
 from trace_core.models.eval import EvalReport
 
 router = APIRouter(prefix="/eval", tags=["eval"])
 
 
-def _signed_in(request: Request, settings: SettingsDep, repo: AuthRepoDep) -> str:
+def _evaluator(request: Request, settings: SettingsDep, repo: AuthRepoDep) -> str:
+    """Signed in AND an evaluator (the route matrix: others get 403)."""
     if settings.dev_auth:
         return "dev"
     user = repo.lookup(request.cookies.get(COOKIE))
     if user is None:
         raise unauthenticated()
+    if user.role != "evaluator":
+        raise ProblemError(403, "Forbidden", headers={"Cache-Control": NO_STORE})
     return user.user_id
 
 
-EvalAuthDep = Annotated[str, Depends(_signed_in)]
+EvaluatorDep = Annotated[str, Depends(_evaluator)]
 
 
 @router.post(
@@ -36,15 +42,33 @@ EvalAuthDep = Annotated[str, Depends(_signed_in)]
     responses=ERRORS,
     operation_id="runEval",
 )
-def run_eval(x_trace_csrf: CsrfHeader) -> object:
-    return not_implemented()
+def run_eval(
+    x_trace_csrf: CsrfHeader, auth: EvaluatorDep, settings: SettingsDep, store: StoreDep
+) -> object:
+    # `store` makes sure the migrations (incl. eval_runs) are applied before the first use.
+    service = EvalService(settings, EvalRunRepository(settings.db_path))
+    try:
+        run_id = service.start()
+    except EvalInProgress:
+        raise ProblemError(
+            409,
+            "Evaluation already running",
+            type_=PROBLEM_BASE + "build-in-progress",
+            headers={"Retry-After": "5", "Cache-Control": NO_STORE},
+            retry_after=5,
+        ) from None
+    return JSONResponse(
+        EvalRunAccepted(run_id=run_id).model_dump(),
+        status_code=202,
+        headers={"Cache-Control": NO_STORE},
+    )
 
 
 @router.get("/report", response_model=EvalReport, responses=ERRORS, operation_id="getEvalReport")
-def get_report(auth: EvalAuthDep, settings: SettingsDep) -> object:
-    # The report is written by `make eval-dev` / `make eval-holdout`; the API only shows it.
+def get_report(auth: EvaluatorDep, settings: SettingsDep) -> object:
+    # The report is written by an evaluation run (API or `make eval-dev`); this only shows it.
     path = settings.data_dir / "eval_report.json"
     if not path.is_file():
         raise not_found()  # no evaluation has been run yet
     report = EvalReport.model_validate_json(path.read_bytes())
-    return JSONResponse(report.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
+    return JSONResponse(report.model_dump(mode="json"), headers={"Cache-Control": NO_STORE})
