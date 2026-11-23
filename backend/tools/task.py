@@ -186,6 +186,13 @@ def eval_dev() -> int:
     return _pytest("tests/eval", "-m", "not holdout")
 
 
+def e2e() -> int:
+    """Playwright specs against the real app: build the frontend, then run them."""
+    if not _frontend_ready():
+        return 1
+    return _npm("run", "build") or _npm("run", "e2e")
+
+
 def check_perf() -> int:
     return _pytest("tests/perf", "-m", "perf")
 
@@ -220,7 +227,7 @@ TASKS: dict[str, Callable[[], int]] = {
     "hostile": hostile,
     "authz": authz,
     "check-perf": check_perf,
-    "e2e": _stub("M4"),
+    "e2e": e2e,
     "seed": _stub("M3"),
     "seed-gen": _stub("M3"),
     "record-cache": _stub("M3"),

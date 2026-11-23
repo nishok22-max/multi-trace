@@ -4,17 +4,21 @@ ETag = manifest_hash; Vary: Cookie."""
 from __future__ import annotations
 
 import hashlib
+import multiprocessing
+import queue
+import threading
 from typing import Annotated
 
 from fastapi import APIRouter, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from trace_adapters.blob_fs import FsBlobStore
 from trace_adapters.clock import SystemClock
 from trace_adapters.config_loader import load_config_bundle
-from trace_api.deps import AuthDep, SettingsDep, StoreDep
-from trace_api.http import NO_STORE, versioned
-from trace_api.problems import not_found, not_implemented
+from trace_adapters.sqlite.store import SqliteClaimStore
+from trace_api.deps import AuthDep, SettingsDep, StoreDep, require_role
+from trace_api.http import IMMUTABLE, NO_STORE, versioned
+from trace_api.problems import PROBLEM_BASE, ProblemError, not_found
 from trace_api.routers._common import (
     ERRORS,
     Cid,
@@ -25,6 +29,8 @@ from trace_api.routers._common import (
     Offset,
     Version,
 )
+from trace_api.services import evidence_render
+from trace_api.settings import Settings
 from trace_core.models.api_io import (
     ClaimDetail,
     ClaimsPage,
@@ -46,6 +52,9 @@ from trace_core.models.claims import Modality
 from trace_core.models.records import Envelope
 from trace_core.review.status import derive_review_status
 from trace_core.snapshot.integrity import verify_chain
+from trace_worker.build_runner import BuildPaths
+from trace_worker.child_guard import kill_tree
+from trace_worker.replay import replay_target
 
 router = APIRouter(prefix="/cases/{cid}/versions/{v}", tags=["versions"])
 
@@ -62,6 +71,61 @@ PNG = {
     200: {"content": {"image/png": {}}, "description": "Cached PNG"},
     404: {"description": "render-missing: only pre-rendered pages and crops are served"},
 }
+
+
+_REPLAY_LOCK = threading.Lock()
+
+
+def _png(
+    cid: str,
+    v: int,
+    claim_id: str,
+    which: str,
+    request: Request,
+    store: SqliteClaimStore,
+    settings: Settings,
+) -> object:
+    version = _load(store, cid, v)
+    claim = next((c for c in version.records.claims if c.claim_id == claim_id), None)
+    if claim is None:
+        raise not_found()
+    path = evidence_render.artifact_path(settings, claim, which)
+    if path is None:  # only pre-rendered pages and crops are served: never render here
+        raise ProblemError(
+            404,
+            "Render missing",
+            type_=PROBLEM_BASE + "render-missing",
+            headers={"Cache-Control": NO_STORE},
+        )
+    etag = f'"{version.manifest_hash}-{path.stem}"'
+    headers = {"Cache-Control": IMMUTABLE, "ETag": etag, "Vary": "Cookie"}
+    if request.headers.get("if-none-match") == etag:
+        return Response(status_code=304, headers=headers)
+    return Response(content=path.read_bytes(), media_type="image/png", headers=headers)
+
+
+def run_replay(settings: Settings, cid: str, version: int) -> str:
+    """Rebuild in a killable spawned child (it decodes PDFs); the API never does."""
+    paths = BuildPaths(
+        db=str(settings.db_path),
+        blobs=str(settings.blobs_dir),
+        derived=str(settings.derived_dir),
+    )
+    ctx = multiprocessing.get_context("spawn")
+    out = ctx.Queue()
+    child = ctx.Process(target=replay_target, args=(paths, cid, version, out))
+    child.start()
+    try:
+        kind, value = out.get(timeout=settings.build_timeout_s)
+    except queue.Empty:
+        kind, value = "error", "timeout"
+    finally:
+        if child.is_alive():
+            kill_tree(child.pid or 0)
+        child.join(10)
+    if kind != "ok":
+        raise ProblemError(500, "Replay failed", headers={"Cache-Control": NO_STORE})
+    return str(value)
 
 
 @router.get("/state", response_model=CaseState, responses=ERRORS, operation_id="getState")
@@ -224,22 +288,50 @@ def get_claim(
     responses=ERRORS,
     operation_id="getEvidence",
 )
-def get_evidence(cid: Cid, v: Version, claim_id: ClaimPath) -> object:
-    return not_implemented()
+def get_evidence(
+    cid: Cid,
+    v: Version,
+    claim_id: ClaimPath,
+    request: Request,
+    auth: AuthDep,
+    store: StoreDep,
+    settings: SettingsDep,
+) -> object:
+    version = _load(store, cid, v)
+    claim = next((c for c in version.records.claims if c.claim_id == claim_id), None)
+    if claim is None or claim.evidence is None:
+        raise not_found()
+    return versioned(request, version, evidence_render.render(settings, cid, version, claim))
 
 
 @router.get(
     "/claims/{claim_id}/evidence/page.png", responses=PNG, operation_id="getEvidencePagePng"
 )
-def get_evidence_page(cid: Cid, v: Version, claim_id: ClaimPath) -> object:
-    return not_implemented()
+def get_evidence_page(
+    cid: Cid,
+    v: Version,
+    claim_id: ClaimPath,
+    request: Request,
+    auth: AuthDep,
+    store: StoreDep,
+    settings: SettingsDep,
+) -> object:
+    return _png(cid, v, claim_id, "page", request, store, settings)
 
 
 @router.get(
     "/claims/{claim_id}/evidence/crop.png", responses=PNG, operation_id="getEvidenceCropPng"
 )
-def get_evidence_crop(cid: Cid, v: Version, claim_id: ClaimPath) -> object:
-    return not_implemented()
+def get_evidence_crop(
+    cid: Cid,
+    v: Version,
+    claim_id: ClaimPath,
+    request: Request,
+    auth: AuthDep,
+    store: StoreDep,
+    settings: SettingsDep,
+) -> object:
+    return _png(cid, v, claim_id, "crop", request, store, settings)
 
 
 @router.get(
@@ -259,6 +351,32 @@ def get_envelope(
 
 
 @router.post("/replay", response_model=ReplayResult, responses=ERRORS, operation_id="replayVersion")
-def replay(cid: Cid, v: Version, x_trace_csrf: CsrfHeader) -> object:
+def replay(
+    cid: Cid,
+    v: Version,
+    x_trace_csrf: CsrfHeader,
+    auth: AuthDep,
+    store: StoreDep,
+    settings: SettingsDep,
+) -> object:
     """Role: evaluator. DB single-flight. Cache-Control: no-store."""
-    return not_implemented()
+    require_role(auth, "evaluator")
+    version = _load(store, cid, v)
+    if not _REPLAY_LOCK.acquire(blocking=False):
+        raise ProblemError(
+            409,
+            "Replay in progress",
+            type_=PROBLEM_BASE + "build-in-progress",
+            headers={"Retry-After": "5", "Cache-Control": NO_STORE},
+            retry_after=5,
+        )
+    try:
+        actual = run_replay(settings, cid, v)
+    finally:
+        _REPLAY_LOCK.release()
+    result = ReplayResult(
+        match=actual == version.manifest_hash,
+        expected_manifest_hash=version.manifest_hash,
+        actual_manifest_hash=actual,
+    )
+    return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": NO_STORE})

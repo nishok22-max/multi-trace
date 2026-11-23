@@ -107,7 +107,13 @@ def write_synthetic_parquet(
     pq.write_table(pa.table(rows), path)
 
 
-def synthetic_world(data_dir: Path, **kwargs: object) -> World:
+def synthetic_world(
+    data_dir: Path,
+    *,
+    case_id: str = CASE_ID,
+    report: bytes | None = None,
+    **kwargs: object,
+) -> World:
     derived = data_dir / "derived"
     write_synthetic_parquet(derived / series_filename(SERIES), **kwargs)  # type: ignore[arg-type]
     blobs = FsBlobStore(data_dir / "blobs")
@@ -119,7 +125,7 @@ def synthetic_world(data_dir: Path, **kwargs: object) -> World:
     def source(source_id: str, data: bytes, **fields: object) -> Source:
         sha, size = put(data)
         base = {
-            "source_id": source_id, "case_id": CASE_ID, "ingested_at": NOW, "sha256": sha,
+            "source_id": source_id, "case_id": case_id, "ingested_at": NOW, "sha256": sha,
             "size": size, "synthetic": True,
         }  # fmt: skip
         return Source.model_validate({**base, **fields})
@@ -131,7 +137,8 @@ def synthetic_world(data_dir: Path, **kwargs: object) -> World:
     }
     sources = [
         source(
-            "report-0805", REPORT.read_bytes() if REPORT.is_file() else report_bytes(),
+            "report-0805",
+            report or (REPORT.read_bytes() if REPORT.is_file() else report_bytes()),
             modality="text", mime="application/pdf", origin="test:report",
         ),
         source(
@@ -152,7 +159,7 @@ def synthetic_world(data_dir: Path, **kwargs: object) -> World:
         Source.model_validate(
             {
                 "source_id": "telemetry-machine-21",
-                "case_id": CASE_ID,
+                "case_id": case_id,
                 "modality": "sensor",
                 "sha256": tel.partition_sha(SERIES),
                 "origin": "test:parquet",
@@ -165,12 +172,12 @@ def synthetic_world(data_dir: Path, **kwargs: object) -> World:
     )
     start, end = local_day_bounds(CASE_DAY, TZ)
     case = Case(
-        case_id=CASE_ID, title="Machine 21, 5 August 2015", entities=[ENTITY],
+        case_id=case_id, title="Machine 21, 5 August 2015", entities=[ENTITY],
         window_start=start, window_end=end, plant_tz=TZ, created_at=NOW,
     )  # fmt: skip
     store = SqliteClaimStore(data_dir / "trace.db")
-    store.append(CASE_ID, [case, *sources])
-    return World(data_dir, CASE_ID, store)
+    store.append(case_id, [case, *sources])
+    return World(data_dir, case_id, store)
 
 
 def real_world(data_dir: Path) -> World:

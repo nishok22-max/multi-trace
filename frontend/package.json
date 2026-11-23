@@ -8,7 +8,9 @@
     "build": "astro build && node scripts/csp-hash.mjs",
     "preview": "astro preview",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/react": "^4.2",
