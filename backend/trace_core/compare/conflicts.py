@@ -1,7 +1,8 @@
 """Conflict grouping (B-08 minimal). One ConflictRecord per connected set of disagreeing claims.
 Conflicts are never averaged: both sides are kept and `averaged` is always False (promise 1).
 
-TODO(M3): error/failure rows as `supporting_context`; "explained" review state.
+Event rows of the same machine inside a side's window are `supporting_context`.
+TODO(M3): "explained" review state.
 """
 
 from __future__ import annotations
@@ -12,8 +13,31 @@ from trace_core.compare.quantifiers import sensor_state_of
 from trace_core.ids import conflict_id
 from trace_core.models.claims import ClaimRecord
 from trace_core.models.records import ComparisonRecord, ConflictRecord, Magnitude
+from trace_core.models.time import Interval
 
 UNIT = "unitless (z)"
+EVENT_ATTRIBUTES = frozenset({"error_event", "failure_event", "maintenance_action"})
+
+
+def _event_context(sides: Sequence[ClaimRecord], claims: Sequence[ClaimRecord]) -> set[str]:
+    spans = [
+        (s.subject.entity_id, s.temporal.valid_time)
+        for s in sides
+        if isinstance(s.temporal.valid_time, Interval)
+    ]
+    out: set[str] = set()
+    for c in claims:
+        vt = c.temporal.valid_time
+        if c.attribute not in EVENT_ATTRIBUTES or not isinstance(vt, Interval):
+            continue
+        for entity, span in spans:
+            if (
+                isinstance(span, Interval)
+                and c.subject.entity_id == entity
+                and max(vt.start, span.start) < min(vt.end, span.end)
+            ):
+                out.add(c.claim_id)
+    return out
 
 
 def _components(pairs: Sequence[tuple[str, str]]) -> list[set[str]]:
@@ -36,10 +60,14 @@ def group_conflicts(
         _components([(c.claim_a, c.claim_b) for c in disagreeing]), key=lambda g: sorted(g)
     ):
         sides = sorted(component)
+        side_claims = [by_id[s] for s in sides if s in by_id]
         context = sorted(
-            c.claim_id
-            for c in claims
-            if c.claim_id not in component and any(s in c.derived_from for s in sides)
+            {
+                c.claim_id
+                for c in claims
+                if c.claim_id not in component and any(s in c.derived_from for s in sides)
+            }
+            | (_event_context(side_claims, claims) - set(component))
         )
         numbers = next(
             (st for st in (sensor_state_of(by_id[s]) for s in sides if s in by_id) if st), None

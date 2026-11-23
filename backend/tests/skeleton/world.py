@@ -142,6 +142,7 @@ def synthetic_world(data_dir: Path, **kwargs: object) -> World:
             source(
                 f"events-{kind}-machine-21", data, modality="table", mime="text/csv",
                 origin=f"test:{kind}",
+                coverage_period={"start": "2015-01-01T00:00:00Z", "end": "2016-01-01T00:00:00Z"},
             )
             for kind, data in logs.items()
         ],

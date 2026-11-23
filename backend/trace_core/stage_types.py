@@ -10,7 +10,7 @@ from trace_core.models.base import CoreModel, Sha256, SourceId
 from trace_core.models.case import VersionRecords
 from trace_core.models.claims import ClaimRecord
 from trace_core.models.config import ConfigBundle
-from trace_core.models.records import Envelope, ReviewItem
+from trace_core.models.records import CoveragePeriod, Envelope, ReviewItem
 
 Pair = tuple[ClaimRecord, ClaimRecord]
 
@@ -32,6 +32,10 @@ class GateContext(CoreModel):
     config: ConfigBundle
     config_hash: Sha256
     envelopes: list[Envelope]
+    events: list[ClaimRecord] = Field(default_factory=list)
+    """Error / maintenance / failure rows: a ∀ phrase is violated by one inside its window."""
+    log_coverage: list[CoveragePeriod] = Field(default_factory=list)
+    """Declared coverage periods of every event log; empty means the logs cover nothing."""
 
 
 class Provenance(CoreModel):

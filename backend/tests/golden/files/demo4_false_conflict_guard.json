@@ -1,0 +1,25 @@
+{
+  "raw_window_is_not_paired": true,
+  "same_day": "disagree",
+  "undated_checks": [
+    [
+      1,
+      "same_entity",
+      true
+    ],
+    [
+      2,
+      "same_attribute",
+      true
+    ],
+    [
+      3,
+      "time_overlap",
+      false
+    ]
+  ],
+  "undated_note": [
+    "cant_compare",
+    "They can't be compared: time unknown"
+  ]
+}

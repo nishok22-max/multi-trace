@@ -1,0 +1,60 @@
+{
+  "checks": [
+    [
+      1,
+      "same_entity",
+      true,
+      "machine:21 = Machine 21 (machine:21)"
+    ],
+    [
+      2,
+      "same_attribute",
+      true,
+      "'ran normally' (forall: all channels in scope + no error events) <-> operating_state"
+    ],
+    [
+      3,
+      "time_overlap",
+      true,
+      "both cover 05 Aug 2015 (plant-local), day granularity"
+    ],
+    [
+      4,
+      "comparable_terms",
+      true,
+      "sensor_native series telemetry/machine:21; statistic robust_max_z/day matches the envelope"
+    ],
+    [
+      5,
+      "data_both_sides",
+      true,
+      "note present; 88 of 96 readings present"
+    ],
+    [
+      6,
+      "beyond_variation",
+      false,
+      "T_D 2.82 vs T* 4.01 (envelope env_91ce31a113f6f083f2375224): 8 readings missing"
+    ]
+  ],
+  "gaps": [
+    [
+      "missing",
+      2
+    ],
+    [
+      "missing",
+      2
+    ],
+    [
+      "missing",
+      2
+    ],
+    [
+      "missing",
+      2
+    ]
+  ],
+  "outcome": "cant_tell",
+  "reason": "We can't tell (partial: 8 of 96 readings missing); no data is never normal"
+}

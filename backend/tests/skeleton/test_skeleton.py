@@ -162,7 +162,7 @@ def test_stored_version_round_trips_and_is_chained(
 def api(world: World, monkeypatch: pytest.MonkeyPatch, loopback_only: None) -> Iterator[TestClient]:
     monkeypatch.setenv("TRACE_DATA_DIR", str(world.data_dir))
     monkeypatch.setenv("TRACE_DEV_AUTH", "1")
-    with TestClient(create_app()) as client:
+    with TestClient(create_app(), base_url="http://127.0.0.1") as client:
         yield client
 
 
@@ -235,7 +235,7 @@ def test_dev_auth_off_by_default_returns_401(
     monkeypatch.delenv("TRACE_DEV_AUTH", raising=False)
     monkeypatch.setenv("TRACE_DATA_DIR", str(world.data_dir))
     assert load_settings().dev_auth is False
-    with TestClient(create_app()) as client:
+    with TestClient(create_app(), base_url="http://127.0.0.1") as client:
         for method, path in (
             ("get", f"/api/v1/cases/{world.case_id}/latest"),
             ("get", f"/api/v1/cases/{world.case_id}/versions/1/story"),

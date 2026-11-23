@@ -114,9 +114,9 @@ def test_conflict_schema_pins_averaged_false_and_no_status() -> None:
 @pytest.mark.parametrize(
     ("method", "path", "kwargs"),
     [
-        # M2 implements latest, state, story, timeline, claims, comparisons, conflicts, review,
-        # manifest, claim detail, envelope and build; these remain contract stubs.
-        ("get", f"/api/v1/cases/{CID}/versions/1/integrity", {}),
+        # Implemented: latest, state, story, timeline, claims, comparisons, conflicts, review,
+        # manifest, integrity, claim detail, envelope, build, sources and decisions. These remain
+        # contract stubs.
         ("get", f"/api/v1/cases/{CID}/versions/1/claims/{CLAIM}/evidence", {}),
         ("post", f"/api/v1/cases/{CID}/versions/1/replay", {"headers": CSRF}),
         ("post", "/api/v1/eval/run", {"headers": CSRF}),
@@ -155,11 +155,13 @@ def test_a_reviewer_field_on_the_decision_route_is_422(loopback_only: None) -> N
         "shown_evidence_hash": "0" * 64,
     }
     url = f"/api/v1/cases/{CID}/review/rv_{'b' * 24}/decision"
-    assert (
-        client.post(url, json=body, headers=CSRF).status_code == 501
-    )  # valid body reaches the stub
-    assert client.post(url, json={**body, "reviewer": "mallory"}, headers=CSRF).status_code == 422
-    assert client.post(url, json=body).status_code == 422  # CSRF header missing
+    # a valid body reaches the real route, which authenticates first
+    assert client.post(url, json=body, headers=CSRF).status_code == 401
+    # authentication comes first; the 422 for a spoofed `reviewer` field (signed in) is pinned
+    # by tests/unit/api/test_decisions_api.py::test_spoofed_reviewer_field_422
+    assert client.post(url, json={**body, "reviewer": "mallory"}, headers=CSRF).status_code == 401
+    # the missing CSRF header is refused by the middleware of the real app (test_auth.py)
+    assert client.post(url, json=body).status_code == 401
 
 
 def test_schema_dts_exists_and_is_nonempty() -> None:

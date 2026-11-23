@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Sequence
 from importlib import metadata
 from pathlib import Path
 
@@ -35,13 +36,13 @@ def lockfile_hash() -> str:
     return hashlib.sha256(lock.read_bytes()).hexdigest() if lock.is_file() else UNLOCKED
 
 
-def build_key(manifest: Manifest, config: ConfigBundle) -> str:
+def build_key(manifest: Manifest, config: ConfigBundle, decision_ids: Sequence[str] = ()) -> str:
     """sha256(source shas || config_hash || decision ids || engine_sha || lockfile)."""
     return canonical_sha256(
         {
             "sources": sorted(s.sha256 for s in manifest.sources),
             "config_hash": config_hash(config),
-            "decisions": [],  # TODO(M3): decision ids
+            "decisions": sorted(decision_ids),
             "engine_sha": engine_sha(),
             "lockfile_hash": lockfile_hash(),
         }

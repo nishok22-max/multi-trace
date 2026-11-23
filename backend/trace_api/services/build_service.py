@@ -2,7 +2,8 @@
 killable `multiprocessing` spawn child (`trace_worker.build_runner`).
 
 This module never imports a decoder: the child imports pypdfium2 lazily on its own side.
-TODO(M3/A-08): RLIMIT, killpg, startup sweep, SSE.
+On timeout the whole process tree is killed; stale builds are swept before each start.
+TODO(M3/A-08): RLIMIT (needs the measured peak VM), SSE.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ import secrets
 import threading
 from datetime import UTC, datetime
 
+from trace_adapters.clock import SystemClock
 from trace_adapters.config_loader import load_config_bundle
 from trace_adapters.sqlite.builds import BuildRepository
 from trace_adapters.sqlite.store import SqliteClaimStore
@@ -19,7 +21,9 @@ from trace_api.settings import Settings
 from trace_core.models.case import BuildStatus
 from trace_core.normalise.time import fmt_utc
 from trace_worker.build_runner import BuildPaths, run_build
+from trace_worker.child_guard import kill_tree
 from trace_worker.env import build_key
+from trace_worker.sweep import sweep_stale
 
 _OOM_EXIT_CODES = frozenset({-9, 137})
 
@@ -37,6 +41,7 @@ class BuildService:
     def start(self, case_id: str) -> BuildStatus:
         """Queue and spawn a build. Same inputs -> the existing build (idempotent).
         Raises LookupError for an unknown case, BuildInProgress for a concurrent build."""
+        sweep_stale(self._repo, SystemClock())  # a build orphaned by a restart frees its slot
         manifest = self._store.load_manifest(case_id)
         if manifest is None:
             raise LookupError("unknown case")
@@ -65,7 +70,7 @@ class BuildService:
     def _watch(self, process: multiprocessing.process.BaseProcess, build_id: str) -> None:
         process.join(self._settings.build_timeout_s)
         if process.is_alive():
-            process.terminate()
+            kill_tree(process.pid or 0)  # the child AND its grandchildren (Tesseract)
             process.join(5)
             self._repo.finish_failed(build_id, "failed_timeout", "timeout", _now())
         elif process.exitcode != 0:

@@ -106,11 +106,6 @@ def test_lockfiles_in_sync() -> None:
         assert pkg.get(key, {}) == plock.get(key, {}), f"package-lock.json stale ({key})"
 
 
-@pytest.mark.xfail(reason="implemented in A-10", strict=True)
-def test_no_secret_in_logs_or_responses() -> None:
-    pytest.fail("placeholder until A-10")
-
-
 def test_pytest_socket_blocks_network() -> None:
     with pytest.raises(pytest_socket.SocketBlockedError):
         socket.socket(socket.AF_INET, socket.SOCK_STREAM)

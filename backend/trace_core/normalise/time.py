@@ -1,14 +1,17 @@
 """Time helpers (PRD 10.2): half-open `[start, end)` intervals, fixed-width UTC strings, days in
-the case's `plant_tz`. File mtime is never an input. Only `resolve_time` (M3) is still a stub."""
+the case's `plant_tz`. File mtime is never an input.
+Relative expressions are resolved by `resolve_time`."""
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
+from trace_core.ids import build_claim
 from trace_core.models.claims import ClaimRecord
 from trace_core.models.config import ConfigBundle
-from trace_core.models.time import Interval
+from trace_core.models.time import Interval, Temporal, UnknownTime
 
 MIN_TS = "0001-01-01T00:00:00Z"
 """Lower bound for full-history reads (fixed width, sorts before every real timestamp)."""
@@ -90,5 +93,63 @@ def hours_in(start_utc: str, end_utc: str) -> list[str]:
     return out
 
 
+_RELATIVE_DAYS = {"yesterday": -1, "today": 0, "tomorrow": 1}
+_SHIFT = re.compile(r"\bshift[ _-]?(\d+)\b", re.IGNORECASE)
+
+
+def shift_interval(
+    day: date, start_hour: int, end_hour: int, tz: str, resolved_from: str
+) -> Interval:
+    """`[D start_hour:00, D end_hour:00)` in plant-local time (24 = next midnight)."""
+    zone = ZoneInfo(tz)
+    start = datetime.combine(day, time(start_hour % 24), tzinfo=zone)
+    if start_hour >= 24:
+        start += timedelta(days=start_hour // 24)
+    end = datetime.combine(day + timedelta(days=end_hour // 24), time(end_hour % 24), tzinfo=zone)
+    return Interval(
+        start=fmt_utc(start), end=fmt_utc(end), granularity="shift", resolved_from=resolved_from
+    )
+
+
+def _relative(claim: ClaimRecord, cfg: ConfigBundle) -> Interval | None:
+    """Resolve "yesterday" / "today" (+ optional "shift N") against the document's observed
+    time, in plant-local days. No document date -> None (time stays unknown, promise 7)."""
+    observed = claim.temporal.observed_time.at
+    if observed is None or claim.temporal.observed_time.basis != "document_date":
+        return None
+    text = claim.statement.casefold()
+    offsets = [(w, o) for w, o in _RELATIVE_DAYS.items() if re.search(rf"\b{w}\b", text)]
+    if len(offsets) != 1:
+        return None  # none, or ambiguous: fail closed
+    tz = cfg.case.plant_tz
+    day = local_date(observed, tz) + timedelta(days=offsets[0][1])
+    shift_match = _SHIFT.search(claim.statement)
+    if shift_match is not None:
+        index = int(shift_match.group(1)) - 1
+        if not 0 <= index < len(cfg.case.shifts):
+            return None
+        shift = cfg.case.shifts[index]
+        return shift_interval(day, shift.start_hour, shift.end_hour, tz, "relative")
+    return day_interval(day, tz, "relative")
+
+
 def resolve_time(claims: list[ClaimRecord], cfg: ConfigBundle) -> list[ClaimRecord]:
-    raise NotImplementedError("M3")
+    """Fill the valid time of text claims whose date is relative to the document date.
+    Everything already dated, and everything without a document date, is left unchanged."""
+    out: list[ClaimRecord] = []
+    for claim in claims:
+        if claim.modality != "text" or not isinstance(claim.temporal.valid_time, UnknownTime):
+            out.append(claim)
+            continue
+        interval = _relative(claim, cfg)
+        if interval is None:
+            out.append(claim)
+            continue
+        fields = claim.model_dump(mode="python")
+        fields["temporal"] = Temporal(
+            valid_time=interval,
+            observed_time=claim.temporal.observed_time,
+            timezone_original=claim.temporal.timezone_original,
+        )
+        out.append(build_claim(**fields))
+    return out

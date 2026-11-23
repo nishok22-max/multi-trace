@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from trace_adapters.sqlite.builds import BuildInProgress, BuildRepository
-from trace_api.deps import AuthDep, BuildServiceDep, SettingsDep
+from trace_api.deps import AuthDep, BuildServiceDep, SettingsDep, require_role
 from trace_api.http import NO_STORE
 from trace_api.problems import PROBLEM_BASE, ProblemError, not_found
 from trace_api.routers._common import ERRORS, Bid, Cid, CsrfHeader
@@ -32,7 +32,7 @@ def start_build(
     cid: Cid, x_trace_csrf: CsrfHeader, auth: AuthDep, service: BuildServiceDep
 ) -> object:
     """Role: ingestor. Runs in a killable child process."""
-    # TODO(M3/A-09): enforce the ingestor role and the CSRF header value.
+    require_role(auth, "ingestor")
     try:
         status = service.start(cid)
     except BuildInProgress:
