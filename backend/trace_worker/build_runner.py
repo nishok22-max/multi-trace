@@ -33,6 +33,7 @@ class BuildPaths:
     db: str
     blobs: str
     derived: str
+    renders: str = ""
 
 
 def scrub_env() -> None:
@@ -112,11 +113,22 @@ def run_build(paths: BuildPaths, case_id: str, build_id: str) -> None:
         )
         built = time.monotonic()
         store.commit_build(version, manifest)  # ONE transaction
+        committed = time.monotonic()
+        if paths.renders:  # cited pages and crops: the API serves only what is cached here
+            from pathlib import Path
+
+            from trace_worker.prerender import prerender
+
+            prerender(version, ports.blobs, Path(paths.renders))
         done = time.monotonic()
         repo.finish_ok(
             build_id,
             version.version,
-            {"build_case": int((built - started) * 1000), "commit": int((done - built) * 1000)},
+            {
+                "build_case": int((built - started) * 1000),
+                "commit": int((committed - built) * 1000),
+                "render": int((done - committed) * 1000),
+            },
             {
                 "claims": len(version.records.claims),
                 "comparisons": len(version.records.comparisons),

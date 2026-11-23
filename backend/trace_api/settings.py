@@ -32,6 +32,10 @@ class Settings:
     def derived_dir(self) -> Path:
         return self.data_dir / "derived"
 
+    @property
+    def renders_dir(self) -> Path:
+        return self.data_dir / "renders"
+
 
 def load_settings() -> Settings:
     data_dir = os.environ.get("TRACE_DATA_DIR")

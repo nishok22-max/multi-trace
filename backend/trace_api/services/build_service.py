@@ -55,6 +55,7 @@ class BuildService:
             db=str(self._settings.db_path),
             blobs=str(self._settings.blobs_dir),
             derived=str(self._settings.derived_dir),
+            renders=str(self._settings.renders_dir),
         )
         process = multiprocessing.get_context("spawn").Process(
             target=run_build, args=(paths, case_id, build_id)

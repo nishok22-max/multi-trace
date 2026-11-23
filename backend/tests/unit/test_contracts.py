@@ -115,10 +115,8 @@ def test_conflict_schema_pins_averaged_false_and_no_status() -> None:
     ("method", "path", "kwargs"),
     [
         # Implemented: latest, state, story, timeline, claims, comparisons, conflicts, review,
-        # manifest, integrity, claim detail, envelope, build, sources and decisions. These remain
-        # contract stubs.
-        ("get", f"/api/v1/cases/{CID}/versions/1/claims/{CLAIM}/evidence", {}),
-        ("post", f"/api/v1/cases/{CID}/versions/1/replay", {"headers": CSRF}),
+        # manifest, integrity, claim detail, evidence, recheck, replay, envelope, build, sources,
+        # decisions, cases and the eval report. Only `POST /eval/run` remains a contract stub.
         ("post", "/api/v1/eval/run", {"headers": CSRF}),
     ],
 )
