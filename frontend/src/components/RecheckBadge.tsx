@@ -14,23 +14,17 @@ export default function RecheckBadge({ caseId, claimId }: { caseId: string; clai
   });
   const result = mutation.data;
   return (
-    <div className="flex flex-wrap items-center gap-2" data-testid="recheck">
-      <button
-        type="button"
-        data-testid="recheck-button"
-        className="rounded border border-slate-600 bg-white px-2 py-1 text-sm font-semibold"
-        disabled={mutation.isPending}
-        onClick={() => mutation.mutate()}
-      >
+    <div className="actions" data-testid="recheck">
+      <button type="button" data-testid="recheck-button" className="btn btn-sm" disabled={mutation.isPending} onClick={() => mutation.mutate()}>
         {mutation.isPending ? 'Re-checking...' : 'Re-check now'}
       </button>
       {result ? (
         result.match ? (
-          <span data-testid="recheck-result" data-match="true" className="rounded border border-green-700 bg-green-100 px-2 py-0.5 text-sm font-semibold text-green-900">
-            Re-checked just now: matches the stored evidence
+          <span data-testid="recheck-result" data-match="true" className="badge badge-ok">
+            <span className="dot" /> Re-checked just now: matches the stored evidence
           </span>
         ) : (
-          <span data-testid="recheck-result" data-match="false" role="alert" className="rounded border border-red-800 bg-red-600 px-2 py-0.5 text-sm font-bold text-white">
+          <span data-testid="recheck-result" data-match="false" role="alert" className="badge badge-bad">
             Evidence changed
             {!result.source_sha_ok ? ' · source bytes differ' : ''}
             {!result.artifact_sha_ok ? ' · artifact differs' : ''}
@@ -40,7 +34,7 @@ export default function RecheckBadge({ caseId, claimId }: { caseId: string; clai
         )
       ) : null}
       {mutation.error ? (
-        <span role="alert" data-testid="recheck-error" className="text-sm text-red-800">
+        <span role="alert" data-testid="recheck-error" className="field-error">
           {mutation.error.message}
         </span>
       ) : null}

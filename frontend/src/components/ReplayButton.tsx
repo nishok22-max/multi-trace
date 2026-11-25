@@ -9,29 +9,23 @@ export default function ReplayButton({ caseId, version }: { caseId: string; vers
   });
   const r = mutation.data;
   return (
-    <div className="flex flex-wrap items-center gap-2" data-testid="replay">
-      <button
-        type="button"
-        data-testid="replay-button"
-        className="rounded border border-slate-600 bg-white px-2 py-1 text-sm font-semibold"
-        disabled={mutation.isPending}
-        onClick={() => mutation.mutate()}
-      >
+    <div className="actions" data-testid="replay">
+      <button type="button" data-testid="replay-button" className="btn btn-sm" disabled={mutation.isPending} onClick={() => mutation.mutate()}>
         {mutation.isPending ? 'Replaying...' : 'Verify replay'}
       </button>
       {r ? (
         r.match ? (
-          <span data-testid="replay-result" data-match="true" className="rounded border border-green-700 bg-green-100 px-2 py-0.5 text-sm font-semibold text-green-900">
-            Replay matches: {r.actual_manifest_hash.slice(0, 12)}
+          <span data-testid="replay-result" data-match="true" className="badge badge-ok">
+            <span className="dot" /> Replay matches: {r.actual_manifest_hash.slice(0, 12)}
           </span>
         ) : (
-          <span data-testid="replay-result" data-match="false" role="alert" className="rounded border border-red-800 bg-red-600 px-2 py-0.5 text-sm font-bold text-white">
+          <span data-testid="replay-result" data-match="false" role="alert" className="badge badge-bad">
             Replay differs: expected {r.expected_manifest_hash.slice(0, 12)}, rebuilt {r.actual_manifest_hash.slice(0, 12)}
           </span>
         )
       ) : null}
       {mutation.error ? (
-        <span role="alert" className="text-sm text-red-800">
+        <span role="alert" className="field-error">
           {mutation.error.message}
         </span>
       ) : null}

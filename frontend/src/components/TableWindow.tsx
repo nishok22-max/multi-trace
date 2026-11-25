@@ -10,14 +10,12 @@ export default function TableWindow({ rows, citedRow, citedColumn }: { rows: Row
   }, [rows, citedRow]);
   const columns = rows[0] ? Object.keys(rows[0]) : [];
   return (
-    <div className="max-h-72 overflow-auto border border-slate-400" data-testid="table-window">
-      <table className="w-full border-collapse text-left font-mono text-xs">
-        <thead className="sticky top-0 bg-slate-100">
+    <div className="table-wrap" style={{ maxHeight: 288 }} data-testid="table-window">
+      <table className="t">
+        <thead>
           <tr>
             {columns.map((c) => (
-              <th key={c} className="px-2 py-1">
-                {c}
-              </th>
+              <th key={c}>{c}</th>
             ))}
           </tr>
         </thead>
@@ -30,7 +28,7 @@ export default function TableWindow({ rows, citedRow, citedColumn }: { rows: Row
                   <td
                     key={c}
                     data-cited-cell={cited && c === citedColumn ? 'true' : undefined}
-                    className={`px-2 py-0.5 ${cited ? 'bg-amber-100' : ''} ${cited && c === citedColumn ? 'font-bold outline outline-2 outline-red-600' : ''}`}
+                    className={`m ${cited ? 'cell-cited' : ''} ${cited && c === citedColumn ? 'cell-hit' : ''}`}
                   >
                     {String(row[c] ?? '')}
                   </td>

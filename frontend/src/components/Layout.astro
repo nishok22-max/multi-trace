@@ -12,6 +12,7 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <main><slot /></main>
+    <a class="skip" href="#main">Skip to content</a>
+    <main id="main" class="shell"><slot /></main>
   </body>
 </html>

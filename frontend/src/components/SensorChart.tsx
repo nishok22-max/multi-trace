@@ -16,7 +16,7 @@ export default function SensorChart({ rows, channels, envelope, tStar, tz }: Pro
   return (
     <figure data-testid="sensor-chart" aria-label="Sensor readings with the alarm band">
       <ReactECharts option={option} style={{ height: 280, width: '100%' }} notMerge opts={{ renderer: 'canvas' }} />
-      <figcaption className="text-xs text-slate-700">
+      <figcaption className="small muted">
         Shaded band = alarm threshold (median ± T*·s), not the typical range. Sensor units (undocumented). A missing hour is a gap,
         never a value.
       </figcaption>

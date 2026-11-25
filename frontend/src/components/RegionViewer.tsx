@@ -21,12 +21,11 @@ export default function RegionViewer({ src, alt, rectsPt, rectsPx }: Props) {
       ]).map((r) => toDisplay(r, size.nw, size.dw))
     : [];
   return (
-    <div className="relative inline-block max-w-full overflow-auto border border-slate-400" data-testid="region-viewer">
+    <div className="viewer" data-testid="region-viewer">
       <img
         src={src}
         alt={alt}
-        className="block h-auto max-w-full"
-        data-testid="region-image"
+                data-testid="region-image"
         onLoad={(e) => {
           const img = e.currentTarget;
           setSize({ nw: img.naturalWidth, nh: img.naturalHeight, dw: img.clientWidth });
@@ -37,7 +36,7 @@ export default function RegionViewer({ src, alt, rectsPt, rectsPx }: Props) {
           key={i}
           data-testid="region-overlay"
           aria-label="Cited region"
-          className="pointer-events-none absolute border-2 border-red-600 bg-red-500/20"
+          className="box"
           style={{ left: b.x, top: b.y, width: b.w, height: b.h }}
         />
       ))}

@@ -21,45 +21,40 @@ function Form() {
           : error.message
       : null;
   return (
-    <form
-      aria-label="Sign in"
-      className="mx-auto max-w-sm space-y-3 rounded border border-slate-400 bg-white p-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        login.mutate();
-      }}
-    >
-      <h1 className="text-xl font-bold">Sign in to TRACE</h1>
-      <label className="block text-sm">
-        User name
-        <input
-          data-testid="username"
-          autoComplete="username"
-          className="mt-1 block w-full rounded border border-slate-500 p-1"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </label>
-      <label className="block text-sm">
-        Password
-        <input
-          data-testid="password"
-          type="password"
-          autoComplete="current-password"
-          className="mt-1 block w-full rounded border border-slate-500 p-1"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
-      {message ? (
-        <p role="alert" data-testid="login-error" className="text-sm text-red-800">
-          {message}
-        </p>
-      ) : null}
-      <button type="submit" data-testid="login" disabled={login.isPending || !username || !password} className="rounded bg-slate-800 px-3 py-1 font-semibold text-white">
-        {login.isPending ? 'Signing in...' : 'Sign in'}
-      </button>
-    </form>
+    <div className="login-wrap">
+      <form
+        aria-label="Sign in"
+        className="card login stack-sm"
+        onSubmit={(e) => {
+          e.preventDefault();
+          login.mutate();
+        }}
+      >
+        <div>
+          <p className="brand" style={{ margin: '0 0 14px' }}>
+            TRACE
+          </p>
+          <h1>Sign in</h1>
+          <p className="lead">Every fact in TRACE has an address. Sign in to follow it.</p>
+        </div>
+        <label className="field">
+          User name
+          <input data-testid="username" className="input" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        </label>
+        <label className="field">
+          Password
+          <input data-testid="password" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </label>
+        {message ? (
+          <p role="alert" data-testid="login-error" className="field-error">
+            {message}
+          </p>
+        ) : null}
+        <button type="submit" data-testid="login" disabled={login.isPending || !username || !password} className="btn btn-primary">
+          {login.isPending ? 'Signing in...' : 'Sign in'}
+        </button>
+      </form>
+    </div>
   );
 }
 
