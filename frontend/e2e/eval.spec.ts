@@ -6,6 +6,7 @@ test('e2e_eval_page_renders_report', async ({ page }) => {
   await page.goto('/eval/');
   await expect(page.getByTestId('report')).toBeVisible();
   await expect(page.getByTestId('split')).toHaveText('dev');
+  await expect(page.getByTestId('superseded')).toHaveCount(0); // made by the engine running now
   // every fault type is reported with its own precision, recall, F1 and n
   await expect(page.getByTestId('fault-row')).toHaveCount(5);
   await expect(page.getByTestId('per-fault')).toContainText('contradicting_note');

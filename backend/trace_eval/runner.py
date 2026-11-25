@@ -20,7 +20,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from trace_adapters.config_loader import load_config_bundle
 from trace_core.build import build_case
@@ -336,25 +336,21 @@ def _tally(results: Sequence[CaseResult]) -> dict[str, dict[str, int]]:
     return {k: dict(v) for k, v in out.items()}
 
 
-def run_dev(
-    out: Path,
+def assemble_report(
     *,
-    n_per_kind: int = 3,
-    seed: int = 7,
-    work_dir: Path | None = None,
-    machines: Sequence[int] = DEV_MACHINES,
+    split: Literal["dev", "holdout"],
+    results: Sequence[CaseResult],
+    config: ConfigBundle,
+    machines: Sequence[int],
+    root: Path,
+    seed: int,
+    n_per_kind: int,
+    out: Path,
+    disclosure: str = DISCLOSURE,
+    extras_extra: dict[str, Any] | None = None,
 ) -> EvalReport:
-    """Build every seeded case with the real engine and write the report to `out`."""
-    if not set(machines) <= set(DEV_MACHINES):
-        raise ValueError("the dev runner only accepts dev machines")
-    config = eval_config(machines)
-    root = work_dir or Path(tempfile.mkdtemp(prefix="trace-eval-"))
-    results: list[CaseResult] = []
-    for k_index, kind in enumerate(KINDS):
-        for i in range(n_per_kind):
-            n = machines[(k_index * n_per_kind + i) % len(machines)]
-            world = build_case_world(root / f"c{len(results)}", n, kind, seed * 1000 + len(results))
-            results.append(run_case(world, config))
+    """Score built cases and write the report. Shared by the dev run and the holdout run, so both
+    are computed by exactly the same code."""
     overall, per_fault = _prf_by_kind(results)
 
     alarms = tested = 0
@@ -416,8 +412,8 @@ def run_dev(
 
     hashes = snapshot_hashes(config, "eval")
     report = EvalReport(
-        run_id=f"dev-s{seed}-n{n_per_kind}-{hashes.config_hash[:8]}",
-        split="dev",
+        run_id=f"{split}-s{seed}-n{n_per_kind}-{hashes.config_hash[:8]}",
+        split=split,
         config_hash=hashes.config_hash,
         engine_sha=engine_sha(),
         lockfile_hash=lockfile_hash(),
@@ -450,7 +446,8 @@ def run_dev(
         "ece_ci": list(ece_ci),
         "brier_ci": list(brier_ci),
         "external_fault_share": EXTERNAL_FAULT_SHARE,
-        "disclosure": DISCLOSURE,
+        "disclosure": disclosure,
+        **(extras_extra or {}),
         "entity": {"routed_to_review_share": routed, "mentions": n_alias},
         "false_conflicts": {"gate": list(fc["gate"]), "nogate": [flagged, non_comparable]},
         "baseline_surfaced_planted_conflict": {**surfaced, "planted_cases": len(planted)},
@@ -458,6 +455,37 @@ def run_dev(
     }
     save(report, extras, out)
     return report
+
+
+def run_dev(
+    out: Path,
+    *,
+    n_per_kind: int = 3,
+    seed: int = 7,
+    work_dir: Path | None = None,
+    machines: Sequence[int] = DEV_MACHINES,
+) -> EvalReport:
+    """Build every seeded case with the real engine and write the report to `out`."""
+    if not set(machines) <= set(DEV_MACHINES):
+        raise ValueError("the dev runner only accepts dev machines")
+    config = eval_config(machines)
+    root = work_dir or Path(tempfile.mkdtemp(prefix="trace-eval-"))
+    results: list[CaseResult] = []
+    for k_index, kind in enumerate(KINDS):
+        for i in range(n_per_kind):
+            n = machines[(k_index * n_per_kind + i) % len(machines)]
+            world = build_case_world(root / f"c{len(results)}", n, kind, seed * 1000 + len(results))
+            results.append(run_case(world, config))
+    return assemble_report(
+        split="dev",
+        results=results,
+        config=config,
+        machines=machines,
+        root=root,
+        seed=seed,
+        n_per_kind=n_per_kind,
+        out=out,
+    )
 
 
 def main(argv: Sequence[str]) -> int:

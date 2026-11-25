@@ -5,9 +5,9 @@ type Claim = Schemas['ClaimRecord'];
 
 function Confidence({ claim }: { claim: Claim }) {
   return (
-    <p className="text-sm" data-testid="confidence">
-      Confidence {fmt(claim.confidence.value)}{' '}
-      <span className="rounded bg-slate-200 px-1 text-xs font-semibold">
+    <p className="conf" data-testid="confidence">
+      Confidence <strong className="num">{fmt(claim.confidence.value)}</strong>
+      <span className={`badge ${claim.confidence.calibrated ? 'badge-ok' : 'badge-warn'}`}>
         {claim.confidence.calibrated ? 'calibrated' : 'uncalibrated'}
       </span>
     </p>
@@ -32,24 +32,20 @@ export function TextClaimPanel({
   const ev = claim.evidence;
   const span = ev && ev.kind === 'text_span' ? ev : null;
   return (
-    <section aria-label="Text claim" data-testid="text-claim" className="rounded border border-slate-400 bg-white p-3">
-      <h3 className="font-bold">
-        <span data-testid="claim-label">{claim.label ?? claim.claim_id}</span> · written note
-        {synthetic ? (
-          <span className="ml-2 rounded bg-amber-100 px-1 text-xs font-semibold text-amber-900">
-            synthetic (written for the demo)
-          </span>
-        ) : null}
+    <section aria-label="Text claim" data-testid="text-claim" className="claim">
+      <p className="eyebrow">Written note</p>
+      <h3>
+        <span data-testid="claim-label">{claim.label ?? claim.claim_id}</span>
+        {synthetic ? <span className="badge badge-warn">synthetic (written for the demo)</span> : null}
       </h3>
-      <p className="text-sm text-slate-700">Says: {dayLabel(claim, tz)}, operating state “{String(claim.value)}”</p>
+      <p className="says">
+        Says: {dayLabel(claim, tz)}, operating state “{String(claim.value)}”
+      </p>
       {span ? (
         <>
-          <blockquote data-testid="quote" className="my-2 border-l-4 border-slate-500 pl-2 italic">
-            {span.quote}
-          </blockquote>
-          <p className="font-mono text-xs text-slate-700">
-            {span.source_id} · page {span.page ?? 'n/a'} · line {span.line ?? 'n/a'} · chars {span.char_start}–
-            {span.char_end}
+          <blockquote data-testid="quote">{span.quote}</blockquote>
+          <p className="pointer">
+            {span.source_id} · page {span.page ?? 'n/a'} · line {span.line ?? 'n/a'} · chars {span.char_start}–{span.char_end}
           </p>
         </>
       ) : null}
@@ -76,32 +72,29 @@ export function SensorClaimPanel({
   const window = ev && ev.kind === 'sensor_window' ? ev : null;
   const peakStart = child && 'start' in child.temporal.valid_time ? child.temporal.valid_time.start : null;
   return (
-    <section aria-label="Sensor claim" data-testid="sensor-claim" className="rounded border border-slate-400 bg-white p-3">
-      <h3 className="font-bold">
-        <span data-testid="claim-label">{claim.label ?? claim.claim_id}</span> · sensor day
-        <span className="ml-2 rounded bg-slate-200 px-1 text-xs font-semibold">sensor units (undocumented)</span>
+    <section aria-label="Sensor claim" data-testid="sensor-claim" className="claim">
+      <p className="eyebrow">Sensor day</p>
+      <h3>
+        <span data-testid="claim-label">{claim.label ?? claim.claim_id}</span>
+        <span className="badge">sensor units (undocumented)</span>
       </h3>
-      <p className="text-sm text-slate-700">
+      <p className="says">
         {dayLabel(claim, tz)}, state “{String(value?.['state'] ?? 'n/a')}”
       </p>
-      <dl className="my-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm" data-testid="sensor-numbers">
+      <dl className="kv" data-testid="sensor-numbers">
         <dt>T_D (robust max-z)</dt>
-        <dd data-testid="t-d" className="font-mono font-semibold">
-          {fmt(num(value?.['T_D']))}
-        </dd>
+        <dd data-testid="t-d">{fmt(num(value?.['T_D']))}</dd>
         <dt>T* (conformal threshold)</dt>
-        <dd data-testid="t-star" className="font-mono font-semibold">
-          {fmt(threshold ?? num(value?.['T_star']))}
-        </dd>
+        <dd data-testid="t-star">{fmt(threshold ?? num(value?.['T_star']))}</dd>
         {peak ? (
           <>
             <dt>Peak</dt>
-            <dd data-testid="peak" className="font-mono font-semibold">
+            <dd data-testid="peak">
               {String(peak['channel'])} {fmt(num(peak['reading']))}
               {peakStart ? ` at ${localHour(peakStart, tz)}` : ''}
             </dd>
             <dt>Alarm band</dt>
-            <dd className="font-mono">
+            <dd>
               {fmt(num(peak['band_low']))} to {fmt(num(peak['band_high']))}
             </dd>
           </>
@@ -109,7 +102,7 @@ export function SensorClaimPanel({
         {window ? (
           <>
             <dt>Coverage</dt>
-            <dd className="font-mono">
+            <dd>
               {window.n_points} of {window.expected_points} readings
             </dd>
           </>

@@ -10,24 +10,13 @@ const LABEL: Record<Outcome, string> = {
   cant_tell: "We can't tell",
 };
 
-const STYLE: Record<Outcome, string> = {
-  agree: 'bg-green-100 text-green-900 border-green-700',
-  disagree: 'bg-red-600 text-white border-red-800',
-  cant_compare: 'bg-slate-200 text-slate-900 border-slate-600',
-  cant_tell: 'bg-amber-100 text-amber-900 border-amber-700',
-};
-
 export function outcomeLabel(outcome: Outcome): string {
   return LABEL[outcome];
 }
 
-export default function OutcomeBadge({ outcome }: { outcome: Outcome }) {
+export default function OutcomeBadge({ outcome, small }: { outcome: Outcome; small?: boolean }) {
   return (
-    <span
-      data-testid="outcome-badge"
-      data-outcome={outcome}
-      className={`inline-block rounded border px-3 py-1 text-lg font-bold ${STYLE[outcome]}`}
-    >
+    <span data-testid="outcome-badge" data-outcome={outcome} className={`outcome outcome-${outcome}${small ? ' outcome-sm' : ''}`}>
       {LABEL[outcome]}
     </span>
   );

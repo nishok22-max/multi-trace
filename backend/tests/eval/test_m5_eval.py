@@ -208,7 +208,7 @@ def test_holdout_marker_excluded_from_test_and_check() -> None:
         check=False,
         timeout=120,
     ).stdout
-    assert "1 skipped" in run and "passed" not in run  # ...and is skipped without the env flag
+    assert "skipped" in run and "passed" not in run  # ...and is skipped without the env flag
     task = (BACKEND / "tools" / "task.py").read_text(encoding="utf-8")
     assert "not holdout" in task  # make test / make check deselect it as well
 

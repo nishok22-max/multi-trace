@@ -10,3 +10,16 @@ node_modules
 dist
 __pycache__
 **/__pycache__
+backend/tests/golden/files
+frontend/test-results
+frontend/playwright-report
+**/.venv
+**/node_modules
+**/dist
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+**/.hypothesis
+**/.astro
+anchors
+docs

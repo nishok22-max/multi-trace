@@ -1,0 +1,25 @@
+# One service, hardened (HARDENING S11): published on loopback only, read-only root filesystem,
+# no capabilities, no privilege escalation, a tmpfs for /tmp and a named volume for /data.
+services:
+  trace:
+    build: .
+    image: trace:mvp
+    ports:
+      - "127.0.0.1:8000:8000"
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 3g
+    environment:
+      TRACE_DATA_DIR: /data
+      TRACE_CONTAINER: "1"
+    volumes:
+      - trace-data:/data
+volumes:
+  trace-data: {}

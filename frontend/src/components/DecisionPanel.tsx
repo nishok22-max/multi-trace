@@ -63,86 +63,90 @@ export default function DecisionPanel({ caseId, baseVersion, item, onDecided }: 
     <form
       aria-label="Your decision"
       data-testid="decision-panel"
-      className="space-y-3 rounded border-2 border-slate-600 bg-white p-3"
+      className="card"
       onSubmit={(e) => {
         e.preventDefault();
         setTouched(true);
         if (!problem && !needsEntity) mutation.mutate();
       }}
     >
-      <h3 className="font-bold">Your decision</h3>
-      <fieldset className="space-y-1">
-        <legend className="text-sm font-semibold">What do you decide?</legend>
-        {kinds.map((k) => (
-          <label key={k} className="block text-sm">
-            <input type="radio" name="choice" className="mr-2" checked={kind === k} onChange={() => setKind(k)} data-testid={`choice-${k}`} />
-            {LABEL[k]}
+      <div className="card-head">
+        <h3>Your decision</h3>
+        <span className="aside small muted">Recorded under your session, with the evidence you were shown.</span>
+      </div>
+      <div className="card-body stack-sm">
+        <fieldset className="choices">
+          <legend>What do you decide?</legend>
+          {kinds.map((k) => (
+            <label key={k} className="choice">
+              <input type="radio" name="choice" checked={kind === k} onChange={() => setKind(k)} data-testid={`choice-${k}`} />
+              {LABEL[k]}
+            </label>
+          ))}
+        </fieldset>
+        {kind === 'entity' ? (
+          <label className="field">
+            Machine
+            <select data-testid="entity-select" className="input" value={entity} onChange={(e) => setEntity(e.target.value)}>
+              <option value="">Choose...</option>
+              {(item.candidates ?? []).map((c) => (
+                <option key={c.entity_id} value={c.entity_id}>
+                  {c.entity_id}
+                  {c.vetoed ? ' (vetoed)' : ''}
+                </option>
+              ))}
+            </select>
           </label>
-        ))}
-      </fieldset>
-      {kind === 'entity' ? (
-        <label className="block text-sm">
-          Machine
-          <select
-            data-testid="entity-select"
-            className="ml-2 rounded border border-slate-500 px-1"
-            value={entity}
-            onChange={(e) => setEntity(e.target.value)}
-          >
-            <option value="">Choose...</option>
-            {(item.candidates ?? []).map((c) => (
-              <option key={c.entity_id} value={c.entity_id}>
-                {c.entity_id}
-                {c.vetoed ? ' (vetoed)' : ''}
-              </option>
-            ))}
-          </select>
+        ) : null}
+        {kind === 'reading' ? (
+          <label className="field">
+            Verdict
+            <select data-testid="verdict-select" className="input" value={verdict} onChange={(e) => setVerdict(e.target.value as 'accept' | 'reject')}>
+              <option value="accept">Accept the reading</option>
+              <option value="reject">Reject the reading</option>
+            </select>
+          </label>
+        ) : null}
+        {kind === 'explain' ? (
+          <label className="field">
+            Explanation
+            <input className="input" value={explanation} onChange={(e) => setExplanation(e.target.value)} />
+          </label>
+        ) : null}
+        <label className="field">
+          <span>
+            Reason <span className="hint">(at least 15 characters)</span>
+          </span>
+          <textarea
+            data-testid="reason"
+            className="input"
+            rows={3}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            aria-invalid={touched && problem ? true : undefined}
+          />
         </label>
-      ) : null}
-      {kind === 'reading' ? (
-        <label className="block text-sm">
-          Verdict
-          <select data-testid="verdict-select" className="ml-2 rounded border border-slate-500 px-1" value={verdict} onChange={(e) => setVerdict(e.target.value as 'accept' | 'reject')}>
-            <option value="accept">Accept the reading</option>
-            <option value="reject">Reject the reading</option>
-          </select>
-        </label>
-      ) : null}
-      {kind === 'explain' ? (
-        <label className="block text-sm">
-          Explanation
-          <input className="ml-2 w-80 rounded border border-slate-500 px-1" value={explanation} onChange={(e) => setExplanation(e.target.value)} />
-        </label>
-      ) : null}
-      <label className="block text-sm">
-        Reason (at least 15 characters)
-        <textarea
-          data-testid="reason"
-          className="mt-1 block w-full rounded border border-slate-500 p-1"
-          rows={2}
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          aria-invalid={touched && problem ? true : undefined}
-        />
-      </label>
-      {touched && problem ? (
-        <p role="alert" data-testid="reason-error" className="text-sm text-red-800">
-          {problem}
-        </p>
-      ) : null}
-      {touched && needsEntity ? (
-        <p role="alert" className="text-sm text-red-800">
-          Choose a machine.
-        </p>
-      ) : null}
-      {error ? (
-        <p role="alert" data-testid="decision-error" className="text-sm font-semibold text-red-800">
-          {error instanceof ApiError && error.status === 409 ? conflictMessage(error.problemType) : error.message}
-        </p>
-      ) : null}
-      <button type="submit" data-testid="decide" disabled={mutation.isPending} className="rounded bg-slate-800 px-3 py-1 font-semibold text-white">
-        {mutation.isPending ? 'Saving...' : kind === 'escalate' ? 'Escalate' : 'Save decision'}
-      </button>
+        {touched && problem ? (
+          <p role="alert" data-testid="reason-error" className="field-error">
+            {problem}
+          </p>
+        ) : null}
+        {touched && needsEntity ? (
+          <p role="alert" className="field-error">
+            Choose a machine.
+          </p>
+        ) : null}
+        {error ? (
+          <p role="alert" data-testid="decision-error" className="callout callout-bad">
+            {error instanceof ApiError && error.status === 409 ? conflictMessage(error.problemType) : error.message}
+          </p>
+        ) : null}
+        <div className="actions">
+          <button type="submit" data-testid="decide" disabled={mutation.isPending} className="btn btn-primary">
+            {mutation.isPending ? 'Saving...' : kind === 'escalate' ? 'Escalate' : 'Save decision'}
+          </button>
+        </div>
+      </div>
     </form>
   );
 }

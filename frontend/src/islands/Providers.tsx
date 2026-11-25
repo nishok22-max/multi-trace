@@ -29,16 +29,22 @@ export default function Providers({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
+export function Loading({ what }: { what: string }) {
+  return (
+    <p className="empty" role="status">
+      Loading {what}...
+    </p>
+  );
+}
+
 export function ErrorNote({ error }: { error: Error }) {
   return (
-    <p role="alert" data-testid="error" className="rounded border border-red-700 bg-red-50 p-3">
+    <p role="alert" data-testid="error" className="callout callout-bad">
       {error.message}
       {error instanceof ApiError && error.status === 401 ? (
         <>
           {' '}
-          <a href="/login/" className="underline">
-            Sign in
-          </a>
+          <a href="/login/">Sign in</a>
         </>
       ) : null}
     </p>

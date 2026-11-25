@@ -69,3 +69,13 @@ test('NFR-10: the proof is one click and the decision form two clicks from the c
   await page.getByTestId('resolve').click(); // click 1 towards the decision
   await expect(page.getByTestId('decision-panel')).toBeVisible(); // the form is there: no second hop
 });
+
+test('e2e_roots_visible_in_the_ui: the anchor badge follows the anchor file', async ({ page }) => {
+  await login(page);
+  await page.goto('/case/?id=case-main');
+  await expect(page.getByTestId('anchor-badge')).toHaveAttribute('data-anchored', 'true');
+  await expect(page.getByTestId('anchor-badge')).toContainText('anchor file');
+  await page.goto('/case/?id=case-flip');
+  await expect(page.getByTestId('anchor-badge')).toHaveAttribute('data-anchored', 'false');
+  await expect(page.getByTestId('anchor-badge')).toContainText('not anchored');
+});

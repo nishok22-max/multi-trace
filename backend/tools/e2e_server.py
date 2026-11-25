@@ -100,8 +100,13 @@ def main() -> int:
     data_dir = Path(os.environ.get("TRACE_E2E_DATA") or tempfile.mkdtemp(prefix="trace-e2e-"))
     data_dir.mkdir(parents=True, exist_ok=True)
     os.environ["TRACE_DATA_DIR"] = str(data_dir)
+    os.environ["TRACE_ANCHORS"] = str(data_dir / "anchors.txt")  # a throwaway anchor file
     os.environ.pop("TRACE_DEV_AUTH", None)  # real sessions: the specs log in
-    build_all(data_dir)
+    info = build_all(data_dir)
+    main_root = info["cases"]["case-main"]["manifest_hash"]  # type: ignore[index]
+    (data_dir / "anchors.txt").write_text(
+        f"# e2e anchors\n2015-08-06T04:00:00Z case-main v1 {main_root}\n", encoding="utf-8"
+    )
     from trace_api.main import app
 
     print(f"e2e server ready on http://127.0.0.1:{PORT} (data {data_dir})", flush=True)

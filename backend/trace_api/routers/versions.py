@@ -30,6 +30,7 @@ from trace_api.routers._common import (
     Version,
 )
 from trace_api.services import evidence_render
+from trace_api.services.anchors import is_anchored
 from trace_api.settings import Settings
 from trace_core.models.api_io import (
     ClaimDetail,
@@ -259,7 +260,13 @@ def get_integrity(
         return digest.hexdigest()
 
     result = verify_chain(chain, stored_sha)
-    return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": NO_STORE})
+    # whether this version's root is listed in the anchor file: a header on this no-store answer
+    # (the immutable manifest read must not carry a status that changes over time)
+    anchored = is_anchored(settings.anchors_path, chain[-1].manifest_hash)
+    return JSONResponse(
+        result.model_dump(mode="json"),
+        headers={"Cache-Control": NO_STORE, "X-Manifest-Anchored": "true" if anchored else "false"},
+    )
 
 
 @router.get(
