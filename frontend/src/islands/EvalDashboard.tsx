@@ -24,10 +24,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Report({ r }: { r: Schemas['EvalReport'] }) {
+function Report({ r, superseded }: { r: Schemas['EvalReport']; superseded: boolean }) {
   const calibrated = r.ece_after !== null && r.ece_after !== undefined;
   return (
     <div className="space-y-4" data-testid="report">
+      {superseded ? (
+        <p role="alert" data-testid="superseded" className="rounded border-2 border-red-700 bg-red-50 p-3 font-semibold text-red-900">
+          Superseded: this report was made by another version of the engine than the one running now. Its numbers describe that
+          engine, not this one.
+        </p>
+      ) : null}
       <p className="flex flex-wrap items-center gap-2 text-sm">
         <span data-testid="split" className="rounded bg-slate-200 px-1 font-semibold">
           {r.split}
@@ -142,7 +148,10 @@ function Report({ r }: { r: Schemas['EvalReport'] }) {
 function Dashboard() {
   const report = useQuery({
     queryKey: keys.evalReport(),
-    queryFn: async () => unwrap(await api.GET('/api/v1/eval/report')),
+    queryFn: async () => {
+      const res = await api.GET('/api/v1/eval/report');
+      return { report: unwrap(res), superseded: res.response.headers.get('x-report-superseded') === 'true' };
+    },
   });
   const none = report.error instanceof ApiError && report.error.status === 404;
   const denied = report.error instanceof ApiError && report.error.status === 403;
@@ -161,7 +170,7 @@ function Dashboard() {
       ) : report.error ? (
         <ErrorNote error={report.error} />
       ) : null}
-      {report.data ? <Report r={report.data} /> : null}
+      {report.data ? <Report r={report.data.report} superseded={report.data.superseded} /> : null}
     </div>
   );
 }

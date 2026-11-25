@@ -100,7 +100,7 @@ select = ["E", "F", "W", "I", "B", "UP", "S", "DTZ", "TID251"]
 "trace_api/**" = ["TID251"]
 "trace_worker/**" = ["TID251"]
 "trace_eval/**" = ["TID251"]
-"tools/**" = ["TID251", "S603", "S607", "S101"]
+"tools/**" = ["TID251", "S603", "S607", "S101", "E501"]  # developer scripts: long report lines
 "tests/**" = ["TID251", "S101", "S105", "S106"]
 
 # ---------------------------------------------------------------- mypy

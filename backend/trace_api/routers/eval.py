@@ -16,6 +16,7 @@ from trace_api.security.sessions import COOKIE
 from trace_api.services.eval_service import EvalService
 from trace_core.models.api_io import EvalRunAccepted
 from trace_core.models.eval import EvalReport
+from trace_worker.env import engine_sha
 
 router = APIRouter(prefix="/eval", tags=["eval"])
 
@@ -67,8 +68,16 @@ def run_eval(
 @router.get("/report", response_model=EvalReport, responses=ERRORS, operation_id="getEvalReport")
 def get_report(auth: EvaluatorDep, settings: SettingsDep) -> object:
     # The report is written by an evaluation run (API or `make eval-dev`); this only shows it.
-    path = settings.data_dir / "eval_report.json"
+    # the holdout report, once it exists, is THE report; a later dev run never replaces it
+    holdout = settings.data_dir / "eval_report_holdout.json"
+    path = holdout if holdout.is_file() else settings.data_dir / "eval_report.json"
     if not path.is_file():
         raise not_found()  # no evaluation has been run yet
     report = EvalReport.model_validate_json(path.read_bytes())
-    return JSONResponse(report.model_dump(mode="json"), headers={"Cache-Control": NO_STORE})
+    # a report made by another engine than the one running now says so (T-31), as a header: the
+    # frozen report model has no field for it
+    stale = "true" if report.engine_sha != engine_sha() else "false"
+    return JSONResponse(
+        report.model_dump(mode="json"),
+        headers={"Cache-Control": NO_STORE, "X-Report-Superseded": stale},
+    )

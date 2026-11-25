@@ -226,6 +226,43 @@ def e2e() -> int:
     return _npm("run", "build") or _npm("run", "e2e")
 
 
+def seed() -> int:
+    """Seed the demo case into data/skeleton (idempotent) and print its id."""
+    return _py("tools.seed_build")
+
+
+def replay_verify() -> int:
+    """Rebuild every stored version and compare the manifest hashes (native or image)."""
+    return _py("tools.replay_verify")
+
+
+def anchor() -> int:
+    """Write the latest manifest roots to anchors/demo_roots.txt and commit them LOCALLY. Pushing
+    is a separate, deliberate step: `python -m tools.anchor --push`."""
+    return _py("tools.anchor")
+
+
+def run_native() -> int:
+    """Serve the built app on 127.0.0.1:8000 (real sessions: create users with `seed-users`)."""
+    return _py("uvicorn", "trace_api.main:app", "--host", "127.0.0.1", "--port", "8000")
+
+
+def rehearse() -> int:
+    return _py("tools.rehearse")
+
+
+def slide_numbers() -> int:
+    return _py("tools.slide_numbers")
+
+
+def perf_report() -> int:
+    return _py("tools.perf_report")
+
+
+def seed_users() -> int:
+    return _py("tools.seed_users")
+
+
 def check_perf() -> int:
     return _pytest("tests/perf", "-m", "perf")
 
@@ -261,16 +298,20 @@ TASKS: dict[str, Callable[[], int]] = {
     "authz": authz,
     "check-perf": check_perf,
     "e2e": e2e,
-    "seed": _stub("M3"),
+    "seed": seed,
     "seed-gen": _stub("M3"),
     "record-cache": _stub("M3"),
-    "demo": _stub("M3"),
-    "replay-verify": _stub("M3"),
+    "demo": demo_skeleton,
+    "replay-verify": replay_verify,
     "eval-dev": eval_dev,
     "eval-holdout": eval_holdout,
     "audit": audit,
-    "anchor": _stub("M6"),
-    "run-native": _stub("M2"),
+    "anchor": anchor,
+    "run-native": run_native,
+    "rehearse": rehearse,
+    "slide-numbers": slide_numbers,
+    "perf-report": perf_report,
+    "seed-users": seed_users,
 }
 
 

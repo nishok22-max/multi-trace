@@ -36,6 +36,11 @@ class Settings:
     def renders_dir(self) -> Path:
         return self.data_dir / "renders"
 
+    @property
+    def anchors_path(self) -> Path:
+        override = os.environ.get("TRACE_ANCHORS")
+        return Path(override) if override else REPO / "anchors" / "demo_roots.txt"
+
 
 def load_settings() -> Settings:
     data_dir = os.environ.get("TRACE_DATA_DIR")
@@ -48,7 +53,15 @@ def load_settings() -> Settings:
 LOOPBACK = frozenset({"127.0.0.1", "localhost", "::1"})
 
 
+def in_container() -> bool:
+    """True only inside a container that asked for it: `TRACE_CONTAINER=1` AND the runtime's
+    marker file. A plain `TRACE_CONTAINER=1` on a laptop does not widen the bind."""
+    return os.environ.get("TRACE_CONTAINER") == "1" and Path("/.dockerenv").exists()
+
+
 def assert_safe_bind(host: str, tls: bool) -> None:
-    """Non-loopback binding (LAN) is refused unless TLS is configured (S1)."""
-    if host not in LOOPBACK and not tls:
+    """Non-loopback binding (LAN) is refused unless TLS is configured (S1). Inside the container
+    the process listens on all interfaces because docker-compose publishes the port on 127.0.0.1
+    only (tests/unit/test_container.py checks that)."""
+    if host not in LOOPBACK and not tls and not in_container():
         raise RuntimeError("refusing to listen beyond loopback without TLS")

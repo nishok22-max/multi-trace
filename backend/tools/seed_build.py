@@ -179,3 +179,12 @@ def seed_skeleton(data_dir: Path) -> str:
     )
     SqliteClaimStore(data_dir / "trace.db").append(case_id, [case, *sources])
     return case_id
+
+
+if __name__ == "__main__":
+    import sys
+
+    target = Path(__file__).resolve().parents[2] / "data" / "skeleton"
+    target.mkdir(parents=True, exist_ok=True)
+    print("seeded", seed_skeleton(target), "into", target)
+    sys.exit(0)
